@@ -41,13 +41,30 @@ const ReportDumpForm = () => {
     }
   };
 
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+        },
+        (error) => {
+          alert('Unable to retrieve location. Please allow location access.');
+          console.error(error);
+        }
+      );
+    } else {
+      alert('Geolocation is not supported by this browser.');
+    }
+  };
+
   return (
     <div
       style={{
         padding: '30px',
         width: '380px',
-        marginTop: '100px', // Adjusted to be lower
-        marginLeft: '260px', // Adjusted for better positioning from sidebar
+        marginTop: '100px',
+        marginLeft: '260px',
         backgroundColor: '#ffffff',
         borderRadius: '10px',
         boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)',
@@ -113,22 +130,40 @@ const ReportDumpForm = () => {
           >
             Location (Lat, Long)
           </label>
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="Enter Latitude and Longitude"
-            required
-            style={{
-              width: '100%',
-              padding: '12px',
-              fontSize: '14px',
-              border: '1px solid #ddd',
-              borderRadius: '8px',
-              boxSizing: 'border-box',
-              transition: 'border 0.3s ease-in-out',
-            }}
-          />
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Enter Latitude and Longitude"
+              required
+              style={{
+                flex: 1,
+                padding: '12px',
+                fontSize: '14px',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                boxSizing: 'border-box',
+                transition: 'border 0.3s ease-in-out',
+              }}
+            />
+            <button
+              type="button"
+              onClick={getCurrentLocation}
+              style={{
+                padding: '10px 12px',
+                fontSize: '14px',
+                border: '1px solid #4CAF50',
+                backgroundColor: '#ffffff',
+                color: '#4CAF50',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '600',
+              }}
+            >
+              Get Location
+            </button>
+          </div>
         </div>
 
         {/* Description Input */}
