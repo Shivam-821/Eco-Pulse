@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FaMap, FaTasks, FaUsers, FaBell, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
 
-const Sidebar = () => {
+export default function Sidebar ()  {
   return (
     <div className="sidebar">
       <div className="sidebar-top">
@@ -27,4 +27,3 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;

@@ -10,7 +10,7 @@ const allNotifications = [
   { message: "Pooja’s Team #3 has completed task at Tamenglong.", timestamp: "2025-04-19 11:30 AM", type: "completed" },
 ];
  
-const Notifications = () => {
+export default function Notifications () {
   const [search, setSearch] = useState("");
 
   const filteredNotifications = allNotifications.filter(notification => 
@@ -78,4 +78,3 @@ const Notifications = () => {
   );
 };
 
-export default Notifications;
