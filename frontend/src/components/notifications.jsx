@@ -9,7 +9,7 @@ const allNotifications = [
   { message: "A dump has been reported at Senapati.", timestamp: "2025-04-20 06:00 PM", type: "dump" },
   { message: "Pooja’s Team #3 has completed task at Tamenglong.", timestamp: "2025-04-19 11:30 AM", type: "completed" },
 ];
-
+ 
 const Notifications = () => {
   const [search, setSearch] = useState("");
 
