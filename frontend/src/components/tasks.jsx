@@ -77,7 +77,7 @@ const style = {
   borderRadius: 2
 };
 
-const Tasks = () => {
+export default function Tasks ()  {
   const [tasks, setTasks] = useState(dummyTasks);
   const [open, setOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -270,4 +270,3 @@ const Tasks = () => {
   );
 };
 
-export default Tasks;

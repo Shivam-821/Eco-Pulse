@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AppBar, Toolbar, Button, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-const Navbar = () => {
+export default function Navbar () {
   const [inputValue, setInputValue] = useState('');
 
   const handleInputChange = (e) => {
@@ -55,4 +55,3 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
