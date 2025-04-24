@@ -23,4 +23,9 @@ app.use("/api/map", require("./routes/map"));
 app.use("/api/upload", require("./routes/upload"));
 app.use("/api/stats", require("./routes/stats"));
 
+
+
+app.use('/uploads', express.static('uploads'));
+
+
 app.listen(3001, () => console.log("Backend running on port 3001"));

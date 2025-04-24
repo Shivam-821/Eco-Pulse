@@ -86,7 +86,7 @@ export default function Map () {
                 <strong>Location:</strong> {location.name}<br />
                 <strong>Status:</strong> {location.status}<br />
                 <strong>Team Assigned:</strong> {location.teamAssigned ? 'Yes' : 'No'}<br />
-                <strong>Time:</strong> {location.time}
+                <strong >Time:</strong> {location.time}
               </Popup>
             </Marker>
           ))}
