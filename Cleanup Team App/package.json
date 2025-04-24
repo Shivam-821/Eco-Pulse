@@ -1,0 +1,30 @@
+{
+  "name": "cleanupteamapp",
+  "license": "0BSD",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@react-navigation/native": "^7.1.6",
+    "@react-navigation/stack": "^7.2.10",
+    "expo": "~52.0.46",
+    "expo-font": "~13.0.4",
+    "expo-location": "~18.0.10",
+    "expo-status-bar": "~2.0.1",
+    "geolib": "^3.3.4",
+    "react": "18.3.1",
+    "react-native": "0.76.9",
+    "react-native-gesture-handler": "^2.25.0",
+    "react-native-safe-area-context": "^5.4.0",
+    "react-native-screens": "^4.10.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0"
+  },
+  "private": true
+}
