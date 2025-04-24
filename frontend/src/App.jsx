@@ -1,12 +1,13 @@
 import { Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
-import LeafletMap from './components/map';
+import Map from './components/Map';
 import './index.css';
-import Tasks from './components/tasks';
-import Teams from './components/teams';
-import Notifications from './components/notifications';
-import ReportDumpForm from './components/reportDump';
+import Tasks from './components/Tasks';
+import Teams from './components/Teams';
+import Notifications from './components/Notifications';
+import ReportDumpForm from './components/ReportDumpForm';
+
 function App() {
   return (
     <div className="app-layout">
@@ -15,7 +16,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<LeafletMap/>} />
-          <Route path="/map" element={<LeafletMap/>} />
+          <Route path="/map" element={<Map/>} />
           <Route path="/tasks" element={<Tasks/>} />
           <Route path="/teams" element={<Teams/>} />
           <Route path="/notifications" element={<Notifications/>} />

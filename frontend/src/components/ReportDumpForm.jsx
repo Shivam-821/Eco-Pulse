@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const ReportDumpForm = () => {
+export default function ReportDumpForm  ()  {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
@@ -251,4 +251,3 @@ const ReportDumpForm = () => {
   );
 };
 
-export default ReportDumpForm;

@@ -11,7 +11,7 @@ const allTeams = [
   { name: "Eric's Team #6", phone: "+91 0123456789", location: "Chandel", status: "NOT ASSIGNED", date: "14/09/20" }
 ];
 
-const Teams = () => {
+export default function Teams  ()  {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
 
@@ -85,5 +85,3 @@ const Teams = () => {
     </Box>
   );
 };
-
-export default Teams;

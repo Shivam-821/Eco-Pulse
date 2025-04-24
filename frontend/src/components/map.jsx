@@ -22,7 +22,7 @@ const blueIcon = new L.Icon({
   iconAnchor: [12, 41],
 });
 
-const LeafletMap = () => {
+export default function Map () {
   const [userLocation, setUserLocation] = useState({ lat: 24.7938, lon: 93.9491 }); // Default: Imphal
 
   useEffect(() => {
@@ -96,4 +96,3 @@ const LeafletMap = () => {
   );
 };
 
-export default LeafletMap;
