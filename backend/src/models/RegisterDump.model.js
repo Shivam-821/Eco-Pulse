@@ -1,0 +1,49 @@
+import mongoose,{Schema} from "mongoose";
+
+const registerdumpSchema = new Schema(
+  {
+    address: {
+      type: String,
+    },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+      },
+      coordinates: {
+        type: [Number],
+      },
+    },
+    picture: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+    },
+    dumpReporter: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    teamAssigned: {
+      type: Boolean,
+      default: false,
+    },
+    completed: {
+      type: Boolean,
+      default: false,
+    },
+    complainLodge: {
+      type: Boolean,
+      default: false,
+    },
+    uniqueNumber: {
+      type: Number,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
+
+const Regdump = mongoose.model("Regdump", registerdumpSchema)

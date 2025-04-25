@@ -158,7 +158,8 @@ API requests are rate-limited to 100 requests per 15 minutes per IP address.
 - cors: Cross-origin resource sharing
 - dotenv: Environment variable management
 - multer: File upload handling
-- express-rate-limit: Rate limiting
+- express-rate-limit: Rate limiting.
+- sharp : using this for image processing and compression.
 
 ## Authentication
 ### Login
