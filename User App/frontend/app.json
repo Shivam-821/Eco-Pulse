@@ -21,13 +21,17 @@
         "backgroundColor": "#ffffff"
       },
       "config": {
-    "googleMaps": {
-      "apiKey": "AIzaSyD9K2p4QYXl8MausQHbqbrrWP697aTYI1I"
-    }
-  }
+        "googleMaps": {
+          "apiKey": "AIzaSyD9K2p4QYXl8MausQHbqbrrWP697aTYI1I"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "enabled": false
     }
   }
 }
