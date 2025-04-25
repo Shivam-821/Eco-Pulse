@@ -1,141 +1,152 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import { User } from "../models/index.js";
-import {
-  uploadOnCloudinary,
-  deleteFromCloudinary,
-} from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Admin } from "../models/index.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
-    const user = await User.findById(userId);
+    const user = await Admin.findById(userId);
     if (!user) {
-      throw new ApiError(404, "User not found");
+      throw new ApiError(404, "Admin not found");
     }
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
     user.refreshToken = refreshToken;
+    await user.save();
 
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(500, "Something went wrong while generating tokens");
+    throw new ApiError(500, `Something went wrong while generating tokens ${error.message}`);
   }
 };
 
-const registerUser = asyncHandler(async (req, res) => {
-  const { fullname, email, username, password } = req.body;
+const registerAdmin = asyncHandler(async (req, res) => {
+  const {
+    fullname,
+    email,
+    password,
+    district,
+    state,
+    adminOfficer,
+    pincode,
+  } = req.body;
 
   if (
-    [fullname, email, username, password].some((field) => field?.trim() === "")
+    [
+      fullname,
+      email,
+      password,
+      district,
+      state,
+      adminOfficer,
+    ].some((field) => field?.trim() === "")
   ) {
     throw new ApiError(400, "All fields are required.");
   }
+  console.log('reached')
 
+  const existedAdmin = await Admin.findOne({ $or: [{ district }, { email }] });
 
-
-  const existedUser = await User.findOne({ $or: [{ username }, { email }] });
-
-  if (existedUser) {
-    throw new ApiError(409, "User with email or username already exists.");
-  }
-
-  const avatarLocalPath = req.file?.path;
-
-  if (!avatarLocalPath) {
-    throw new ApiError(400, "Avatar file is missing");
-  }
-
-  let avatar;
-  try {
-    avatar = await uploadOnCloudinary(avatarLocalPath);
-  } catch (error) {
-    throw new ApiError(500, "Failed to upload avatar: user.controller :: registerUser:: ", error);
+  if (existedAdmin) {
+    throw new ApiError(409, "User with district or email already exists.");
   }
 
   try {
-    const user = await User.create({
+    const admin = await Admin.create({
       fullname,
-      avatar: avatar?.url || "",
       email,
       password,
-      username: username.toLowerCase(),
+      pincode,
+      district,
+      state,
+      adminOfficer,
     });
+    console.log(admin)
 
-    const createdUser = await User.findById(user._id).select(
-      "-password -refreshToken"
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      admin._id
     );
 
-    if (!createdUser) {
-      throw new ApiError(500, "Something went wrong while registering a user");
-    }
+    const createdAdmin = await Admin.findById(admin._id).select(
+      "-password -refreshToken"
+    );
+    console.log(createdAdmin)
+
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: "None",
+    };
 
     return res
       .status(201)
-      .json(new ApiResponse(200, createdUser, "User registered successfully"));
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          201,
+          { admin: createdAdmin, accessToken, refreshToken },
+          "Admin registered and logged in successfully"
+        )
+      );
   } catch (error) {
-    if (avatar) await deleteFromCloudinary(avatar.public_id);
-
-    throw new ApiError(
-      500,
-      "Something went wrong while registering a user, images were deleted"
-    );
+    throw new ApiError(500, `Something went wrong while registering a admin :: registerAdmin :: ${error.message}`);
   }
 });
 
-const loginUser = asyncHandler(async (req, res) => {
-  const { email, username, password } = req.body;
+const loginAdmin = asyncHandler(async (req, res) => {
+  const { email, district, password } = req.body;
 
-  if (!email || !username) {
+  if (!email && !district) {
     throw new ApiError(400, "Required field should be filled");
   }
 
-  const user = await User.findOne({ $or: [{ username }, { email }] });
+  const admin = await Admin.findOne({ $or: [{ district }, { email }] });
 
-  if (!user) {
-    throw new ApiError(404, "User not found");
+  if (!admin) {
+    throw new ApiError(404, "Admin not found");
   }
 
-
-  const isPasswordValid = await user.isPasswordCorrect(password);
+  const isPasswordValid = await admin.isPasswordCorrect(password);
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid credentials");
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    user._id
+    admin._id
   );
 
-  const loggedInUser = await User.findById(user._id).select(
+  const loggedInAdmin = await Admin.findById(admin._id).select(
     "-password -refreshToken"
   );
 
-  if (!loggedInUser) {
+  if (!loggedInAdmin) {
     throw new ApiError(404, "User not found");
   }
 
   const options = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: "None",
   };
 
   return res
-    .status(200)
+    .status(201)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
     .json(
       new ApiResponse(
-        200,
-        { user: loggedInUser, accessToken, refreshToken },
+        201,
+        { user: loggedInAdmin, accessToken, refreshToken },
         "User logged in successfully"
       )
     );
 });
 
-const logoutUser = asyncHandler(async (req, res) => {
-  await User.findByIdAndUpdate(
-    req.user.id,
+const logoutAdmin = asyncHandler(async (req, res) => {
+  await Admin.findByIdAndUpdate(
+    req.admin.id,
     {
       $unset: { refreshToken: "" },
     },
@@ -144,6 +155,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: "None",
   };
   return res
     .status(200)
@@ -152,17 +164,10 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
 
-
-const getCurrentUser = asyncHandler(async (req, res) => {
+const getCurrentAdmin = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, req.user, "Current user details"));
 });
 
-
-export {
-  registerUser,
-  loginUser,
-  logoutUser,
-  getCurrentUser,
-};
+export { registerAdmin, loginAdmin, logoutAdmin, getCurrentAdmin };

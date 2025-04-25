@@ -1,13 +1,13 @@
 import mongoose, { Schema } from "mongoose";
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const adminSchema = new Schema({
-  name: {
+  fullname: {
     type: String,
     required: true,
   },
-  pincode:{
+  pincode: {
     type: Number,
     required: true,
   },
@@ -19,39 +19,25 @@ const adminSchema = new Schema({
   state: {
     type: String,
     required: true,
-    unique: true,
   },
   adminOfficer: {
     type: String,
     required: true,
   },
-  email:{
+  email: {
     type: String,
-    requied: true,
+    required: true,
+    unique: true,
     validate: {
       validator: function (value) {
         return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
       },
-        
     },
   },
-  phone: {
-    type: Number,
-    required: true,
-    validate: {
-        validator: function (value) {
-          return /^[6-9]\d{9}$/.test(value.toString());
-        },
-      },
-  },
-  helpLineNumber:{
+  helpLineNumber: {
     type: Number,
   },
-  password:{
-    type: String,
-    required: true,
-  },
-  address: {
+  password: {
     type: String,
     required: true,
   },
@@ -66,21 +52,21 @@ const adminSchema = new Schema({
   },
   complaintReceived: [
     {
-        type: Schema.Types.ObjectId,
-        ref: "RegisterComplain",
-    },  
+      type: Schema.Types.ObjectId,
+      ref: "RegisterComplain",
+    },
   ],
-  refreshToken:{
+  refreshToken: {
     type: String,
-  }
+  },
 });
 
-adminSchema.pre("save", async function(next){
-  if(!this.isModified("password")) return next()
+adminSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
 
-  this.password = await bcrypt.hash(this.password, 10)
-  next()
-})
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
 
 adminSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
@@ -102,10 +88,9 @@ adminSchema.methods.generateRefreshToken = function () {
     {
       _id: this._id,
     },
-    process.env.REFERESH_TOKEN_SECRET,
-    { expiresIn: process.env.REFERESH_TOKEN_EXPIRY }
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
   );
 };
 
-
-export const Admin = mongoose.model("Admin", adminSchema)
+export const Admin = mongoose.model("Admin", adminSchema);

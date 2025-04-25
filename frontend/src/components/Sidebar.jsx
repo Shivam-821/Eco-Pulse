@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FaMap, FaTasks, FaUsers, FaBell, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
+import DarkMode from "./DarkMode";
 
 export default function Sidebar ()  {
   return (
@@ -10,17 +11,38 @@ export default function Sidebar ()  {
 
       <div className="sidebar-scrollable">
         <ul className="nav-links">
-          <li><Link to="/map"><FaMap /> Map</Link></li>
-          <li><Link to="/teams"><FaUsers /> Teams</Link></li>
-          <li><Link to="/tasks"><FaTasks /> Tasks</Link></li>
-          <li><Link to="/notifications"><FaBell /> Notifications</Link></li>
+          <li>
+            <Link to="/map">
+              <FaMap /> Map
+            </Link>
+          </li>
+          <li>
+            <Link to="/teams">
+              <FaUsers /> Teams
+            </Link>
+          </li>
+          <li>
+            <Link to="/tasks">
+              <FaTasks /> Tasks
+            </Link>
+          </li>
+          <li>
+            <Link to="/notifications">
+              <FaBell /> Notifications
+            </Link>
+          </li>
         </ul>
       </div>
 
       <div className="sidebar-bottom">
         <div className="account-links">
-          <Link to="#"><FaSignInAlt /> Sign In</Link>
-          <Link to="#"><FaUserPlus /> Sign Up</Link>
+          <Link to="#">
+            <FaSignInAlt /> Sign In
+          </Link>
+          <Link to="#">
+            <FaUserPlus /> Sign Up
+          </Link>
+          <DarkMode />
         </div>
       </div>
     </div>

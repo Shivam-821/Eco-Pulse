@@ -1,22 +1,29 @@
+import { GeneralComplaint } from "../models/index.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import {Regdump, GeneralComplaint} from "../models/index.js"
-
+import { Regdump } from "../models/index.js";
 
 const complaintRegistered = asyncHandler(async (req, res) => {
-  const {complaintType, description, binUniqueCode, location, pincode, uniqueNumber} = req.body
+  const {
+    complaintType,
+    description,
+    binUniqueCode,
+    location,
+    pincode,
+    uniqueNumber,
+  } = req.body;
 
-  if(!complaintType || !description || !location || !pincode ) {
-    throw new ApiError(402, "All fields are required:: complain.controller")
+  if (!complaintType || !description || !location || !pincode) {
+    throw new ApiError(402, "All fields are required:: complain.controller");
   }
 
-  if(complaintType === "bin-issue"){
-    if(!binUniqueCode){
-        throw new ApiError(402, "binUniqueCode are required")
+  if (complaintType === "bin-issue") {
+    if (!binUniqueCode) {
+      throw new ApiError(402, "binUniqueCode are required");
     }
-  } 
-  const getDump = await Regdump.findOne({uniqueNumber})
+  }
+  const getDump = await Regdump.findOne({ uniqueNumber });
 
   try {
     const createComplain = await GeneralComplaint.create({
@@ -26,20 +33,25 @@ const complaintRegistered = asyncHandler(async (req, res) => {
       binUniqueCode,
       location,
       pincode,
-      user: req.user
-    })
-
+      user: req.user,
+    });
 
     return res
-        .status(200)
-        .json(new ApiResponse(200, createComplain, "Complain raised successfully"))
+      .status(200)
+      .json(
+        new ApiResponse(200, createComplain, "Complain raised successfully")
+      );
   } catch (error) {
-        throw new ApiError(501, "Error generating Complain:: ComplainRegistered")
+    throw new ApiError(501, "Error generating Complain:: ComplainRegistered");
   }
+});
 
-  
-})
+const viewComplains = asyncHandler(async (req, res) => {
+  const complains = await GeneralComplaint.find().sort({ createdAt: -1 });
 
+  return res
+    .status(200)
+    .json(new ApiResponse(200, complains, "all complains fetched"));
+});
 
-
-
+export { complaintRegistered, viewComplains };

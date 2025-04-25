@@ -2,7 +2,7 @@ import express from "express";
 const router = express.Router();
 
 // Import individual route files using ES module syntax
-import authRoutes from "./auth.js";
+import authRoutes from "./auth.route.js";
 import teamRoutes from "./teams.js";
 import taskRoutes from "./tasks.js";
 import reportRoutes from "./reports.js";

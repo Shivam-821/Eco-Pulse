@@ -1,41 +1,21 @@
-import {Regdump} from '../models/index.js'
-import { ApiError } from '../utils/ApiError.js';
-import {asyncHandler} from '../utils/asyncHandler.js'
-import {User} from '../models/index.js'
-import { uploadOnCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
-import {ApiResponse} from '../utils/ApiResponse.js'
-import { SmartBin } from '../models/index.js';
+import { Regdump } from "../models/index.js";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { User } from "../models/index.js";
+import {
+  uploadOnCloudinary,
+  deleteFromCloudinary,
+} from "../utils/cloudinary.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { SmartBin } from "../models/index.js";
 
 const registerDump = asyncHandler(async (req, res) => {
-  const { location, description, type, binCode, pincode } = req.body;
+  const { location, description } = req.body;
   const dumpReporter = await User.findById(req.user._id);
 
   if (!dumpReporter || !location || !description || !type) {
     throw new ApiError(400, "All fields are required");
   }
-
-  let bin = null;
-  if (type === "bin") {
-    if (!binCode) {
-      throw new ApiError(400, "Bin code is required for bin reports");
-    }
-    bin = await SmartBin.findOne({ uniqueCode: binCode });
-    if (!bin) {
-      throw new ApiError(404, "Smart bin not found with the given code");
-    }
-  }
-
-  const existDump = await Regdump.exists({
-    pincode,
-    uniqueCode: binCode,
-  });
-
-  if(existDump){
-    return res
-      .status(401)
-      .json(new ApiResponse(401, "Another user have already updated about it, Thankyou for you kindness towards nature"))
-  }
-
 
   let picture;
   const picturePath = req.file?.path;
@@ -49,12 +29,11 @@ const registerDump = asyncHandler(async (req, res) => {
 
   try {
     const dump = await Regdump.create({
-      type,
-      binRef: bin?._id,
       location,
       description,
-      picture: picture?.url,
+      picture: picture?.url || "",
       dumpReporter: dumpReporter._id,
+      uniqueNumber: Math.floor(Math.random() * 20),
     });
 
     const registeredDump = await Regdump.findById(dump._id).populate({
@@ -62,9 +41,8 @@ const registerDump = asyncHandler(async (req, res) => {
       select: "username fullname email avatar",
     });
 
-    dumpReporter.dumpRegistered.push(dump._id)
+    dumpReporter.dumpRegistered.push(dump._id);
     await dumpReporter.save();
-   
 
     return res
       .status(201)
@@ -77,16 +55,16 @@ const registerDump = asyncHandler(async (req, res) => {
   }
 });
 
-
 const getAllDump = asyncHandler(async (req, res) => {
-    const dumps = await Regdump.find().populate("dumpReporter").select("-password -refreshToken")
+  const dumps = await Regdump.find()
+    .populate("dumpReporter")
+    .select("-password -refreshToken");
 
-    if(!dumps) throw new ApiError(404, "Dumps not found")
+  if (!dumps) throw new ApiError(404, "Dumps not found");
 
-    return res
-        .status(200)
-        .json(new ApiResponse(200, dumps, "Dumps fetched successfully"))
-})
+  return res
+    .status(200)
+    .json(new ApiResponse(200, dumps, "Dumps fetched successfully"));
+});
 
-
-export {getAllDump, registerDump,}
+export { getAllDump, registerDump };

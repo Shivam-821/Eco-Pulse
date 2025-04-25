@@ -3,12 +3,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const userSchema = new Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
   fullname: {
     type: String,
     required: true,
@@ -27,6 +21,8 @@ const userSchema = new Schema({
   },
   phone: {
     type: Number,
+    require: true,
+    unique: true,
     validate: {
       validator: function (value) {
         return /^[6-9]\d{9}$/.test(value.toString());
@@ -59,15 +55,15 @@ userSchema.pre("save", async function(next) {
 })
 
 userSchema.methods.isPasswordCorrect = async function(password){
-    return await bcrypt.compare(this.password, password)
+    return await bcrypt.compare(password, this.password);
 }
 
 userSchema.methods.generateAccessToken = function(){
     return jwt.sign(
         {
             _id: this._id,
-            email: this._email,
-            username: this.username,
+            email: this.email,
+            phone: this.phone,
         },
         process.env.ACCESS_TOKEN_SECRET,
         {expiresIn: process.env.ACCESS_TOKEN_EXPIRY}

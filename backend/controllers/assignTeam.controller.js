@@ -1,15 +1,11 @@
-import { AssignTeam, Regdump } from "../models/index.js";
-
+import { AssignTeam } from "../models/assignTeam.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { Regdump } from "../models/index.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import {
-  uploadOnCloudinary,
-  deleteFromCloudinary,
-} from "../utils/cloudinary.js";
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-  const R = 6371; 
+  const R = 6371;
   const dLat = deg2rad(lat2 - lat1);
   const dLon = deg2rad(lon2 - lon1);
   const a =
@@ -36,6 +32,7 @@ const generateAccessAndRefreshToken = async (teamId) => {
     const accessToken = team.generateAccessToken();
     const refreshToken = team.generateRefreshToken();
     team.refreshToken = refreshToken;
+    await team.save();
 
     return { accessToken, refreshToken };
   } catch (error) {
@@ -44,13 +41,13 @@ const generateAccessAndRefreshToken = async (teamId) => {
 };
 
 const registerTeam = asyncHandler(async (req, res) => {
-  const { teamname, email, username, password, location } = req.body;
+  const { fullname, email, password, location } = req.body;
+  console.log(req.body)
 
-  if (
-    [teamname, email, username, password].some((field) => field?.trim() === "")
-  ) {
+  if ([fullname, email, password].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "All fields are required.");
   }
+  const teamname = fullname
 
   const existedTeam = await AssignTeam.findOne({
     $or: [{ teamname }, { email }],
@@ -60,50 +57,97 @@ const registerTeam = asyncHandler(async (req, res) => {
     throw new ApiError(409, "Team with this name or email already exists.");
   }
 
-  const avatarLocalPath = req.file?.path;
-
-  if (!avatarLocalPath) {
-    throw new ApiError(400, "Avatar file is missing");
-  }
-
-  let avatar;
-  try {
-    avatar = await uploadOnCloudinary(avatarLocalPath);
-  } catch (error) {
-    throw new ApiError(500, "Failed to upload avatar");
-  }
-
   try {
     const team = await AssignTeam.create({
       teamname,
-      avatar: avatar?.url || "",
       email,
       password,
       location,
     });
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      team._id
+    );
 
     const createdTeam = await AssignTeam.findById(team._id).select(
       "-password -refreshToken"
     );
 
     if (!createdTeam) {
-      throw new ApiError(
-        500,
-        "Something went wrong while registering the team"
-      );
+      throw new ApiError(500, "Something went wrong while registering a admin");
     }
+
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: "None",
+    };
 
     return res
       .status(201)
-      .json(new ApiResponse(201, createdTeam, "Team registered successfully"));
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          201,
+          { user: createdTeam, accessToken, refreshToken },
+          "Consumer registered and logged in successfully"
+        )
+      );
   } catch (error) {
-    if (avatar) await deleteFromCloudinary(avatar.public_id);
-
     throw new ApiError(
       500,
-      "Something went wrong while registering the team. Avatar deleted."
+      `Something went wrong while registering the team ${error.message}`
     );
   }
+});
+
+const loginTeam = asyncHandler(async (req, res) => {
+  const { email, teamname, password } = req.body;
+
+  if (!email && !teamname) {
+    throw new ApiError(400, "Required field should be filled");
+  }
+
+  const team = await AssignTeam.findOne({ $or: [{ teamname }, { email }] });
+
+  if (!team) {
+    throw new ApiError(404, "Team not found");
+  }
+
+  const isPasswordValid = await team.isPasswordCorrect(password);
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid credentials");
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    team._id
+  );
+
+  const loggedInTeam = await AssignTeam.findById(team._id).select(
+    "-password -refreshToken"
+  );
+
+  if (!loggedInTeam) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+  };
+
+  return res
+    .status(201)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        201,
+        { user: loggedInTeam, accessToken, refreshToken },
+        "User logged in successfully"
+      )
+    );
 });
 
 const assignWork = asyncHandler(async (req, res) => {
@@ -167,9 +211,4 @@ const workCompleted = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, dump, "Dump marked as completed"));
 });
 
-export {
-  registerTeam,
-  assignWork,
-  workCompleted,
-  generateAccessAndRefreshToken,
-};
+export { registerTeam, loginTeam, assignWork, workCompleted };
