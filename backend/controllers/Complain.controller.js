@@ -23,7 +23,10 @@ const complaintRegistered = asyncHandler(async (req, res) => {
       throw new ApiError(402, "binUniqueCode are required");
     }
   }
-  const getDump = await Regdump.findOne({ uniqueNumber });
+  let getDump;
+  if (uniqueNumber) {
+    getDump = await Regdump.findOne({ uniqueNumber });
+  }
 
   try {
     const createComplain = await GeneralComplaint.create({

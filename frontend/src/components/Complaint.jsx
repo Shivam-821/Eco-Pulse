@@ -34,7 +34,9 @@ useEffect(() => {
 
   const fetchComplaints = async () => {
     try {
-      const res = await axios.get("/api/complaint/view-complains");
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/complain/view-complain`
+      );
       setComplaints(res.data?.data || []);
     } catch (err) {
       console.error("Error fetching complaints:", err);
@@ -64,7 +66,10 @@ useEffect(() => {
         sentData.uniqueNumber = uniqueNumber;
       }
 
-      const res = await axios.post("/api/complaint/register", sentData);
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/complain/loadge-complain`,
+        sentData
+      );
       setMessage(res.data?.message || "Complaint submitted successfully!");
       
       setComplaints([res.data?.data, ...complaints]);
@@ -83,9 +88,18 @@ useEffect(() => {
 
   return (
     <div className="flex md:justify-center justify-end ml-[240px]">
-      <div className="max-w-2xl p-4 dark:bg-blue-950 mt-15 dark:text-gray-200 md:w-[550px] w-auto sm:mr-9 mr-5">
+      <div className="max-w-2xl p-4 dark:bg-blue-950 mt-18 dark:text-gray-200 md:w-[550px] w-auto sm:mr-9 mr-5 rounded-lg">
         <div className="bg-white rounded-xl shadow-md p-6 mb-8 dark:bg-slate-600">
-          <h2 className="text-2xl font-bold mb-4">Register a Complaint</h2>
+          <h2 className="text-2xl font-bold mb-4">
+            Register a Complaint
+            <a
+              className="bg-slate-400 ml-10 md:ml-15 p-2 rounded-lg text-lg font-semibold hover:bg-slate-500 dark:bg-blue-500 dark:hover:bg-blue-600 scroll-smooth"
+              href="#view-complain"
+            >
+              View Complains
+            </a>
+          </h2>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block font-medium">Complaint Type:</label>
@@ -177,7 +191,10 @@ useEffect(() => {
         </div>
 
         {/* Complaints Section */}
-        <div className="bg-white rounded-xl shadow-md p-6 dark:bg-slate-700 dark:text-gray-100">
+        <div
+          id="view-complain"
+          className="bg-white rounded-xl shadow-md p-6 dark:bg-slate-700 dark:text-gray-100"
+        >
           <h2 className="text-xl font-semibold mb-4 ">All Complaints</h2>
           {complaints.length === 0 ? (
             <p className="text-gray-500">No complaints found.</p>

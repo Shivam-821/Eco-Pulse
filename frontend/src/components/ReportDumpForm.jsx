@@ -1,253 +1,170 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
 
-export default function ReportDumpForm  ()  {
-  const [name, setName] = useState('');
-  const [location, setLocation] = useState('');
-  const [description, setDescription] = useState('');
-  const [contactInfo, setContactInfo] = useState('');
+const RegisterDump = () => {
+  const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
+  const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem("accessToken");
+  const [data, setData] = useState(null)
+  const dataCardRef = useRef(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!name || !location || !description || !contactInfo) {
-      alert('Please fill in all fields.');
-      return;
-    }
-
-    const formData = {
-      name,
-      location,
-      description,
-      contactInfo,
-      timeReported: new Date().toISOString(),
-    };
-
-    const response = await fetch('http://your-backend-url/api/report-dump', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      alert('Dump report submitted successfully!');
-      setName('');
-      setLocation('');
-      setDescription('');
-      setContactInfo('');
-    } else {
-      alert('Error submitting dump report.');
-    }
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
   };
+
+  const notifyError = () => toast("Error Registring Dump");
+    const notifySuccess = () => {
+      toast("Dump Registered Successfully")
+    }
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+          setLocation(`${latitude.toFixed(6)},${longitude.toFixed(6)}`);
         },
         (error) => {
-          alert('Unable to retrieve location. Please allow location access.');
+          alert("Unable to retrieve location. Please allow location access.");
           console.error(error);
         }
       );
     } else {
-      alert('Geolocation is not supported by this browser.');
+      alert("Geolocation is not supported by this browser.");
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("location", location);
+    formData.append("description", description);
+    if (image) formData.append("picture", image);
+
+    try {
+      const res  = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/dump/report-dump`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      if(res.status === 201){
+        setDescription("");
+        setLocation("");
+        setImage(null);
+        setData(res.data.data)
+        notifySuccess();
+         dataCardRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+      
+    } catch (error) {
+      console.log(error)
+      notifyError()
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div
-      style={{
-        padding: '30px',
-        width: '380px',
-        marginTop: '100px',
-        marginLeft: '260px',
-        backgroundColor: '#ffffff',
-        borderRadius: '10px',
-        boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)',
-        fontFamily: 'Arial, sans-serif',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <h2
-        style={{
-          fontSize: '28px',
-          fontWeight: '600',
-          marginBottom: '20px',
-          textAlign: 'center',
-          color: '#333',
-        }}
-      >
-        Report a Dump
-      </h2>
+    <div className="flex flex-col dark:bg-slate-950 ml-[230px] justify-center items-center py-10 min-h-screen">
+      <ToastContainer />
+      <div className="max-w-md mx-auto p-5 bg-white rounded-xl shadow-lg shadow-gray-300 space-y-6 mt-10 dark:bg-blue-950 dark:text-white dark:shadow-md dark:shadow-blue-900">
+        <h2 className="text-2xl font-bold text-center">Register Dump</h2>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-        {/* Name Input */}
-        <div style={{ marginBottom: '20px' }}>
-          <label
-            style={{
-              fontSize: '14px',
-              color: '#555',
-              marginBottom: '5px',
-              display: 'block',
-              fontWeight: '500',
-            }}
-          >
-            Your Name
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your name"
-            required
-            style={{
-              width: '100%',
-              padding: '12px',
-              fontSize: '14px',
-              border: '1px solid #ddd',
-              borderRadius: '8px',
-              boxSizing: 'border-box',
-              transition: 'border 0.3s ease-in-out',
-            }}
-          />
-        </div>
-
-        {/* Location Input */}
-        <div style={{ marginBottom: '20px' }}>
-          <label
-            style={{
-              fontSize: '14px',
-              color: '#555',
-              marginBottom: '5px',
-              display: 'block',
-              fontWeight: '500',
-            }}
-          >
-            Location (Lat, Long)
-          </label>
-          <div style={{ display: 'flex', gap: '10px' }}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex items-center gap-2">
             <input
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="Enter Latitude and Longitude"
+              className="w-full border p-2 rounded"
+              placeholder="Latitude,Longitude"
               required
-              style={{
-                flex: 1,
-                padding: '12px',
-                fontSize: '14px',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                boxSizing: 'border-box',
-                transition: 'border 0.3s ease-in-out',
-              }}
             />
             <button
               type="button"
               onClick={getCurrentLocation}
-              style={{
-                padding: '10px 12px',
-                fontSize: '14px',
-                border: '1px solid #4CAF50',
-                backgroundColor: '#ffffff',
-                color: '#4CAF50',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: '600',
-              }}
+              className="bg-green-600 text-white w-20 px-3 py-2 rounded hover:bg-green-700 text-sm"
             >
-              Get Location
+              Use GPS
             </button>
           </div>
-        </div>
 
-        {/* Description Input */}
-        <div style={{ marginBottom: '20px' }}>
-          <label
-            style={{
-              fontSize: '14px',
-              color: '#555',
-              marginBottom: '5px',
-              display: 'block',
-              fontWeight: '500',
-            }}
+          <div>
+            <label className="block font-medium">Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full border p-2 rounded"
+              rows={3}
+              placeholder="Describe the dump"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium ">Upload Image</label>
+            <input
+              type="file"
+              onChange={handleImageChange}
+              accept="image/*"
+              className="w-full border-2 border-gray-500 rounded cursor-pointer hover:bg-blue-900 px-2"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 cursor-pointer"
+            disabled={loading}
           >
-            Description of the Dump
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe the dump"
-            required
-            style={{
-              width: '100%',
-              padding: '12px',
-              fontSize: '14px',
-              border: '1px solid #ddd',
-              borderRadius: '8px',
-              boxSizing: 'border-box',
-              resize: 'vertical',
-              minHeight: '80px',
-              transition: 'border 0.3s ease-in-out',
-            }}
-          />
-        </div>
-
-        {/* Contact Info Input */}
-        <div style={{ marginBottom: '20px' }}>
-          <label
-            style={{
-              fontSize: '14px',
-              color: '#555',
-              marginBottom: '5px',
-              display: 'block',
-              fontWeight: '500',
-            }}
-          >
-            Contact Email or Phone
-          </label>
-          <input
-            type="text"
-            value={contactInfo}
-            onChange={(e) => setContactInfo(e.target.value)}
-            placeholder="Email or Phone Number"
-            required
-            style={{
-              width: '100%',
-              padding: '12px',
-              fontSize: '14px',
-              border: '1px solid #ddd',
-              borderRadius: '8px',
-              boxSizing: 'border-box',
-              transition: 'border 0.3s ease-in-out',
-            }}
-          />
-        </div>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          style={{
-            padding: '14px',
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            width: '100%',
-            cursor: 'pointer',
-            borderRadius: '8px',
-            fontSize: '16px',
-            transition: 'background-color 0.3s ease',
-          }}
+            {loading ? "Submitting..." : "Register Dump"}
+          </button>
+        </form>
+      </div>
+      {data && (
+        <div
+          ref={dataCardRef}
+          className="ml-6 mt-10 max-w-md bg-white dark:bg-blue-950 dark:text-white rounded-xl shadow-md p-4 space-y-4"
         >
-          Submit Report
-        </button>
-      </form>
+          <h3 className="text-xl font-bold">Submitted Dump Info</h3>
+          <p>
+            <span className="font-semibold">Description:</span>{" "}
+            {data.description}
+          </p>
+          <p>
+            <span className="font-semibold">Location:</span>{" "}
+            {data.location?.coordinates?.[1]}, {data.location?.coordinates?.[0]}
+          </p>
+          {data.picture && data.picture && (
+            <div>
+              <span className="font-semibold">Image:</span>
+              <img
+                src={data.picture}
+                alt="Dump"
+                className="mt-2 rounded-lg w-full h-48  contain-content border"
+              />
+            </div>
+          )}
+          <p>
+            <span className="font-semibold">Dump ID:</span> {data._id}
+          </p>
+          <p>
+            <span className="font-semibold">Unique Number:</span>{" "}
+            {data.uniqueNumber}
+          </p>
+        </div>
+      )}
     </div>
   );
 };
 
+export default RegisterDump;
