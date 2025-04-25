@@ -1,16 +1,22 @@
-const router = require("express").Router();
-const Report = require("../models/Report");
-const auth = require("../middleware/auth");
+import express from "express";
+import { Regdump } from "../models/index.js";
+import { verifyAdmin } from "../middleware/auth.middleware.js";
+
+const router = express.Router();
 
 router.post("/", async (req, res) => {
-  const report = new Report({ ...req.body, timeReported: new Date() });
+  // Option 1: Rely on timestamps – remove timeReported, or
+  // Option 2: Ensure Regdump schema supports timeReported.
+
+  
+  const report = new Regdump({ ...req.body, timeReported: new Date() });
   await report.save();
   res.json({ success: true, message: "Report submitted" });
 });
 
-router.get("/", auth(["admin"]), async (req, res) => {
-  const reports = await Report.find();
+router.get("/", verifyAdmin, async (req, res) => {
+  const reports = await Regdump.find();
   res.json(reports);
 });
 
-module.exports = router;
+export default router;

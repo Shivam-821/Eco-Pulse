@@ -1,15 +1,21 @@
-const router = require("express").Router();
-const Task = require("../models/Task");
-const Team = require("../models/Team");
-const Report = require("../models/Report");
-const auth = require("../middleware/auth");
+import express from "express";
+import { Task, AssignTeam, Regdump } from "../models/index.js";
+import { verifyAdmin } from "../middleware/auth.middleware.js";
 
-router.get("/", auth(["admin"]), async (req, res) => {
-  const totalTasks = await Task.countDocuments();
-  const completedTasks = await Task.countDocuments({ completed: true });
-  const activeTeams = await Team.countDocuments({ status: "ASSIGNED" });
-  const pendingReports = await Report.countDocuments();
-  res.json({ totalTasks, completedTasks, activeTeams, pendingReports });
+const router = express.Router();
+
+router.get("/", verifyAdmin, async (req, res) => {
+  try {
+    const totalTasks = await Task.countDocuments();
+    const completedTasks = await Task.countDocuments({ completed: true });
+    // Since the team model is now AssignTeam without a "status" field, count all teams.
+    const activeTeams = await AssignTeam.countDocuments();
+    const pendingReports = await Regdump.countDocuments();
+    res.json({ totalTasks, completedTasks, activeTeams, pendingReports });
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    res.status(500).json({ error: "Failed to fetch stats" });
+  }
 });
 
-module.exports = router;
+export default router;

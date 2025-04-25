@@ -1,23 +1,22 @@
-const express = require('express');
-const router = express.Router();
-const upload = require('../middleware/upload');
-const Dump = require('../models/Dump'); 
-const { processImage } = require('./upload');
+import express from "express";
+import uploadMiddleware, { processImage } from "../middleware/upload.js"; // ensure upload.js exports default uploadMiddleware and processImage
+import { Regdump } from "../models/index.js";
 
-router.post('/report-dump', upload.single('image'),processImage, async (req, res) => {
+const router = express.Router();
+
+router.post("/report-dump", uploadMiddleware, processImage, async (req, res) => {
   try {
-    const newDump = new Dump({
+    const newDump = new Regdump({
       location: req.body.location,
       description: req.body.description,
-      image: req.file.path
+      picture: req.file.path, // using 'picture' as in Regdump schema
     });
-
     await newDump.save();
-    res.status(201).json({ message: 'Reported successfully', dump: newDump });
+    res.status(201).json({ message: "Reported successfully", dump: newDump });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to report dump' });
+    res.status(500).json({ error: "Failed to report dump" });
   }
 });
 
-module.exports = router;
+export default router;

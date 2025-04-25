@@ -1,7 +1,7 @@
-import { AssignTeam } from "../models/assignTeam.model.js";
+import { AssignTeam, Regdump } from "../models/index.js";
+
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { Regdump } from "../models/RegisterDump.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import {
   uploadOnCloudinary,

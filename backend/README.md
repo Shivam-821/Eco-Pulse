@@ -1,417 +1,418 @@
-# EcoPulse Backend API Documentation## Overview
-Backend service for the EcoPulse waste management system that handles team management, task assignments, and waste reports.
+routes.md
 
-## Project Structure
-```
-backend/
-├── config/
-│   └── db.js              # Database configuration
-├── middleware/
-│   ├── auth.js            # Authentication middleware
-│   └── rateLimiter.js     # Rate limiting middleware
-├── models/
-│   ├── Notification.js    # Notification schema
-│   ├── Report.js          # Report schema
-│   ├── Task.js            # Task schema
-│   ├── Team.js            # Team schema
-│   └── User.js            # User schema
-├── routes/
-│   ├── auth.js            # Authentication routes
-│   ├── map.js            # Map location routes
-│   ├── notifications.js   # Notification routes
-│   ├── reports.js        # Report handling routes
-│   ├── stats.js          # Statistics routes
-│   ├── tasks.js          # Task management routes
-│   ├── teams.js          # Team management routes
-│   └── upload.js         # File upload routes
-├── .env                  # Environment variables
-├── .env.example          # Example environment variables
-├── .gitignore           # Git ignore rules
-├── package.json         # Project dependencies
-└── server.js           # Main application entry point
-```
+# API Routes Documentation
 
-## Setup
+This document covers all the available routes in the backend, what they do, which data to send, and the expected responses.
 
-### Prerequisites
-- Node.js (v14 or higher)
-- MongoDB
-- npm or yarn
+---
 
-### Installation
-1. Clone the repository
-2. Install dependencies:
-```bash
-npm install
-```
-3. Create a `.env` file based on `.env.example`:
-```properties
-PORT=3001
-MONGO_URI=mongodb://localhost:27017/ecopulse
-JWT_SECRET=your_secret_key_here
-```
+## Base URL
+All endpoints are prefixed with the base URL (e.g., `http://localhost:3001/api/`).
 
-### Running the Server
-Development mode:
-```bash
-npm run dev
-```
+---
 
-Production mode:
-```bash
-npm start
-```
+## Authentication Routes
 
-## API Endpoints
+### Register
+- **Endpoint:** `POST /api/auth/signup`
+- **Description:** signup of a new user.
+- - **Request Body:**
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "user_password"
+  }
+  ```
+- **Success Response:**
+  ```json
+  {
+    "statusCode": 200,
+    "data": {
+      "_id": "607d1b2f5e3c1a0015c9d212",
+      "fullname": "John Doe",
+      "avatar": "https://res.cloudinary.com/your_cloud_name/image/upload/v1626841234/1600000000000-avatar.jpg",
+      "email": "johndoe@example.com",
+      "username": "johndoe",
+      "dumpRegistered": []
+    },
+    "message": "User registered successfully",
+    "success": true
+  }
+  
+  ```
 
-### Authentication
-- `POST /api/auth/login` - User login
-- `GET /api/auth/profile` - Get user profile
-
-### Teams
-- `GET /api/teams` - Get all teams
-- `POST /api/teams` - Create new team
-
-### Tasks
-- `GET /api/tasks` - Get all tasks
-- `POST /api/tasks/assign` - Assign task to team
-- `PUT /api/tasks/:id/complete` - Mark task as complete
-
-### Reports
-- `POST /api/report-dump` - Submit new dump report
-- `GET /api/dump-reports` - Get all dump reports
-
-### Map
-- `GET /api/map/locations` - Get all location markers
-
-### Notifications
-- `GET /api/notifications` - Get all notifications
-- `POST /api/notifications` - Create new notification
-
-### Statistics
-- `GET /api/stats` - Get system statistics
-
-### File Upload
-- `POST /api/upload` - Upload files
-
-## Authentication
-The API uses JWT (JSON Web Tokens) for authentication. Protected routes require a valid JWT token in the Authorization header:
-```
-Authorization: Bearer <token>
-```
-
-## Models
-
-### User
-- email: String
-- password: String
-- role: String
-
-### Team
-- name: String
-- phone: String
-- location: String
-- status: String (ASSIGNED/NOT ASSIGNED)
-- date: Date
-
-### Task
-- location: String
-- type: String
-- color: String
-- timestamp: Date
-- assigned: Boolean
-- completed: Boolean
-- team: Reference to Team
-- deadline: Date
-- description: String
-
-### Report
-- name: String
-- location: String
-- description: String
-- contactInfo: String
-- timeReported: Date
-
-### Notification
-- message: String
-- timestamp: Date
-- type: String
-
-## Error Handling
-The API returns appropriate HTTP status codes:
-- 200: Success
-- 201: Created
-- 400: Bad Request
-- 401: Unauthorized
-- 403: Forbidden
-- 404: Not Found
-- 500: Server Error
-
-## Rate Limiting
-API requests are rate-limited to 100 requests per 15 minutes per IP address.
-
-## Dependencies
-- express: Web framework
-- mongoose: MongoDB ODM
-- jsonwebtoken: JWT authentication
-- bcryptjs: Password hashing
-- cors: Cross-origin resource sharing
-- dotenv: Environment variable management
-- multer: File upload handling
-- express-rate-limit: Rate limiting.
-- sharp : using this for image processing and compression.
-
-## Authentication
+- **Error Responses:**  
+  - 401: Invalid credentials  
+  - 404: User not found
 ### Login
-- **Path:** `/auth/login`
-- **Method:** POST
+- **Endpoint:** `POST /api/auth/login`
+- **Description:** Authenticate a user.
+- **Request Header:**  
+  `Content-Type: application/json`
 - **Request Body:**
-```json
-{
-  "email": "string",
-  "password": "string"
-}
-```
-- **Response:**
-```json
-{
-  "token": "jwt_token",
-  "user": {
-    "id": "string",
-    "email": "string",
-    "role": "string"
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "user_password"
   }
-}
-```
+  ```
+- **Success Response:**
+  ```json
+  {
+    "token": "jwt_token_here",
+    "user": {
+      "id": "user_id",
+      "email": "user@example.com",
+      "role": "user" // or admin role etc.
+    }
+  }
+  ```
+- **Error Responses:**  
+  - 401: Invalid credentials  
+  - 404: User not found
 
-### Get Profile 
-- **Path:** `/auth/profile`
-- **Method:** GET
-- **Headers:** `Authorization: Bearer <token>`
-- **Response:**
-```json
-{
-  "id": "string",
-  "email": "string",
-  "role": "string"
-}
-```
+### Get Profile
+- **Endpoint:** `GET /api/auth/profile`
+- **Description:** Get details of the authenticated user.
+- **Request Headers:**
+  - `Authorization: Bearer <jwt_token>`
+- **Success Response:**
+  ```json
+  {
+    "id": "user_id",
+    "email": "user@example.com",
+    "role": "user"
+  }
+  ```
+- **Error Responses:**  
+  - 401: Unauthorized  
+  - 404: User not found
 
-## Teams
+---
+
+## Team Routes
+
 ### Get All Teams
-- **Path:** `/teams`
-- **Method:** GET
-- **Headers:** `Authorization: Bearer <token>`
-- **Response:**
-```json
-[
-  {
-    "id": "string",
-    "name": "string",
-    "phone": "string",
-    "location": "string",
-    "status": "ASSIGNED" | "NOT ASSIGNED",
-    "date": "date"
-  }
-]
-```
+- **Endpoint:** `GET /api/teams`
+- **Description:** Returns a list of all teams (requires admin authentication).
+- **Request Headers:**
+  - `Authorization: Bearer <jwt_token>`
+- **Success Response:**
+  ```json
+  [
+    {
+      "_id": "team_id",
+      "teamname": "Team A",
+      "location": { "type": "Point", "coordinates": [longitude, latitude] },
+      "email": "teama@example.com",
+      "assignedWork": []
+    },
+    { ... }
+  ]
+  ```
+- **Error Responses:**  
+  - 500: Failed to fetch teams
 
-### Create Team
-- **Path:** `/teams`
-- **Method:** POST
-- **Headers:** `Authorization: Bearer <token>`
+### Create New Team
+- **Endpoint:** `POST /api/teams`
+- **Description:** Create a new team (admin only).
+- **Request Headers:**
+  - `Authorization: Bearer <jwt_token>`
+  - `Content-Type: application/json`
 - **Request Body:**
-```json
-{
-  "name": "string",
-  "phone": "string",
-  "location": "string",
-  "status": "ASSIGNED" | "NOT ASSIGNED"
-}
-```
+  ```json
+  {
+    "teamname": "Team A",
+    "email": "teama@example.com",
+    "location": {
+      "type": "Point",
+      "coordinates": [longitude, latitude]
+    },
+    "password": "team_password"
+  }
+  ```
+- **Success Response:**
+  ```json
+  {
+    "_id": "team_id",
+    "teamname": "Team A",
+    "email": "teama@example.com",
+    "location": { "type": "Point", "coordinates": [longitude, latitude] },
+    "assignedWork": []
+  }
+  ```
+- **Error Responses:**  
+  - 500: Failed to create team
 
-## Tasks
+---
+
+## Task Routes
+
 ### Get All Tasks
-- **Path:** `/tasks`
-- **Method:** GET
-- **Headers:** `Authorization: Bearer <token>`
-- **Response:**
-```json
-[
-  {
-    "id": "string",
-    "location": "string",
-    "type": "string",
-    "color": "string",
-    "timestamp": "date",
-    "assigned": "boolean",
-    "completed": "boolean",
-    "team": "Team object",
-    "deadline": "date",
-    "description": "string"
-  }
-]
-```
+- **Endpoint:** `GET /api/tasks`
+- **Description:** Retrieve tasks; each task populates the assigned team details.
+- **Request Headers:**
+  - `Authorization: Bearer <jwt_token>`
+- **Success Response:**
+  ```json
+  [
+    {
+      "_id": "task_id",
+      "title": "Task Title",
+      "description": "Task description",
+      "assignedTo": { "_id": "team_id", "teamname": "Team A" },
+      "status": "PENDING", // or IN_PROGRESS, COMPLETED, CANCELLED
+      "priority": "MEDIUM",
+      "dueDate": "2025-04-30T00:00:00.000Z",
+      "location": {
+        "type": "Point",
+        "coordinates": [longitude, latitude],
+        "address": "Address string"
+      },
+      "createdAt": "2025-04-25T00:00:00.000Z"
+    },
+    { ... }
+  ]
+  ```
+- **Error Responses:**
+  - 500: Failed to fetch tasks
 
-### Assign Task
-- **Path:** `/tasks/assign`
-- **Method:** POST
-- **Headers:** `Authorization: Bearer <token>`
+### Assign Task to a Team
+- **Endpoint:** `POST /api/tasks/assign`
+- **Description:** Assign a task to a team (admin only).
+- **Request Headers:**
+  - `Authorization: Bearer <jwt_token>`
+  - `Content-Type: application/json`
 - **Request Body:**
-```json
-{
-  "taskId": "string",
-  "teamId": "string",
-  "deadline": "date"
-}
-```
+  ```json
+  {
+    "taskId": "task_id",
+    "teamId": "team_id",
+    "deadline": "2025-05-01T00:00:00.000Z"
+  }
+  ```
+- **Success Response:** Returns the updated task.
+  ```json
+  {
+    "_id": "task_id",
+    "assignedTo": "team_id",
+    "assigned": true,
+    "deadline": "2025-05-01T00:00:00.000Z",
+    ...
+  }
+  ```
+- **Error Responses:**
+  - 500: Failed to assign task
 
-### Complete Task
-- **Path:** `/tasks/:id/complete`
-- **Method:** PUT
-- **Headers:** `Authorization: Bearer <token>`
-- **Response:** Updated task object
+### Mark Task as Complete
+- **Endpoint:** `PUT /api/tasks/:id/complete`
+- **Description:** Mark a task as complete.
+- **Request Headers:**
+  - `Authorization: Bearer <jwt_token>`
+- **Success Response:** Returns the updated task.
+  ```json
+  {
+    "_id": "task_id",
+    "completed": true,
+    ...
+  }
+  ```
+- **Error Responses:**
+  - 500: Failed to update task
 
-## Reports
+---
+
+## Report Routes
+
 ### Submit Dump Report
-- **Path:** `/report-dump`
-- **Method:** POST
-- **Request Body:**
-```json
-{
-  "name": "string",
-  "location": "string",
-  "description": "string",
-  "contactInfo": "string"
-}
-```
-
-### Get All Reports
-- **Path:** `/dump-reports`
-- **Method:** GET
-- **Headers:** `Authorization: Bearer <token>`
-- **Response:**
-```json
-[
+- **Endpoint:** `POST /api/report-dump`
+- **Description:** Submit a new dump report. This route uses file uploads.
+- **Request Headers:**
+  - `Content-Type: multipart/form-data`
+  - Optionally `Authorization: Bearer <jwt_token>` if authentication is required.
+- **Request Body (Form Data):**
+  - `location`: coordinates or address string.
+  - `description`: details about the dump.
+  - `image`: the file being uploaded.
+- **Processing:**
+  - The `uploadMiddleware` handles file upload.
+  - `processImage` resizes and converts the image.
+- **Success Response:**
+  ```json
   {
-    "id": "string",
-    "name": "string",
-    "location": "string",
-    "description": "string",
-    "contactInfo": "string",
-    "timeReported": "date"
+    "message": "Reported successfully",
+    "dump": {
+      "_id": "dump_id",
+      "location": "...",
+      "description": "Dump description",
+      "picture": "uploads/1600000000000-filename.jpg",
+      "createdAt": "2025-04-25T00:00:00.000Z"
+    }
   }
-]
-```
+  ```
+- **Error Responses:**
+  - 500: Failed to report dump
 
-## Map
+### Get All Dump Reports
+- **Endpoint:** `GET /api/dump-reports`
+- **Description:** Retrieve all dump reports (admin only, if protected by middleware).
+- **Request Headers:**
+  - `Authorization: Bearer <jwt_token>`
+- **Success Response:**
+  ```json
+  [
+    {
+      "_id": "dump_id",
+      "location": { ... },
+      "description": "Dump description",
+      "picture": "uploads/filename.jpg",
+      "createdAt": "2025-04-25T00:00:00.000Z"
+    },
+    { ... }
+  ]
+  ```
+- **Error Responses:**
+  - 500: Failed to fetch dump reports
+
+---
+
+## Map Routes
+
 ### Get Location Markers
-- **Path:** `/map/locations`
-- **Method:** GET
-- **Headers:** `Authorization: Bearer <token>`
-- **Response:**
-```json
-[
-  {
-    "name": "string",
-    "lat": "number",
-    "lon": "number",
-    "status": "COMPLETED" | "PENDING",
-    "teamAssigned": "boolean",
-    "time": "date"
-  }
-]
-```
+- **Endpoint:** `GET /api/map/locations`
+- **Description:** Retrieves markers built from task data. Each marker contains:
+  - `name`: Task description
+  - `lat` and `lon`: Coordinates from the task’s location
+  - `status`: "COMPLETED" or "PENDING"
+  - `teamAssigned`: Boolean indicating if the task is assigned
+  - `time`: Task createdAt timestamp
+- **Request Headers:**
+  - `Authorization: Bearer <jwt_token>`
+- **Success Response:**
+  ```json
+  [
+    {
+      "name": "Fix leak",
+      "lat": 12.9716,
+      "lon": 77.5946,
+      "status": "PENDING",
+      "teamAssigned": false,
+      "time": "2025-04-25T00:00:00.000Z"
+    },
+    { ... }
+  ]
+  ```
+- **Error Responses:**
+  - 500: Failed to fetch markers
 
-## Notifications
-### Get All Notifications
-- **Path:** `/notifications`
-- **Method:** GET
-- **Headers:** `Authorization: Bearer <token>`
-- **Response:**
-```json
-[
-  {
-    "id": "string",
-    "message": "string",
-    "timestamp": "date",
-    "type": "string"
-  }
-]
-```
+---
+
+## Notification Routes
+
+### Get Notifications
+- **Endpoint:** `GET /api/notifications`
+- **Description:** Retrieve notifications. Accessible by any authenticated user.
+- **Request Headers:**
+  - `Authorization: Bearer <jwt_token>`
+- **Success Response:**
+  ```json
+  [
+    {
+      "_id": "notif_id",
+      "title": "Alert",
+      "message": "Service disruption",
+      "type": "ALERT",
+      "read": false,
+      "createdAt": "2025-04-25T00:00:00.000Z"
+    },
+    { ... }
+  ]
+  ```
+- **Error Responses:**
+  - 500: Failed to fetch notifications
 
 ### Create Notification
-- **Path:** `/notifications`
-- **Method:** POST
-- **Headers:** `Authorization: Bearer <token>`
+- **Endpoint:** `POST /api/notifications`
+- **Description:** Create a new notification (admin only).
+- **Request Headers:**
+  - `Authorization: Bearer <jwt_token>`
+  - `Content-Type: application/json`
 - **Request Body:**
-```json
-{
-  "message": "string",
-  "type": "string"
-}
-```
+  ```json
+  {
+    "title": "Info",
+    "message": "New update available",
+    "type": "INFO"
+  }
+  ```
+- **Success Response:**
+  ```json
+  {
+    "_id": "notif_id",
+    "title": "Info",
+    "message": "New update available",
+    "type": "INFO",
+    "read": false,
+    "createdAt": "2025-04-25T00:00:00.000Z"
+  }
+  ```
+- **Error Responses:**
+  - 500: Failed to create notification
 
-## Statistics
-### Get System Stats
-- **Path:** `/stats`
-- **Method:** GET
-- **Headers:** `Authorization: Bearer <token>`
-- **Response:**
-```json
-{
-  "totalTasks": "number",
-  "completedTasks": "number",
-  "activeTeams": "number",
-  "pendingReports": "number"
-}
-```
+---
 
-## File Upload
+## Statistics Routes
+
+### Get System Statistics
+- **Endpoint:** `GET /api/stats`
+- **Description:** Returns system stats.
+- **Request Headers:**
+  - `Authorization: Bearer <jwt_token>`
+- **Success Response:**
+  ```json
+  {
+    "totalTasks": 100,
+    "completedTasks": 60,
+    "activeTeams": 10,
+    "pendingReports": 5 
+  }
+  ```
+- **Error Responses:**
+  - 500: Failed to fetch stats
+
+---
+
+## File Upload Route
+
 ### Upload File
-- **Path:** `/upload`
-- **Method:** POST
-- **Headers:** 
-  - `Authorization: Bearer <token>`
+- **Endpoint:** `POST /api/upload`
+- **Description:** Uploads a file and processes the image.
+- **Request Headers:**
+  - `Authorization: Bearer <jwt_token>`
   - `Content-Type: multipart/form-data`
-- **Request Body:**
-```form-data
-file: (binary)
-```
-- **Response:**
-```json
-{
-  "fileUrl": "string"
-}
-```
+- **Request Body (Form Data):**
+  - Key: `image`
+  - Value: (binary file)
+- **Processing:**
+  - `uploadMiddleware` handles the file upload.
+  - `processImage` resizes and compresses the image.
+- **Success Response:**
+  ```json
+  {
+    "fileUrl": "uploads/1600000000000-filename.jpg"
+  }
+  ```
+- **Error Responses:**
+  - 500: Failed to process image
 
-## Error Responses
-All endpoints may return these error responses:
+---
 
-### 401 Unauthorized
-```json
-{
-  "message": "Unauthorized"
-}
-```
+## Notes
+- **Authentication:** Most routes require an `Authorization` header with a valid JWT.
+- **Error Format:** In case of errors, expected responses include a JSON with an error message and appropriate HTTP status code.
+- **File Uploads:** Images are processed using Sharp; processed files are stored in the `uploads/` directory.
+- **Data Validation:** Required fields must be provided as mentioned in each endpoint’s request body.
 
-### 403 Forbidden
-```json
-{
-  "message": "Forbidden"
-}
-```
+---
 
-### 400 Bad Request
-```json
-{
-  "message": "Error description"
-}
-```
-
-### 500 Server Error
-```json
-{
-  "message": "Internal server error"
-}
-```
+This documentation should guide frontend developers on how to interact with the API endpoints. For any clarification, please refer to our README or contact the backend team.
