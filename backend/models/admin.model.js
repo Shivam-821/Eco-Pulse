@@ -75,18 +75,18 @@ const adminSchema = new Schema({
   }
 });
 
-municipalitySchema.pre("save", async function(next){
+adminSchema.pre("save", async function(next){
   if(!this.isModified("password")) return next()
 
   this.password = await bcrypt.hash(this.password, 10)
   next()
 })
 
-municipalitySchema.methods.isPasswordCorrect = async function (password) {
+adminSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-municipalitySchema.methods.generateAccessToken = function () {
+adminSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
       _id: this._id,
@@ -97,7 +97,7 @@ municipalitySchema.methods.generateAccessToken = function () {
   );
 };
 
-municipalitySchema.methods.generateRefreshToken = function () {
+adminSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
       _id: this._id,

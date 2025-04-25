@@ -46,4 +46,4 @@ const registerdumpSchema = new Schema(
 );
 
 
-const Regdump = mongoose.model("Regdump", registerdumpSchema)
+export const Regdump = mongoose.model("Regdump", registerdumpSchema)

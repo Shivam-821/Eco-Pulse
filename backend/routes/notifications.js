@@ -1,16 +1,21 @@
-const router = require("express").Router();
-const Notification = require("../models/Notification");
-const auth = require("../middleware/auth");
+import express from "express";
 
-router.get("/", auth(), async (req, res) => {
+const router = express.Router();
+
+import { Notification } from "../models/index.js";
+import { verifyUser, verifyAdmin } from "../middleware/index.js";
+
+// Use verifyUser for any authenticated user
+router.get("/", verifyUser, async (req, res) => {
   const notifications = await Notification.find();
   res.json(notifications);
 });
 
-router.post("/", auth(["admin"]), async (req, res) => {
+// Use verifyAdmin for admin-only access
+router.post("/", verifyAdmin, async (req, res) => {
   const notification = new Notification({ ...req.body, timestamp: new Date() });
   await notification.save();
   res.status(201).json(notification);
 });
 
-module.exports = router;
+export default router;

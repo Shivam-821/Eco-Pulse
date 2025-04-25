@@ -1,8 +1,7 @@
-import { GeneralComplaint } from "../models/ReportComplain.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import {Regdump} from "../models/RegisterDump.model.js"
+import {Regdump, GeneralComplaint} from "../models/index.js"
 
 
 const complaintRegistered = asyncHandler(async (req, res) => {

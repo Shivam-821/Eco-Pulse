@@ -1,31 +1,28 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const cors = require("cors");
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+
+import limiter from "./middleware/rateLimiter.js";
+import connectDB from "./config/db.js";
+
+// Import the aggregated API routes from /routes/index.js
+import apiRoutes from "./routes/index.js";
 
 dotenv.config();
 const app = express();
+
 app.use(express.json());
 app.use(cors());
-
-const limiter = require("./middleware/rateLimiter");
 app.use(limiter);
 
-require("./config/db");
+// Connect DB
+connectDB();
 
-app.use("/api/auth", require("./routes/auth"));
-app.use("/api/teams", require("./routes/teams"));
-app.use("/api/tasks", require("./routes/tasks"));
-app.use("/api/report-dump", require("./routes/reports"));
-app.use("/api/dump-reports", require("./routes/reports"));
-app.use("/api/notifications", require("./routes/notifications"));
-app.use("/api/map", require("./routes/map"));
-app.use("/api/upload", require("./routes/upload"));
-app.use("/api/stats", require("./routes/stats"));
+// Mount all API routes under "/api"
+app.use("/api", apiRoutes);
 
+// Serve static files (e.g. processed uploads)
+app.use("/uploads", express.static("uploads"));
 
-
-app.use('/uploads', express.static('uploads'));
-
-
-app.listen(3001, () => console.log("Backend running on port 3001"));
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));

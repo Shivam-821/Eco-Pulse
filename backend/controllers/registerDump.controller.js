@@ -1,10 +1,10 @@
-import {Regdump} from '../models/RegisterDump.model.js'
+import {Regdump} from '../models/index.js'
 import { ApiError } from '../utils/ApiError.js';
 import {asyncHandler} from '../utils/asyncHandler.js'
-import {User} from '../models/user.model.js'
+import {User} from '../models/index.js'
 import { uploadOnCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
 import {ApiResponse} from '../utils/ApiResponse.js'
-import { SmartBin } from '../models/SmartBin.model.js';
+import { SmartBin } from '../models/index.js';
 
 const registerDump = asyncHandler(async (req, res) => {
   const { location, description, type, binCode, pincode } = req.body;

@@ -1,16 +1,29 @@
-const router = require("express").Router();
-const Team = require("../models/Team");
-const auth = require("../middleware/auth");
+import { Router } from "express";
+import { AssignTeam } from "../models/index.js";
+import { verifyAdmin } from "../middleware/auth.middleware.js";
 
-router.get("/", auth(["admin"]), async (req, res) => {
-  const teams = await Team.find();
-  res.json(teams);
+const router = Router();
+
+router.get("/", verifyAdmin, async (req, res) => {
+  try {
+    const teams = await AssignTeam.find();
+    res.json(teams);
+  } catch (error) {
+    console.error("Error fetching teams:", error);
+    res.status(500).json({ error: "Failed to fetch teams" });
+  }
 });
 
-router.post("/", auth(["admin"]), async (req, res) => {
-  const team = new Team({ ...req.body, date: new Date() });
-  await team.save();
-  res.status(201).json(team);
+router.post("/", verifyAdmin, async (req, res) => {
+  try {
+    
+    const team = new AssignTeam({ ...req.body});
+    await team.save();
+    res.status(201).json(team);
+  } catch (error) {
+    console.error("Error creating team:", error);
+    res.status(500).json({ error: "Failed to create team" });
+  }
 });
 
-module.exports = router;
+export default router;
