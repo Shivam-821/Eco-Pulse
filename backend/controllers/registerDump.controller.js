@@ -11,10 +11,10 @@ import { SmartBin } from "../models/index.js";
 import { notifyOnRegisteringDump } from "./twilio.controller.js";
 
 const registerDump = asyncHandler(async (req, res) => {
-const { location, description } = req.body;
+const { location, description, address } = req.body;
 const dumpReporter = req.user
 
-if (!location || !description) {
+if (!location || !description || !address) {
   throw new ApiError(400, "All fields are required");
 }
 
@@ -45,7 +45,8 @@ const geoLocation = {
       description,
       picture: picture?.url || "",
       dumpReporter: dumpReporter._id,
-      uniqueNumber: Math.floor(Math.random() * 90),
+      uniqueNumber: Math.floor(Math.random() * 99),
+      address,
     });
 
 

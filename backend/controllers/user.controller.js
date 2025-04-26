@@ -78,7 +78,7 @@ const registerUser = asyncHandler(async (req, res) => {
         )
       );
   } catch (error) {
-    throw new ApiError(500, "Something went wrong while registering a user :: register :: ", error);
+    throw new ApiError(500, `Something went wrong while registering a user :: register :: ${error}`);
   }
 });
 
@@ -132,29 +132,10 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
-const logoutUser = asyncHandler(async (req, res) => {
-  await User.findByIdAndUpdate(
-    req.user.id,
-    {
-      $unset: { refreshToken: "" },
-    },
-    { new: true }
-  );
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-  };
-  return res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged out successfully"));
-});
-
 const getCurrentUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, req.user, "Current user details"));
 });
 
-export { registerUser, loginUser, logoutUser, getCurrentUser };
+export { registerUser, loginUser, getCurrentUser };

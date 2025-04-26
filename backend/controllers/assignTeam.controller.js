@@ -41,10 +41,10 @@ const generateAccessAndRefreshToken = async (teamId) => {
 };
 
 const registerTeam = asyncHandler(async (req, res) => {
-  const { fullname, email, password, location } = req.body;
+  const { fullname, email, password, location, address, phone } = req.body;
   console.log(req.body)
 
-  if ([fullname, email, password].some((field) => field?.trim() === "")) {
+  if ([fullname, email, password, address].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "All fields are required.");
   }
   const teamname = fullname
@@ -63,6 +63,8 @@ const registerTeam = asyncHandler(async (req, res) => {
       email,
       password,
       location,
+      address,
+      phone,
     });
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(

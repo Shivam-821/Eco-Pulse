@@ -9,6 +9,7 @@ const RegisterDump = () => {
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("accessToken");
   const [data, setData] = useState(null)
+  const [address, setAddress] = useState("")
   const dataCardRef = useRef(null);
 
   const handleImageChange = (e) => {
@@ -44,6 +45,7 @@ const RegisterDump = () => {
     const formData = new FormData();
     formData.append("location", location);
     formData.append("description", description);
+    formData.append("address", address);
     if (image) formData.append("picture", image);
 
     try {
@@ -60,6 +62,7 @@ const RegisterDump = () => {
       if(res.status === 201){
         setDescription("");
         setLocation("");
+        setAddress("")
         setImage(null);
         setData(res.data.data)
         notifySuccess();
@@ -86,7 +89,7 @@ const RegisterDump = () => {
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full border p-2 rounded"
+              className="w-full border p-2 rounded outline-none focus:border-blue-600"
               placeholder="Latitude,Longitude"
               required
             />
@@ -100,11 +103,22 @@ const RegisterDump = () => {
           </div>
 
           <div>
+            <label className="block font-medium">Address</label>
+            <input
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full h-10 border p-2 rounded outline-none focus:border-blue-600"
+              placeholder="Enter the address"
+              required
+            />
+          </div>
+
+          <div>
             <label className="block font-medium">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full border p-2 rounded"
+              className="w-full border p-2 rounded outline-none focus:border-blue-600"
               rows={3}
               placeholder="Describe the dump"
               required
@@ -117,7 +131,7 @@ const RegisterDump = () => {
               type="file"
               onChange={handleImageChange}
               accept="image/*"
-              className="w-full border-2 border-gray-500 rounded cursor-pointer hover:bg-blue-900 px-2"
+              className="w-full border-2 border-gray-500 rounded cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900 px-2"
             />
           </div>
 
@@ -133,7 +147,7 @@ const RegisterDump = () => {
       {data && (
         <div
           ref={dataCardRef}
-          className="ml-6 mt-10 max-w-md bg-white dark:bg-blue-950 dark:text-white rounded-xl shadow-md p-4 space-y-4"
+          className="ml-6 mt-10 max-w-md bg-white dark:bg-blue-950 dark:text-white rounded-xl shadow-lg p-4 space-y-4"
         >
           <h3 className="text-xl font-bold">Submitted Dump Info</h3>
           <p>
@@ -144,7 +158,11 @@ const RegisterDump = () => {
             <span className="font-semibold">Location:</span>{" "}
             {data.location?.coordinates?.[1]}, {data.location?.coordinates?.[0]}
           </p>
-          {data.picture && data.picture && (
+          <p>
+            <span className="font-semibold">Address:</span>{" "}
+            {data.address}
+          </p>
+          {data.picture && (
             <div>
               <span className="font-semibold">Image:</span>
               <img

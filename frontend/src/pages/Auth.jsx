@@ -29,6 +29,7 @@ export default function Auth() {
     pincode: "",
     teamname: "",
     location: null, 
+    address: "",
   });
 
  useEffect(() => {
@@ -155,7 +156,11 @@ export default function Auth() {
           {[
             "user",
             "admin",
-            ...((verifiedUser?.role === "admin" && mode === 'signup')? ["team"] : (verifiedUser?.role !== "admin" && mode === 'login' ? ["team"] : [])),
+            ...(verifiedUser?.role === "admin" && mode === "signup"
+              ? ["team"]
+              : verifiedUser?.role !== "admin" && mode === "login"
+              ? ["team"]
+              : []),
           ].map((r) => (
             <button
               key={r}
@@ -278,6 +283,31 @@ export default function Auth() {
                   </div>
                 </div>
               )}
+              {mode === "signup" && role === "team" && (
+                <div>
+                  <input
+                    type="text"
+                    name="address"
+                    placeholder="Address"
+                    value={form.address}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
+                    required
+                  />
+                </div>
+              )}
+              {(role === "user" || role === "team") && (
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Phone"
+                  value={form.phone}
+                  maxLength={10}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
+                  required
+                />
+              )}
             </>
           )}
 
@@ -290,18 +320,6 @@ export default function Auth() {
             className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
             required
           />
-          {role === "user" || role == "team" && mode === "signup" && (
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Phone"
-              value={form.phone}
-              maxLength={10}
-              onChange={handleChange}
-              className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
-              required
-            />
-          )}
 
           <input
             type="password"

@@ -23,7 +23,6 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import axios from "axios";
-import useGeocoding from "../hooks/useGeocoding";
 
 const style = {
   position: "absolute",
@@ -66,7 +65,6 @@ export default function Tasks() {
   });
   const token = localStorage.getItem("accessToken");
   const [verifiedUser, setVerifiedUser] = useState(null);
-  const { getLocationName, ready } = useGeocoding();
   const [availableTeams, setAvailableTeams] = useState([]);
 
   useEffect(() => {
@@ -81,7 +79,7 @@ export default function Tasks() {
         );
         setVerifiedUser(res.data);
       } catch (err) {
-        console.log(err);
+        console.log(err)
         setVerifiedUser(null);
       }
     };
@@ -114,10 +112,6 @@ export default function Tasks() {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/tasks/get-all-assignteam`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        }
       );
       setAvailableTeams(res.data.data);
       console.log(res.data.data)
@@ -139,23 +133,10 @@ export default function Tasks() {
 
       const tasksWithLocationNames = await Promise.all(
         response.data.data.map(async (dump) => {
-          let locationName = "Unknown Location";
-
-          if (dump.location?.coordinates) {
-            const [lng, lat] = dump.location.coordinates;
-            if (ready) {
-              try {
-                locationName = await getLocationName(lat, lng);
-              } catch (error) {
-                console.error("Geocoding error:", error);
-                locationName = "";
-              }
-            }
-          }
 
           return {
             id: dump._id,
-            locationName,
+            locationName: dump.address,
             lat: dump.location.coordinates[0],
             lng: dump.location.coordinates[1],
             coordinates: dump.location?.coordinates || null,

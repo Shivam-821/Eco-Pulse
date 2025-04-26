@@ -1,13 +1,34 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Button, TextField } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios'
+import { ToastContainer, toast } from "react-toastify";
 
 export default function Navbar () {
   const [inputValue, setInputValue] = useState('');
+  const navigate = useNavigate()
+  const token = localStorage.getItem("accessToken")
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
+
+  const handleLogout = async () => {
+    await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/api/auth/logout`, 
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      }
+    ).then((response) => {
+      if(response.status === 200){
+        localStorage.removeItem('accessToken')
+        toast("Logout successfully")
+        setTimeout(() => navigate("/auth"), 1000)
+      }
+    })
+
+  }
 
   return (
     <AppBar
@@ -45,12 +66,13 @@ export default function Navbar () {
         <Button
           variant="contained"
           component={Link}
-          to="/logout"
+          onClick={() => handleLogout()}
           sx={{ whiteSpace: 'nowrap' }}
         >
           Logout
         </Button>
       </Toolbar>
+      <ToastContainer />
     </AppBar>
   );
 };

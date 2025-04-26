@@ -12,6 +12,6 @@ router.route('/assign-task').post(verifyAdmin, assignTask)
 router.route('/:dumpId/completed').put(verifyTeam, workCompleted)
 
 // Get all teams
-router.route("/get-all-assignteam").get(verifyAdmin, getAllTeam)
+router.route("/get-all-assignteam").get(getAllTeam)
 
 export default router;

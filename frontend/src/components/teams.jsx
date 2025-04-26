@@ -33,7 +33,7 @@ export default function Teams() {
         const extractedTeams = response.data.data.map((dump) => ({
           teamname: dump.assignedTeam?.teamname || "Not Assigned",
           phone: dump.assignedTeam?.phone || "N/A",
-          location: dump.assignedTeam?.location || "N/A",
+          location: dump.address || "N/A",
           status: dump.teamAssigned ? "ASSIGNED" : "NOT ASSIGNED",
           dateAssigned: dump.updatedAt || dump.createdAt,
         }));
