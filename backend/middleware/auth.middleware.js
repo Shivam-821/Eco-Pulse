@@ -45,4 +45,40 @@ const verifyTeam = asyncHandler(async (req, res, next) => {
   next();
 });
 
-export { verifyUser, verifyAdmin, verifyTeam };
+const verifyAnyToken = asyncHandler(async (req, res, next) => {
+  const token = extractToken(req);
+  const decoded = verifyToken(token);
+
+  let user = await User.findById(decoded._id).select("-password -refreshToken");
+  if (user) {
+    req.role = "user";
+    req.user = user;
+    return next();
+  }
+
+  let admin = await Admin.findById(decoded._id).select(
+    "-password -refreshToken"
+  );
+  if (admin) {
+    req.role = "admin";
+    req.admin = admin;
+    return next();
+  }
+
+  let team = await AssignTeam.findById(decoded._id).select(
+    "-password -refreshToken"
+  );
+  if (team) {
+    req.role = "team";
+    req.team = team;
+    return next();
+  }
+
+  throw new ApiError(
+    401,
+    "Unauthorized: Token does not belong to a known user"
+  );
+});
+
+
+export { verifyUser, verifyAdmin, verifyTeam, verifyAnyToken };

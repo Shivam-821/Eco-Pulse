@@ -29,6 +29,10 @@ const registerdumpSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    assignedTeam: {
+      type: Schema.Types.ObjectId,
+      ref: "AssignTeam"
+    },
     completed: {
       type: Boolean,
       default: false,

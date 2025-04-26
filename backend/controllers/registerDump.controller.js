@@ -8,6 +8,7 @@ import {
 } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { SmartBin } from "../models/index.js";
+import { notifyOnRegisteringDump } from "./twilio.controller.js";
 
 const registerDump = asyncHandler(async (req, res) => {
 const { location, description } = req.body;
@@ -44,17 +45,19 @@ const geoLocation = {
       description,
       picture: picture?.url || "",
       dumpReporter: dumpReporter._id,
-      uniqueNumber: Math.floor(Math.random() * 50),
+      uniqueNumber: Math.floor(Math.random() * 90),
     });
 
 
     const registeredDump = await Regdump.findById(dump._id).populate({
       path: "dumpReporter",
-      select: "username fullname email avatar",
+      select: "fullname email avatar",
     });
 
     dumpReporter.dumpRegistered.push(dump._id);
     await dumpReporter.save();
+
+    await notifyOnRegisteringDump(dumpReporter.fullname, dump.uniqueNumber)
 
     return res
       .status(201)
@@ -69,8 +72,9 @@ const geoLocation = {
 
 const getAllDump = asyncHandler(async (req, res) => {
   const dumps = await Regdump.find()
-    .populate("dumpReporter")
+    .populate("dumpReporter assignedTeam")
     .select("-password -refreshToken");
+    
 
   if (!dumps) throw new ApiError(404, "Dumps not found");
 

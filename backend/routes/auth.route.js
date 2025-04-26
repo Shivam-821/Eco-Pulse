@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { verifyAdmin, verifyTeam, verifyUser } from "../middleware/auth.middleware.js";
+import { verifyAdmin, verifyTeam, verifyUser, verifyAnyToken } from "../middleware/auth.middleware.js";
 import {
   registerAdmin,
   loginAdmin,
@@ -23,11 +23,24 @@ router.route("/user/signup").post(registerUser)
 router.route("/user/login").post(loginUser)
 router.route("/user/profile").get(verifyUser, getCurrentUser)
 
-// Team authentication
-router.route("/team/signup").post(registerTeam)
+// Team authentication : Admin will create the Cleaning team
+router.route("/team/signup").post(verifyAdmin, registerTeam)
 router.route('/team/login').post(loginTeam)
 // logic for profile doesn't exist till now
 // router.route("/team/profile").get(verifyTeam, getTeam) 
+
+
+
+// adding unified verification of token
+router.get("/verify-token", verifyAnyToken, (req, res) => {
+  const { role, user, admin, team } = req;
+
+  return res.status(200).json({
+    success: true,
+    role,
+    data: user || admin || team,
+  });
+});
 
 
 

@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaMap, FaTasks, FaUsers, FaBell, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
 import DarkMode from "./DarkMode";
 
 export default function Sidebar ()  {
+  const navigate = useNavigate()
+  const token = localStorage.getItem("accessToken")
   return (
     <div className="sidebar">
       <div className="sidebar-top">
@@ -36,12 +38,18 @@ export default function Sidebar ()  {
 
       <div className="sidebar-bottom">
         <div className="account-links">
-          <Link to="#">
+          {!token && (<div
+            className="cursor-pointer flex items-center gap-1"
+            onClick={() => navigate("/auth")}
+          >
             <FaSignInAlt /> Sign In
-          </Link>
-          <Link to="#">
+          </div>)}
+          {!token && (<div
+            className="cursor-pointer flex items-center gap-1"
+            onClick={() => navigate("/auth")}
+          >
             <FaUserPlus /> Sign Up
-          </Link>
+          </div>)}
           <DarkMode />
         </div>
       </div>

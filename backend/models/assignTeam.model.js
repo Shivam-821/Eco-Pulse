@@ -23,6 +23,16 @@ const assignTeamSchema = new Schema({
     required: true,
     unique: true,
   },
+  phone: {
+    type: Number,
+    require: true,
+    unique: true,
+    validate: {
+      validator: function (value) {
+        return /^[6-9]\d{9}$/.test(value.toString());
+      },
+    },
+  },
   password: {
     type: String,
     required: true,

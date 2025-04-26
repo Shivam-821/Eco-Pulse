@@ -1,34 +1,80 @@
-import React, { useState } from "react";
-import { Box, Typography, Grid, Chip, ToggleButtonGroup, ToggleButton, TextField, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Box,
+  Typography,
+  Chip,
+  ToggleButtonGroup,
+  ToggleButton,
+  TextField,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import { green, grey } from "@mui/material/colors";
 
-const allTeams = [
-  { name: "Aman's Team #1", phone: "+91 345678995", location: "Imphal West", status: "ASSIGNED", date: "23/04/18" },
-  { name: "Zedane's Team #2", phone: "+91 345678996", location: "Imphal East", status: "NOT ASSIGNED", date: "11/01/19" },
-  { name: "Pooja's Team #3", phone: "+91 012345878", location: "Ukhrul", status: "ASSIGNED", date: "19/09/17" },
-  { name: "Levi's Team #4", phone: "+91 0123456789", location: "Senapati", status: "ASSIGNED", date: "24/12/08" },
-  { name: "Tina's Team #5", phone: "+91 0123456789", location: "Tamenglong", status: "NOT ASSIGNED", date: "04/10/21" },
-  { name: "Eric's Team #6", phone: "+91 0123456789", location: "Chandel", status: "NOT ASSIGNED", date: "14/09/20" }
-];
-
-export default function Teams  ()  {
+export default function Teams() {
+  const [teams, setTeams] = useState([]);
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
 
-  const filteredTeams = allTeams.filter(team => {
+  useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/dump/getall-dump`
+        );
+        console.log(response.data.data);
+
+        const extractedTeams = response.data.data.map((dump) => ({
+          teamname: dump.assignedTeam?.teamname || "Not Assigned",
+          phone: dump.assignedTeam?.phone || "N/A",
+          location: dump.assignedTeam?.location || "N/A",
+          status: dump.teamAssigned ? "ASSIGNED" : "NOT ASSIGNED",
+          dateAssigned: dump.updatedAt || dump.createdAt,
+        }));
+
+        setTeams(extractedTeams);
+      } catch (error) {
+        console.error("Error fetching teams:", error);
+      }
+    };
+
+    fetchTeams();
+  }, []);
+
+  const filteredTeams = teams.filter((team) => {
     const matchStatus = statusFilter === "ALL" || team.status === statusFilter;
-    const matchSearch = team.name.toLowerCase().includes(search.toLowerCase());
+
+    const matchSearch = team.teamname
+      ?.toLowerCase()
+      .includes(search.toLowerCase());
+
     return matchStatus && matchSearch;
   });
 
   return (
-    <Box sx={{ display: "flex", marginLeft: '240px' }}>
+    <Box
+      sx={{ display: "flex", marginLeft: "230px" }}
+      className="dark:bg-slate-950 min-h-screen"
+    >
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Typography variant="h5" gutterBottom>
           Clean Up Teams
         </Typography>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            mb: 2,
+            padding: 2,
+          }}
+        >
           <ToggleButtonGroup
             value={statusFilter}
             exclusive
@@ -49,33 +95,52 @@ export default function Teams  ()  {
           />
         </Box>
 
-        <TableContainer component={Paper} sx={{ maxWidth: '100%' }}>
+        <TableContainer component={Paper} sx={{ maxWidth: "100%" }}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell><strong>Team Name</strong></TableCell>
-                <TableCell><strong>Phone</strong></TableCell>
-                <TableCell><strong>Location</strong></TableCell>
-                <TableCell><strong>Status</strong></TableCell>
-                <TableCell><strong>Date Assigned</strong></TableCell>
+                <TableCell>
+                  <strong>Team Name</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Phone</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Location</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Status</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Date Assigned</strong>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {filteredTeams.map((team, index) => (
                 <TableRow key={index}>
-                  <TableCell>{team.name}</TableCell>
+                  <TableCell>{team.teamname}</TableCell>
                   <TableCell>{team.phone}</TableCell>
-                  <TableCell>{team.location}</TableCell>
+                  <TableCell>
+                    {typeof team.location === "object"
+                      ? `${team.location.coordinates?.join(", ") || "N/A"}`
+                      : team.location}
+                  </TableCell>
                   <TableCell>
                     <Chip
                       label={team.status}
                       sx={{
-                        bgcolor: team.status === "ASSIGNED" ? green[500] : grey[700],
-                        color: "white"
+                        bgcolor:
+                          team.status === "ASSIGNED" ? green[500] : grey[700],
+                        color: "white",
                       }}
                     />
                   </TableCell>
-                  <TableCell>{team.date}</TableCell>
+                  <TableCell>
+                    {team.dateAssigned
+                      ? new Date(team.dateAssigned).toLocaleDateString()
+                      : "N/A"}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -84,4 +149,4 @@ export default function Teams  ()  {
       </Box>
     </Box>
   );
-};
+}

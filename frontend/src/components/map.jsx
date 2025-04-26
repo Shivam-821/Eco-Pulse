@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import axios from "axios";
+import dayjs from 'dayjs'
 
 // Marker icons
 const redIcon = new L.Icon({
@@ -93,6 +94,8 @@ export default function Map() {
             "Unknown",
           picture: dump.picture || "",
           icon: blueIcon,
+          team: dump.teamAssigned === false ? "No" : "Yes",
+          reportedAt: dayjs(dump.createdAt).format("YYYY-MM-DD hh:mm A"),
         }));
 
         setDumpLocations(formattedDumps);
@@ -162,6 +165,10 @@ export default function Map() {
                 <strong>Description:</strong> {dump.description}
                 <br />
                 <strong>Unique Number:</strong> {dump.uniqueNumber}
+                <br />
+                <strong>Team Assigned:</strong> {dump.team}
+                <br />
+                <strong>Reported At:</strong> {dump.reportedAt}
                 <br />
                 {dump.picture && (
                   <img src={dump.picture} alt="Dump" width="100" />

@@ -10,4 +10,5 @@ router.route('/report-dump').post(upload.single("picture"),verifyUser, registerD
 
 router.route('/getall-dump').get(getAllDump)
 
+
 export default router;
