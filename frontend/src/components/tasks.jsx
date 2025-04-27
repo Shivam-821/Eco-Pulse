@@ -149,6 +149,7 @@ export default function Tasks() {
             uniqueCode: dump.uniqueNumber,
             team: dump.assignedTeam?.teamname || "",
             deadline: dump.deadline || "",
+            reported: dump.complainLodge,
           };
         })
       );
@@ -262,7 +263,7 @@ export default function Tasks() {
   }
 
   return (
-    <div style={{ padding: "90px 20px 20px 260px" }}>
+    <div style={{ padding: "90px 20px 20px 5px" }}>
       {/* Unassigned Tasks */}
       <Typography variant="h5" gutterBottom fontWeight={600}>
         Unassigned Tasks
@@ -321,7 +322,12 @@ export default function Tasks() {
         ) : (
           assignedTasks.map((task) => (
             <Grid item xs={12} sm={6} md={4} key={task.id}>
-              <Card sx={{ borderLeft: `6px solid ${task.color}` }}>
+              <Card
+                sx={{
+                  borderLeft: `6px solid ${task.color}`,
+                  backgroundColor: task.reported ? "#ffe5e5" : "white", 
+                }}
+              >
                 <CardContent>
                   <Typography variant="h6" fontWeight={600}>
                     Location: {task.locationName}

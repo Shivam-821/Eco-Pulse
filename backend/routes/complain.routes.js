@@ -6,7 +6,7 @@ const router = Router()
 
 router.route('/loadge-complain').post(verifyUser, complaintRegistered)
 
-router.route('/view-complain').get(verifyUser, viewComplains)
+router.route('/view-complain').get(viewComplains)
 
 
 

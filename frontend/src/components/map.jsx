@@ -111,7 +111,7 @@ export default function Map() {
     <div className="map-page">
       <div
         className="map-container"
-        style={{ marginTop: "10vh", marginLeft: "240px", height: "50vh" }}
+        style={{ marginTop: "7vh", marginLeft: "10px", height: "50vh" }}
       >
         <MapContainer
           center={[24.7938, 93.9491]}

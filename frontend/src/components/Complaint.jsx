@@ -12,6 +12,7 @@ const Complaint = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [complaints, setComplaints] = useState([]);
+  const token = localStorage.getItem("accessToken")
 
 
 useEffect(() => {
@@ -35,7 +36,7 @@ useEffect(() => {
   const fetchComplaints = async () => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/complain/view-complain`
+        `${import.meta.env.VITE_BASE_URL}/api/complain/view-complain`
       );
       setComplaints(res.data?.data || []);
     } catch (err) {
@@ -58,6 +59,8 @@ useEffect(() => {
         description,
         location,
         pincode,
+        uniqueNumber,
+        binUniqueCode,
       };
 
       if (complaintType === "bin-issue") {
@@ -67,8 +70,12 @@ useEffect(() => {
       }
 
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/complain/loadge-complain`,
-        sentData
+        `${import.meta.env.VITE_BASE_URL}/api/complain/loadge-complain`,
+        sentData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
       );
       setMessage(res.data?.message || "Complaint submitted successfully!");
       
@@ -87,7 +94,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="flex md:justify-center justify-end ml-[240px]">
+    <div className="flex md:justify-center justify-end">
       <div className="max-w-2xl p-4 dark:bg-blue-950 mt-18 dark:text-gray-200 md:w-[550px] w-auto sm:mr-9 mr-5 rounded-lg">
         <div className="bg-white rounded-xl shadow-md p-6 mb-8 dark:bg-slate-600">
           <h2 className="text-2xl font-bold mb-4">
@@ -205,17 +212,18 @@ useEffect(() => {
                   <p className="font-semibold text-gray-800">
                     Type: {comp.complaintType}
                   </p>
+                  {comp.uniqueNumber && (
+                    <p>Unique-Number: {comp.relatedDump?.uniqueNumber}</p>
+                  )}
                   <p>Description: {comp.description}</p>
                   <p>Pincode: {comp.pincode}</p>
-                  <p>
-                    Location:{" "}
-                    {comp.location?.coordinates?.join(", ") || "Unknown"}
-                  </p>
+                  <p>Address: {comp.address|| "Unknown"}</p>
+                  <p>Assigned-Team: {comp.assignedTeam?.teamname}</p>
                   <p className="text-sm text-gray-500">
                     Created at: {new Date(comp.createdAt).toLocaleString()}
                   </p>
                   {comp.resolved && (
-                    <span className="text-green-700 font-medium"></span>
+                    <span className="text-green-700 font-medium">Resolved</span>
                   )}
                 </li>
               ))}

@@ -4,6 +4,7 @@ const registerdumpSchema = new Schema(
   {
     address: {
       type: String,
+      required: true,
     },
     location: {
       type: {

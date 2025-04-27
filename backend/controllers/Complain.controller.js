@@ -14,13 +14,13 @@ const complaintRegistered = asyncHandler(async (req, res) => {
     uniqueNumber,
   } = req.body;
 
-  if (!complaintType || !description || !location || !pincode) {
-    throw new ApiError(402, "All fields are required:: complain.controller");
+  if (!complaintType || !description || !location) {
+    return res.json(new ApiError(401, "All fields are required"));
   }
 
   if (complaintType === "bin-issue") {
     if (!binUniqueCode) {
-      throw new ApiError(402, "binUniqueCode are required");
+      return res.json(new ApiError(401,"Bin - code is required"))
     }
   }
   let getDump;
@@ -28,24 +28,35 @@ const complaintRegistered = asyncHandler(async (req, res) => {
     getDump = await Regdump.findOne({ uniqueNumber });
   }
 
+  const assignedTeam = getDump?.assignedTeam;
+  const address = getDump?.address;
+  console.log(address)
+
   try {
     const createComplain = await GeneralComplaint.create({
       complaintType,
       description,
-      relatedDump: uniqueNumber?.getDump._id,
+      relatedDump: getDump._id,
       binUniqueCode,
       location,
       pincode,
-      user: req.user,
+      user: req.user._id,
+      assignedTeam,
+      address,
     });
+
+    const createdComp = await GeneralComplaint.findById(
+      createComplain._id
+    ).populate("relatedDump assignedTeam");
+
+    getDump.complainLodge = true,
+    await getDump.save()
 
     return res
       .status(200)
-      .json(
-        new ApiResponse(200, createComplain, "Complain raised successfully")
-      );
+      .json(new ApiResponse(200, createdComp, "Complain raised successfully"));
   } catch (error) {
-    throw new ApiError(501, "Error generating Complain:: ComplainRegistered");
+    throw new ApiError(501, `Error generating Complain:: ComplainRegistered :: ${error.message}`);
   }
 });
 
