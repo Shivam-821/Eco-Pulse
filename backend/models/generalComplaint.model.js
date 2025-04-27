@@ -35,6 +35,9 @@ const generalComplaintSchema = new Schema(
         required: true,
       },
     },
+    address:{
+      type: String,
+    },
     pincode: {
       type: String,
       required: true,
@@ -43,6 +46,10 @@ const generalComplaintSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    assignedTeam: {
+      type: Schema.Types.ObjectId,
+      ref: "AssignTeam"
     },
     resolved: {
       type: Boolean,

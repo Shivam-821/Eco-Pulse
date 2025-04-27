@@ -145,7 +145,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex md:items-center md:justify-center justify-end ml-[230px] bg-gray-100 dark:bg-slate-900 sm:pr-2 pt-10">
+    <div className="min-h-screen flex md:items-center md:justify-center justify-end bg-gray-100 dark:bg-slate-900 sm:pr-2 pt-10">
       <ToastContainer className="" />
       <div className="bg-white shadow-md p-6 rounded-lg w-full max-w-md flex flex-col justify-center dark:bg-gray-700 dark:text-white">
         <h1 className="text-2xl font-bold mb-4 text-center">

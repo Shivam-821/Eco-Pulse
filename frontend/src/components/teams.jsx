@@ -15,7 +15,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { green, grey } from "@mui/material/colors";
+import { green, grey, red } from "@mui/material/colors";
 
 export default function Teams() {
   const [teams, setTeams] = useState([]);
@@ -36,6 +36,7 @@ export default function Teams() {
           location: dump.address || "N/A",
           status: dump.teamAssigned ? "ASSIGNED" : "NOT ASSIGNED",
           dateAssigned: dump.updatedAt || dump.createdAt,
+          reported: dump.complainLodge,
         }));
 
         setTeams(extractedTeams);
@@ -59,13 +60,10 @@ export default function Teams() {
 
   return (
     <Box
-      sx={{ display: "flex", marginLeft: "230px" }}
-      className="dark:bg-slate-950 min-h-screen"
+      sx={{ display: "flex", marginLeft: "5px" }}
+      className="dark:bg-slate-900 min-h-screen"
     >
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Typography variant="h5" gutterBottom>
-          Clean Up Teams
-        </Typography>
 
         <Box
           sx={{
@@ -85,7 +83,7 @@ export default function Teams() {
             <ToggleButton value="ASSIGNED">Assigned</ToggleButton>
             <ToggleButton value="NOT ASSIGNED">Not Assigned</ToggleButton>
           </ToggleButtonGroup>
-
+ 
           <TextField
             label="Search Teams"
             variant="outlined"
@@ -118,7 +116,12 @@ export default function Teams() {
             </TableHead>
             <TableBody>
               {filteredTeams.map((team, index) => (
-                <TableRow key={index}>
+                <TableRow
+                  key={index}
+                  sx={{
+                    backgroundColor: team.reported ? "#ffe5e5" : "transparent",
+                  }}
+                >
                   <TableCell>{team.teamname}</TableCell>
                   <TableCell>{team.phone}</TableCell>
                   <TableCell>
@@ -127,14 +130,29 @@ export default function Teams() {
                       : team.location}
                   </TableCell>
                   <TableCell>
-                    <Chip
-                      label={team.status}
-                      sx={{
-                        bgcolor:
-                          team.status === "ASSIGNED" ? green[500] : grey[700],
-                        color: "white",
-                      }}
-                    />
+                    {team.reported ? (
+                      <Chip
+                        label={" Reported "}
+                        sx={{
+                          color: "white",
+                          bgcolor:
+                            team.reported === true ? red[500] : grey[700],
+                          p: 1,
+                        }}
+                      />
+                    ) : (
+                      <Chip
+                        label={team.status}
+                        color={
+                          team.status === "ASSIGNED" ? "success" : "default"
+                        }
+                        sx={{
+                          color: "white",
+                          bgcolor:
+                            team.status === "ASSIGNED" ? green[500] : grey[700],
+                        }}
+                      />
+                    )}
                   </TableCell>
                   <TableCell>
                     {team.dateAssigned

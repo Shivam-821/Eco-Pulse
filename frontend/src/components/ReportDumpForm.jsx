@@ -78,7 +78,7 @@ const RegisterDump = () => {
   };
 
   return (
-    <div className="flex flex-col dark:bg-slate-950 ml-[230px] justify-center items-center py-10 min-h-screen">
+    <div className="flex flex-col dark:bg-slate-900 justify-center items-center py-10 min-h-screen">
       <ToastContainer />
       <div className="max-w-md mx-auto p-5 bg-white rounded-xl shadow-lg shadow-gray-300 space-y-6 mt-10 dark:bg-blue-950 dark:text-white dark:shadow-md dark:shadow-blue-900">
         <h2 className="text-2xl font-bold text-center">Register Dump</h2>
