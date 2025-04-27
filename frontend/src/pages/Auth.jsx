@@ -8,6 +8,8 @@ export default function Auth() {
   const [role, setRole] = useState("user");
   const [mode, setMode] = useState("login");
   const [locating, setLocating] = useState(false); 
+  const [verifiedUser, setVerifiedUser] = useState(null);
+  const token = localStorage.getItem("accessToken")
   const notifyerror = () => toast("Somthing went wrong");
   const notifySuccess = () => {
     if(mode === "signup"){
@@ -27,6 +29,7 @@ export default function Auth() {
     pincode: "",
     teamname: "",
     location: null, 
+    address: "",
   });
 
  useEffect(() => {
@@ -59,6 +62,29 @@ export default function Auth() {
    }
  }, [role, mode]);
 
+ useEffect(() => {
+   const verify = async () => {
+     try {
+       const res = await axios.get(
+         `${import.meta.env.VITE_BASE_URL}/api/auth/verify-token`,
+         {
+           headers: {
+             Authorization: `Bearer ${token}`,
+           },
+           withCredentials: true,
+         }
+       );
+       setVerifiedUser(res.data); 
+     } catch (err) {
+      console.log(err)
+       setVerifiedUser(null); 
+     }
+   };
+
+   verify();
+ }, []);
+
+
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -80,7 +106,25 @@ export default function Auth() {
     }
 
     try {
-      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/${endpoint}`, form);
+      let res;
+      if (role === "team" && mode === 'signup'){
+        res = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/${endpoint}`,
+          form,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          }
+        );
+      } else {
+        res = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/${endpoint}`,
+          form
+        );
+      }
+      
 
       
       if (res.status === 201) {
@@ -102,14 +146,22 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex md:items-center md:justify-center justify-end ml-[230px] bg-gray-100 dark:bg-slate-900 sm:pr-2 pt-10">
-      <ToastContainer className=""/>
+      <ToastContainer className="" />
       <div className="bg-white shadow-md p-6 rounded-lg w-full max-w-md flex flex-col justify-center dark:bg-gray-700 dark:text-white">
         <h1 className="text-2xl font-bold mb-4 text-center">
           {mode === "login" ? "Login" : "Sign Up"}
         </h1>
 
         <div className="flex justify-center mb-4">
-          {["user", "admin", "team"].map((r) => (
+          {[
+            "user",
+            "admin",
+            ...(verifiedUser?.role === "admin" && mode === "signup"
+              ? ["team"]
+              : verifiedUser?.role !== "admin" && mode === "login"
+              ? ["team"]
+              : []),
+          ].map((r) => (
             <button
               key={r}
               className={`px-4 py-2 mx-1 rounded-full text-sm font-medium transition dark:text-black ${
@@ -231,6 +283,31 @@ export default function Auth() {
                   </div>
                 </div>
               )}
+              {mode === "signup" && role === "team" && (
+                <div>
+                  <input
+                    type="text"
+                    name="address"
+                    placeholder="Address"
+                    value={form.address}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
+                    required
+                  />
+                </div>
+              )}
+              {(role === "user" || role === "team") && (
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Phone"
+                  value={form.phone}
+                  maxLength={10}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
+                  required
+                />
+              )}
             </>
           )}
 
@@ -243,18 +320,6 @@ export default function Auth() {
             className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
             required
           />
-          {role === "user" && mode === "signup" && (
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Phone"
-              value={form.phone}
-              maxLength={10}
-              onChange={handleChange}
-              className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
-              required
-            />
-          )}
 
           <input
             type="password"

@@ -1,8 +1,32 @@
-import { Link } from 'react-router-dom';
+import React, {useState, useEffect} from "react"
+import { Link, useNavigate } from 'react-router-dom';
 import { FaMap, FaTasks, FaUsers, FaBell, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
 import DarkMode from "./DarkMode";
+import axios from 'axios'
 
 export default function Sidebar ()  {
+  const navigate = useNavigate()
+  const token = localStorage.getItem("accessToken")
+  const [verifiedUser, setVerifiedUser] = useState(null);
+
+  useEffect(() => {
+      const verify = async () => {
+        try {
+          const res = await axios.get(
+            `${import.meta.env.VITE_BASE_URL}/api/auth/verify-token`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+              withCredentials: true,
+            }
+          );
+          setVerifiedUser(res.data);
+        } catch (err) {
+          setVerifiedUser(null);
+        }
+      };
+  
+      verify();
+    }, [token]);
   return (
     <div className="sidebar">
       <div className="sidebar-top">
@@ -36,12 +60,38 @@ export default function Sidebar ()  {
 
       <div className="sidebar-bottom">
         <div className="account-links">
-          <Link to="#">
-            <FaSignInAlt /> Sign In
-          </Link>
-          <Link to="#">
-            <FaUserPlus /> Sign Up
-          </Link>
+          {verifiedUser?.role === "admin" && (
+            <div
+              className="cursor-pointer flex items-center gap-1"
+              onClick={() => navigate("/auth")}
+            >
+              <FaSignInAlt /> SignUp Team
+            </div>
+          )}
+          {verifiedUser?.role === "user" && (
+            <div
+              className="cursor-pointer flex items-center gap-1"
+              onClick={() => navigate("/reportdump")}
+            >
+              <FaSignInAlt /> Report Dump
+            </div>
+          )}
+          {!token && (
+            <div
+              className="cursor-pointer flex items-center gap-1"
+              onClick={() => navigate("/auth")}
+            >
+              <FaSignInAlt /> Sign In
+            </div>
+          )}
+          {!token && (
+            <div
+              className="cursor-pointer flex items-center gap-1"
+              onClick={() => navigate("/auth")}
+            >
+              <FaUserPlus /> Sign Up
+            </div>
+          )}
           <DarkMode />
         </div>
       </div>

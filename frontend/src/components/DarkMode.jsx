@@ -21,7 +21,7 @@ const DarkMode = () => {
       {/* Can assign better something like toggle button or any icon  */}
         <button 
         onClick={() => setIsDark((prev) => !prev)}
-        className="text-gray-600 cursor-pointer hover:bg-gray-100 px-2">
+        className="text-gray-800 cursor-pointer hover:bg-gray-100 px-2">
             change Mode
         </button>
     </div>

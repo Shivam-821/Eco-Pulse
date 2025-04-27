@@ -8,14 +8,26 @@ import {
 } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { SmartBin } from "../models/index.js";
+import { notifyOnRegisteringDump } from "./twilio.controller.js";
 
 const registerDump = asyncHandler(async (req, res) => {
-  const { location, description } = req.body;
-  const dumpReporter = await User.findById(req.user._id);
+const { location, description, address } = req.body;
+const dumpReporter = req.user
 
-  if (!dumpReporter || !location || !description || !type) {
-    throw new ApiError(400, "All fields are required");
-  }
+if (!location || !description || !address) {
+  throw new ApiError(400, "All fields are required");
+}
+
+const [lat, lng] = location.split(",").map(Number);
+if (isNaN(lat) || isNaN(lng)) {
+  throw new ApiError(400, "Invalid location format");
+}
+
+const geoLocation = {
+  type: "Point",
+  coordinates: [lng, lat],
+};
+
 
   let picture;
   const picturePath = req.file?.path;
@@ -29,20 +41,24 @@ const registerDump = asyncHandler(async (req, res) => {
 
   try {
     const dump = await Regdump.create({
-      location,
+      location: geoLocation,
       description,
       picture: picture?.url || "",
       dumpReporter: dumpReporter._id,
-      uniqueNumber: Math.floor(Math.random() * 20),
+      uniqueNumber: Math.floor(Math.random() * 99),
+      address,
     });
+
 
     const registeredDump = await Regdump.findById(dump._id).populate({
       path: "dumpReporter",
-      select: "username fullname email avatar",
+      select: "fullname email avatar",
     });
 
     dumpReporter.dumpRegistered.push(dump._id);
     await dumpReporter.save();
+
+    await notifyOnRegisteringDump(dumpReporter.fullname, dump.uniqueNumber)
 
     return res
       .status(201)
@@ -57,8 +73,9 @@ const registerDump = asyncHandler(async (req, res) => {
 
 const getAllDump = asyncHandler(async (req, res) => {
   const dumps = await Regdump.find()
-    .populate("dumpReporter")
+    .populate("dumpReporter assignedTeam")
     .select("-password -refreshToken");
+    
 
   if (!dumps) throw new ApiError(404, "Dumps not found");
 

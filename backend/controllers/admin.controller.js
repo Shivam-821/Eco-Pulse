@@ -144,25 +144,6 @@ const loginAdmin = asyncHandler(async (req, res) => {
     );
 });
 
-const logoutAdmin = asyncHandler(async (req, res) => {
-  await Admin.findByIdAndUpdate(
-    req.admin.id,
-    {
-      $unset: { refreshToken: "" },
-    },
-    { new: true }
-  );
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "None",
-  };
-  return res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged out successfully"));
-});
 
 const getCurrentAdmin = asyncHandler(async (req, res) => {
   return res
@@ -170,4 +151,4 @@ const getCurrentAdmin = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, req.user, "Current user details"));
 });
 
-export { registerAdmin, loginAdmin, logoutAdmin, getCurrentAdmin };
+export { registerAdmin, loginAdmin, getCurrentAdmin };

@@ -41,10 +41,10 @@ const generateAccessAndRefreshToken = async (teamId) => {
 };
 
 const registerTeam = asyncHandler(async (req, res) => {
-  const { fullname, email, password, location } = req.body;
+  const { fullname, email, password, location, address, phone } = req.body;
   console.log(req.body)
 
-  if ([fullname, email, password].some((field) => field?.trim() === "")) {
+  if ([fullname, email, password, address].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "All fields are required.");
   }
   const teamname = fullname
@@ -63,6 +63,8 @@ const registerTeam = asyncHandler(async (req, res) => {
       email,
       password,
       location,
+      address,
+      phone,
     });
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -150,10 +152,22 @@ const loginTeam = asyncHandler(async (req, res) => {
     );
 });
 
-const assignWork = asyncHandler(async (req, res) => {
-  const { teamName, dumpId, location } = req.body;
+const getAllTeam = asyncHandler(async (req, res) => {
+  const teams = await AssignTeam.find();
 
-  if (!teamName || !dumpId || !location) {
+  if(!teams){
+    throw new ApiError(404, "No assign team found")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, teams, 'All teams fetched successfully'))
+})
+
+const assignTask = asyncHandler(async (req, res) => {
+  const { teamName, dumpId, location, deadline } = req.body;
+
+  if (!teamName || !dumpId || !location || !deadline) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -164,12 +178,13 @@ const assignWork = asyncHandler(async (req, res) => {
 
   const team = await AssignTeam.findOne({ teamname: teamName });
   if (!team) {
-    throw new ApiError(404, "No assign team found");
+    throw new ApiError(404, "Team not found");
   }
 
-  const [teamLat, teamLng] = team.location.coordinates;
-  const [dumpLat, dumpLng] = dump.location.coordinates;
+  const [dumpLat, dumpLng] = location; 
+  const [teamLat, teamLng] = team.location.coordinates; 
 
+ 
   const distanceInKm = getDistanceFromLatLonInKm(
     teamLat,
     teamLng,
@@ -177,16 +192,20 @@ const assignWork = asyncHandler(async (req, res) => {
     dumpLng
   );
 
+
   team.assignedWork.push(dump._id);
   await team.save();
 
   dump.teamAssigned = true;
+  dump.assignedTeam = team._id;
   await dump.save();
 
   return res.status(200).json(
     new ApiResponse(200, {
-      message: "Work assigned to team",
+      message: "Task assigned successfully",
       distanceInKm: distanceInKm.toFixed(2),
+      team: team.teamname,
+      deadline: dump.deadline,
     })
   );
 });
@@ -211,4 +230,4 @@ const workCompleted = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, dump, "Dump marked as completed"));
 });
 
-export { registerTeam, loginTeam, assignWork, workCompleted };
+export { registerTeam, loginTeam, assignTask, workCompleted, getAllTeam };

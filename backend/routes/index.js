@@ -10,6 +10,8 @@ import notificationRoutes from "./notifications.js";
 import mapRoutes from "./map.js";
 import uploadRoutes from "./upload.js";
 import statsRoutes from "./stats.js";
+import complainRoutes from './complain.routes.js'
+import dumpRoutes from './dumps.routes.js'
 
 // Mount routes under their respective paths
 router.use("/auth", authRoutes);
@@ -21,5 +23,7 @@ router.use("/notifications", notificationRoutes);
 router.use("/map", mapRoutes);
 router.use("/upload", uploadRoutes);
 router.use("/stats", statsRoutes);
+router.use("/complain", complainRoutes)
+router.use("/dump", dumpRoutes)
 
 export default router;
