@@ -7,8 +7,10 @@ import Tasks from "./components/Tasks";
 import Teams from "./components/Teams";
 import Notifications from "./components/Notifications";
 import ReportDumpForm from "./components/ReportDumpForm";
-import { Complain, Auth, Home } from "./pages/index";
+import { Complain, Auth, Home, RegisterRecycle } from "./pages/index";
+import ViewAllRecycle from "./pages/ViewAllRecycle";
 import { useState } from "react";
+
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
@@ -31,10 +33,12 @@ function App() {
             <Route path="/map" element={<Map />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/teams" element={<Teams />} />
-            <Route path="/notifications" element={<Notifications />} />
+            {/* <Route path="/notifications" element={<Notifications />} /> */}
             <Route path="/reportdump" element={<ReportDumpForm />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/loadge-complain" element={<Complain />} />
+            <Route path='/register-recycle' element={<RegisterRecycle />} />
+            <Route path="/viewrecycle" element={<ViewAllRecycle />} />
           </Routes>
         </main>
       </div>

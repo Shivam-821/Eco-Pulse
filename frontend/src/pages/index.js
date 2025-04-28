@@ -1,5 +1,6 @@
 import Auth from "./Auth";
 import Complain from "./Complain";
 import Home from "./Home";
+import RegisterRecycle from "./RegisterRecycle";
 
-export {Auth, Complain, Home}
+export {Auth, Complain, Home, RegisterRecycle}

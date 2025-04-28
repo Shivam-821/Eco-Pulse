@@ -8,6 +8,7 @@ import {
   FaSignInAlt,
   FaUserPlus,
   FaBars,
+  FaRecycle,
 } from "react-icons/fa";
 import DarkMode from "./DarkMode";
 import axios from "axios";
@@ -94,10 +95,10 @@ export default function Sidebar() {
           </li>
           <li>
             <Link
-              to="/notifications"
+              to="/viewrecycle"
               className="flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
             >
-              <FaBell /> {!collapsed && "Notifications"}
+              <FaRecycle /> {!collapsed && "Recycle Items"}
             </Link>
           </li>
         </ul>
@@ -128,6 +129,14 @@ export default function Sidebar() {
               onClick={() => navigate("/loadge-complain")}
             >
               <FaSignInAlt /> {!collapsed && "Raise Complain"}
+            </div>
+          )}
+          {verifiedUser?.role === "user" && (
+            <div
+              className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+              onClick={() => navigate("/register-recycle")}
+            >
+              <FaSignInAlt /> {!collapsed && "Recycle"}
             </div>
           )}
 
