@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Regdump } from "../models/index.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import {notifyOnAssignTask} from "./twilio.controller.js"
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
@@ -199,6 +200,8 @@ const assignTask = asyncHandler(async (req, res) => {
   dump.teamAssigned = true;
   dump.assignedTeam = team._id;
   await dump.save();
+
+  await notifyOnAssignTask(teamName, dump.uniqueNumber, dump.address, distanceInKm.toFixed(2))
 
   return res.status(200).json(
     new ApiResponse(200, {

@@ -1,10 +1,9 @@
 import twilio from "twilio";
 import { ApiError } from "../utils/ApiError.js";
+import dotenv from 'dotenv'
+dotenv.config();
 
-
-const ACCOUNT_SID = "AC9dba8a8d8f83f6d59a08e5ce88883047";
-const AUTH_TOKEN = "e6975f87cd5e0684aa7c3e4a4110d5ab";
-const MESS_FROM = "+19127155650";
+const { ACCOUNT_SID, AUTH_TOKEN, MESS_FROM } = process.env;
 
 if (!ACCOUNT_SID || !AUTH_TOKEN || !MESS_FROM) {
   throw new ApiError(

@@ -12,6 +12,7 @@ import uploadRoutes from "./upload.js";
 import statsRoutes from "./stats.js";
 import complainRoutes from './complain.routes.js'
 import dumpRoutes from './dumps.routes.js'
+import recycleRouter from './recycle.routes.js'
 
 // Mount routes under their respective paths
 router.use("/auth", authRoutes);
@@ -25,5 +26,6 @@ router.use("/upload", uploadRoutes);
 router.use("/stats", statsRoutes);
 router.use("/complain", complainRoutes)
 router.use("/dump", dumpRoutes)
+router.use("/recycle", recycleRouter)
 
 export default router;

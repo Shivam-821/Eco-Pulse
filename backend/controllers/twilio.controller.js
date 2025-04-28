@@ -31,3 +31,18 @@ export const notifyOnCompletionOfWork = async (
     console.error("Error sending successfully cleaness of registered dump:", error);
   }
 };
+
+
+export const notifyOnAssignTask = async (teamname, uniqueNumber, address, distanceInKm) => {
+  try{
+    await sendSMS(
+      "+917061591674",
+      `Team ${teamname} you are assigned with a new cleaning task: 
+    with Unique-number:${uniqueNumber}, reported at place: ${address}, which is ${distanceInKm} KM away from you.
+    clean it as soon as possible.
+                 - by Admin(municipality)`
+    )
+  } catch (error) {
+    console.error("Error sending assigning message")
+  }
+}
