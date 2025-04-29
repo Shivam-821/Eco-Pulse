@@ -1,3 +1,4 @@
+// App.js
 import { Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
@@ -5,12 +6,12 @@ import Map from "./components/Map";
 import "./index.css";
 import Tasks from "./components/Tasks";
 import Teams from "./components/Teams";
-import Notifications from "./components/Notifications";
+// import Notifications from "./components/Notifications"; // You had this commented out
 import ReportDumpForm from "./components/ReportDumpForm";
 import { Complain, Auth, Home, RegisterRecycle, AboutUs } from "./pages/index";
 import ViewAllRecycle from "./pages/ViewAllRecycle";
 import { useState } from "react";
-
+import ProtectedRoute from "./components/ProtectedRoute"; // Import the ProtectedRoute component
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
