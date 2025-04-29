@@ -7,7 +7,7 @@ import Tasks from "./components/Tasks";
 import Teams from "./components/Teams";
 import Notifications from "./components/Notifications";
 import ReportDumpForm from "./components/ReportDumpForm";
-import { Complain, Auth, Home, RegisterRecycle } from "./pages/index";
+import { Complain, Auth, Home, RegisterRecycle, AboutUs } from "./pages/index";
 import ViewAllRecycle from "./pages/ViewAllRecycle";
 import { useState } from "react";
 
@@ -39,6 +39,7 @@ function App() {
             <Route path="/loadge-complain" element={<Complain />} />
             <Route path='/register-recycle' element={<RegisterRecycle />} />
             <Route path="/viewrecycle" element={<ViewAllRecycle />} />
+            <Route path="/about" element={<AboutUs />} />
           </Routes>
         </main>
       </div>
