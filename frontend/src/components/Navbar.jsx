@@ -7,7 +7,7 @@ import {
   Box,
   IconButton,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -76,16 +76,18 @@ export default function Navbar({ setCollapsed }) {
             >
               <FaBars />
             </IconButton>
-            <Box
-              sx={{
-                fontWeight: "bold",
-                fontSize: "1.2rem",
-                color: "#22c55e",
-                display: { xs: "none", sm: "block" },
-              }}
-            >
-              Eco Pulse
-            </Box>
+            <Link to="/">
+              <Box
+                sx={{
+                  fontWeight: "bold",
+                  fontSize: "1.2rem",
+                  color: "#22c55e",
+                  display: { xs: "none", sm: "block" },
+                }}
+              >
+                Eco Pulse
+              </Box>
+            </Link>  
           </Box>
 
           {/* Right side - Search and Logout */}

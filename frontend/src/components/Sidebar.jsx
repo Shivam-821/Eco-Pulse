@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FaMap,
@@ -9,15 +9,15 @@ import {
   FaUserPlus,
   FaBars,
   FaRecycle,
+  FaInfoCircle
 } from "react-icons/fa";
 import DarkMode from "./DarkMode";
 import axios from "axios";
 
-export default function Sidebar() {
+export default function Sidebar({ collapsed, setCollapsed }) {  // Use props here
   const navigate = useNavigate();
   const token = localStorage.getItem("accessToken");
   const [verifiedUser, setVerifiedUser] = useState(null);
-  const [collapsed, setCollapsed] = useState(false); 
 
   useEffect(() => {
     const verify = async () => {
@@ -43,6 +43,11 @@ export default function Sidebar() {
     setCollapsed(!collapsed);
   };
 
+  // Import FaInfoCircle at the top of your file along with other icons
+  // Add this line at the imports: import { FaInfoCircle } from "react-icons/fa";
+
+  // Then add this in the Sidebar Links section after the other links:
+
   return (
     <div
       className={`bg-white dark:bg-slate-800 h-screen p-4 flex flex-col transition-all duration-300 fixed ${
@@ -51,13 +56,11 @@ export default function Sidebar() {
     >
       {/* Top Section */}
       <div className="flex items-center justify-between mb-6 mt-16">
-        {/* Only show the logo if the sidebar is expanded */}
         {!collapsed && (
           <h2 className="text-2xl font-bold text-green-400 dark:text-green-300">
             Eco Pulse
           </h2>
         )}
-        {/* Toggle button */}
         <button
           onClick={toggleSidebar}
           className="text-green-400 dark:text-green-300 text-xl"
@@ -77,6 +80,14 @@ export default function Sidebar() {
               <FaMap /> {!collapsed && "Map"}
             </Link>
           </li>
+          <li>
+            <Link
+              to="/about"
+              className="flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+            >
+              <FaInfoCircle /> {!collapsed && "About Us"}
+            </Link>
+            </li>
           <li>
             <Link
               to="/teams"
@@ -116,45 +127,42 @@ export default function Sidebar() {
             </div>
           )}
           {verifiedUser?.role === "user" && (
-            <div
-              className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
-              onClick={() => navigate("/reportdump")}
-            >
-              <FaSignInAlt /> {!collapsed && "Report Dump"}
-            </div>
-          )}
-          {verifiedUser?.role === "user" && (
-            <div
-              className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
-              onClick={() => navigate("/loadge-complain")}
-            >
-              <FaSignInAlt /> {!collapsed && "Raise Complain"}
-            </div>
-          )}
-          {verifiedUser?.role === "user" && (
-            <div
-              className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
-              onClick={() => navigate("/register-recycle")}
-            >
-              <FaSignInAlt /> {!collapsed && "Recycle"}
-            </div>
-          )}
-
-          {!token && (
-            <div
-              className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
-              onClick={() => navigate("/auth")}
-            >
-              <FaSignInAlt /> {!collapsed && "Sign In"}
-            </div>
+            <>
+              <div
+                className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+                onClick={() => navigate("/reportdump")}
+              >
+                <FaSignInAlt /> {!collapsed && "Report Dump"}
+              </div>
+              <div
+                className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+                onClick={() => navigate("/loadge-complain")}
+              >
+                <FaSignInAlt /> {!collapsed && "Raise Complain"}
+              </div>
+              <div
+                className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+                onClick={() => navigate("/register-recycle")}
+              >
+                <FaSignInAlt /> {!collapsed && "Recycle"}
+              </div>
+            </>
           )}
           {!token && (
-            <div
-              className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
-              onClick={() => navigate("/auth")}
-            >
-              <FaUserPlus /> {!collapsed && "Sign Up"}
-            </div>
+            <>
+              <div
+                className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+                onClick={() => navigate("/auth")}
+              >
+                <FaSignInAlt /> {!collapsed && "Sign In"}
+              </div>
+              <div
+                className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+                onClick={() => navigate("/auth")}
+              >
+                <FaUserPlus /> {!collapsed && "Sign Up"}
+              </div>
+            </>
           )}
           <DarkMode isSidebarCollapsed={collapsed} />
         </div>

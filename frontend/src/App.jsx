@@ -6,7 +6,7 @@ import Map from "./components/Map";
 import "./index.css";
 import Tasks from "./components/Tasks";
 import Teams from "./components/Teams";
-// import Notifications from "./components/Notifications"; // You had this commented out
+import Notifications from "./components/Notifications"; // You had this commented out
 import ReportDumpForm from "./components/ReportDumpForm";
 import { Complain, Auth, Home, RegisterRecycle, AboutUs } from "./pages/index";
 import ViewAllRecycle from "./pages/ViewAllRecycle";
@@ -30,16 +30,18 @@ function App() {
         <Navbar setCollapsed={setCollapsed} />
         <main className="flex-1 p-4 overflow-y-auto bg-gray-100 dark:bg-slate-900">
           <Routes>
+          <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
             <Route path="/map" element={<Map />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/teams" element={<Teams />} />
-            {/* <Route path="/notifications" element={<Notifications />} /> */}
+            <Route path="/notifications" element={<Notifications />} />
             <Route path="/reportdump" element={<ReportDumpForm />} />
-            <Route path="/auth" element={<Auth />} />
             <Route path="/loadge-complain" element={<Complain />} />
             <Route path='/register-recycle' element={<RegisterRecycle />} />
             <Route path="/viewrecycle" element={<ViewAllRecycle />} />
+          </Route>  
+            <Route path="/auth" element={<Auth />} />
             <Route path="/about" element={<AboutUs />} />
           </Routes>
         </main>
