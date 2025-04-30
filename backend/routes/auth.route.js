@@ -47,12 +47,17 @@ router.route("/team/login").post(loginTeam);
 router.get("/verify-token", verifyAnyToken, (req, res) => {
   const { role, user, admin, team } = req;
 
+  if (!role || (!user && !admin && !team)) {
+    return res.status(400).json(new ApiResponse(400, {}, "User is logged out"));
+  }
+
   return res.status(200).json({
     success: true,
     role,
     data: user || admin || team,
   });
 });
+
 
 // adding unified logout for all
 router.route("/logout").get(
@@ -82,6 +87,10 @@ router.route("/logout").get(
         },
         { new: true }
       );
+    } else {
+      return res
+        .status(404)
+        .json(new ApiResponse(404, {}, "No Account found"))
     }
 
     const options = {

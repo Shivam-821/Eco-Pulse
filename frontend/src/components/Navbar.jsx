@@ -24,17 +24,22 @@ export default function Navbar({ setCollapsed }) {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.get(
+      let response;
+    if(token) { 
+      response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/auth/logout`,
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         }
       );
+    }else {
+      return 
+    }
       if (response.status === 200) {
         localStorage.removeItem("accessToken");
         toast.success("Logged out successfully!");
-        setTimeout(() => navigate("/auth"), 1200);
+        setTimeout(() => navigate("/auth"), 2000);
       }
     } catch (error) {
       console.error(error);

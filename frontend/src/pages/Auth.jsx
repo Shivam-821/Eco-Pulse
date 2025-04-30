@@ -65,7 +65,9 @@ export default function Auth() {
  useEffect(() => {
    const verify = async () => {
      try {
-       const res = await axios.get(
+      let res;
+      if(token) {
+        res = await axios.get(
          `${import.meta.env.VITE_BASE_URL}/api/auth/verify-token`,
          {
            headers: {
@@ -74,6 +76,7 @@ export default function Auth() {
            withCredentials: true,
          }
        );
+      }
        setVerifiedUser(res.data); 
      } catch (err) {
       console.log(err)

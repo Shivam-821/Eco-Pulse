@@ -19,25 +19,31 @@ export default function Sidebar({ collapsed, setCollapsed }) {  // Use props her
   const token = localStorage.getItem("accessToken");
   const [verifiedUser, setVerifiedUser] = useState(null);
 
-  useEffect(() => {
-    const verify = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/auth/verify-token`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-          }
-        );
-        setVerifiedUser(res.data);
-      } catch (err) {
-        console.log(err);
-        setVerifiedUser(null);
-      }
-    };
+ useEffect(() => {
+   if (!token) {
+     setVerifiedUser(null);
+     return;
+   }
 
-    verify();
-  }, [token]);
+   const verify = async () => {
+     try {
+       const res = await axios.get(
+         `${import.meta.env.VITE_BASE_URL}/api/auth/verify-token`,
+         {
+           headers: { Authorization: `Bearer ${token}` },
+           withCredentials: true,
+         }
+       );
+       setVerifiedUser(res?.data);
+     } catch (err) {
+       console.log(err);
+       setVerifiedUser(null);
+     }
+   };
+
+   verify();
+ }, [token]);
+
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);

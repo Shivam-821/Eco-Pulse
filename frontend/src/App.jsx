@@ -41,9 +41,14 @@ function App() {
               <Route path="/register-recycle" element={<RegisterRecycle />} />
               <Route path="/viewrecycle" element={<ViewAllRecycle />} />
             </Route>
-            <Route element={<ProtectedRouteForAuthenticatedUser />}>
-              <Route path="/auth" element={<Auth />} />
-            </Route>
+            <Route
+              path="/auth"
+              element={
+                <ProtectedRouteForAuthenticatedUser>
+                  <Auth />
+                </ProtectedRouteForAuthenticatedUser>
+              }
+            />
             <Route path="/about" element={<AboutUs />} />
           </Routes>
         </main>

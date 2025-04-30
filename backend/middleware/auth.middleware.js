@@ -10,10 +10,16 @@ const extractToken = (req) => {
 
 const verifyToken = (token) => {
   if (!token || token.split(".").length !== 3) {
-    throw new ApiError(402, "Unauthorized: Invalid token format");
+    throw new ApiError(401, "Invalid token format");
   }
-  return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+  try {
+    return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  } catch (err) {
+    throw new ApiError(401, "Invalid or expired token");
+  }
 };
+
 
 const verifyUser = asyncHandler(async (req, res, next) => {
   const token = extractToken(req);
