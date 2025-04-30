@@ -162,12 +162,6 @@ const Home = () => {
             </a>
           </div>
         </section>
-
-        {/* Footer */}
-        <footer className=" dark:bg-slate-900 dark:text-slate-300 text-slate-600 text-center text-sm">
-          © 2025 Smart Waste Management Platform. Built by Shivam Raj, Abhinav
-          Patra, and Barkha Yadav.
-        </footer>
       </div>
     </div>
   );

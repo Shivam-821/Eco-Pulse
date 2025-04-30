@@ -12,6 +12,8 @@ import { Complain, Auth, Home, RegisterRecycle, AboutUs, ViewAllRecycle } from "
 import { useState } from "react";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import the ProtectedRoute component
 import ProtectedRouteForAuthenticatedUser from "./components/ProtectedRouteForAuthenticatedUser";
+import Footer from './components/Footer'
+
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
@@ -51,6 +53,7 @@ function App() {
             />
             <Route path="/about" element={<AboutUs />} />
           </Routes>
+          <Footer />
         </main>
       </div>
     </div>
