@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios'
+import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Auth() {
   const navigate = useNavigate();
-  const [role, setRole] = useState("user");
-  const [mode, setMode] = useState("login");
-  const [locating, setLocating] = useState(false); 
-  const [verifiedUser, setVerifiedUser] = useState(null);
-  const token = localStorage.getItem("accessToken")
-  const notifyerror = () => toast("Somthing went wrong");
-  const notifySuccess = () => {
-    if(mode === "signup"){
-      toast("SignUp successfull");
-    } 
-    if(mode === 'login') toast("Login successfull")
-  }
 
+  const [role, setRole] = useState("user"); // default role
+  const [mode, setMode] = useState("login"); // login | signup
+  const [locating, setLocating] = useState(false);
+  const [verifiedUser, setVerifiedUser] = useState(null);
+
+  const token = localStorage.getItem("accessToken");
+
+  const notifyError = (msg) => toast.error(msg || "Something went wrong!");
+  const notifySuccess = (msg) => toast.success(msg);
+
+  // Form state
   const [form, setForm] = useState({
     fullname: "",
     email: "",
@@ -27,72 +27,90 @@ export default function Auth() {
     state: "",
     adminOfficer: "",
     pincode: "",
-    teamname: "",
-    location: null, 
+    location: null,
     address: "",
   });
 
- useEffect(() => {
-   if (role === "team" && mode === "signup") {
-     if (navigator.geolocation) {
-       setLocating(true);
-       navigator.geolocation.getCurrentPosition(
-         (position) => {
-           setForm((prevForm) => ({
-             ...prevForm,
-             location: {
-               type: "Point",
-               coordinates: [
-                 position.coords.longitude,
-                 position.coords.latitude,
-               ],
-             },
-           }));
-           setLocating(false);
-         },
-         (err) => {
-           console.error("Geolocation error:", err.message);
-           alert("Location permission denied. Team signup needs location.");
-           setLocating(false);
-         }
-       );
-     } else {
-       alert("Geolocation is not supported by your browser.");
-     }
-   }
- }, [role, mode]);
+  // 🔹 Reset form whenever role/mode changes
+  useEffect(() => {
+    setForm((prev) => ({
+      fullname: "",
+      email: prev.email, // keep email
+      password: prev.password, // keep password
+      phone: "",
+      district: "",
+      state: "",
+      adminOfficer: "",
+      pincode: "",
+      location: null,
+      address: "",
+    }));
+  }, [role, mode]);
 
- useEffect(() => {
-   const verify = async () => {
-     try {
-      let res;
-      if(token) {
-        res = await axios.get(
-         `${import.meta.env.VITE_BASE_URL}/api/auth/verify-token`,
-         {
-           headers: {
-             Authorization: `Bearer ${token}`,
-           },
-           withCredentials: true,
-         }
-       );
+  // Handle geolocation for team signup
+  useEffect(() => {
+    if (role === "team" && mode === "signup") {
+      if (navigator.geolocation) {
+        setLocating(true);
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setForm((prevForm) => ({
+              ...prevForm,
+              location: {
+                type: "Point",
+                coordinates: [
+                  position.coords.longitude,
+                  position.coords.latitude,
+                ],
+              },
+            }));
+            setLocating(false);
+          },
+          (err) => {
+            console.error("Geolocation error:", err.message);
+            alert("Location permission denied. Team signup needs location.");
+            setLocating(false);
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by your browser.");
       }
-       setVerifiedUser(res.data); 
-     } catch (err) {
-      console.log(err)
-       setVerifiedUser(null); 
-     }
-   };
+    }
+  }, [role, mode]);
 
-   verify();
- }, []);
+  // Verify token (on mount)
+  useEffect(() => {
+    const verify = async () => {
+      if (!token) {
+        setVerifiedUser(null);
+        return;
+      }
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/auth/verify-token`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          }
+        );
+        console.log(res);
+        setVerifiedUser(res.data.data);
+      } catch (err) {
+        console.log("Token verification failed:", err);
+        setVerifiedUser(null);
+      }
+    };
+    verify();
+  }, [token]);
 
-
-
+  // Handle input change
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -109,52 +127,49 @@ export default function Auth() {
     }
 
     try {
-      let res;
-      if (role === "team" && mode === 'signup'){
-        res = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/${endpoint}`,
-          form,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true,
-          }
-        );
-      } else {
-        res = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/${endpoint}`,
-          form
-        );
-      }
-      
-
-      
-      if (res.status === 201) {
-        const token = res.data.data.accessToken;
-        if(token){
-          localStorage.setItem("accessToken", token)
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/${endpoint}`,
+        form,
+        {
+          headers:
+            role === "team" && mode === "signup"
+              ? {} // no token needed for signup
+              : token
+              ? { Authorization: `Bearer ${token}` }
+              : {},
+          withCredentials: true,
         }
-        notifySuccess()
-        setTimeout(() => navigate("/map"), 1000)
-        
+      );
+
+      if (res.status === 201 || res.status === 200) {
+        const accessToken = res.data?.data?.accessToken;
+        if (accessToken) {
+          localStorage.setItem("accessToken", accessToken);
+        }
+
+        notifySuccess(
+          mode === "signup" ? "Signup successful!" : "Login successful!"
+        );
+
+        setTimeout(() => navigate("/map"), 1000);
       } else {
-        notifyerror();
+        notifyError(res.data?.message || "Request failed");
       }
     } catch (error) {
-      console.error("Error: ", error);
-      notifyerror()
+      console.error("Error:", error);
+      notifyError(error.response?.data?.message || error.message);
     }
   };
 
   return (
     <div className="min-h-screen flex md:items-center md:justify-center justify-end bg-gray-100 dark:bg-slate-900 sm:pr-2 pt-10">
-      <ToastContainer className="" />
+      <ToastContainer />
       <div className="bg-white shadow-md p-6 rounded-lg w-full max-w-md flex flex-col justify-center dark:bg-gray-700 dark:text-white">
         <h1 className="text-2xl font-bold mb-4 text-center">
           {mode === "login" ? "Login" : "Sign Up"}
         </h1>
 
+        {/* Role buttons */}
         <div className="flex justify-center mb-4">
           {[
             "user",
@@ -167,8 +182,10 @@ export default function Auth() {
           ].map((r) => (
             <button
               key={r}
-              className={`px-4 py-2 mx-1 rounded-full text-sm font-medium transition dark:text-black ${
-                role === r ? "bg-blue-600 text-white" : "bg-gray-200"
+              className={`px-4 py-2 mx-1 rounded-full text-sm font-medium transition ${
+                role === r
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 dark:text-black"
               }`}
               onClick={() => setRole(r)}
             >
@@ -181,6 +198,7 @@ export default function Auth() {
           ))}
         </div>
 
+        {/* Mode buttons */}
         <div className="flex justify-center mb-4">
           <button
             className={`px-4 py-2 mr-2 rounded ${
@@ -197,16 +215,18 @@ export default function Auth() {
               mode === "signup"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200 dark:text-gray-800"
-            } `}
+            }`}
             onClick={() => setMode("signup")}
           >
             Sign Up
           </button>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === "signup" && (
             <>
+              {/* Common signup fields */}
               <input
                 type="text"
                 name="fullname"
@@ -217,6 +237,7 @@ export default function Auth() {
                 required
               />
 
+              {/* Admin signup fields */}
               {role === "admin" && (
                 <>
                   <input
@@ -254,16 +275,17 @@ export default function Auth() {
                 </>
               )}
 
+              {/* Team signup fields */}
               {role === "team" && locating && (
                 <p className="text-sm text-blue-500 font-medium">
                   Fetching location...
                 </p>
               )}
 
-              {role === "team" && mode === "signup" && form.location && (
+              {role === "team" && form.location && (
                 <div className="grid grid-cols-2 gap-4 mt-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="block text-sm font-medium">
                       Latitude
                     </label>
                     <input
@@ -274,7 +296,7 @@ export default function Auth() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="block text-sm font-medium">
                       Longitude
                     </label>
                     <input
@@ -286,19 +308,20 @@ export default function Auth() {
                   </div>
                 </div>
               )}
-              {mode === "signup" && role === "team" && (
-                <div>
-                  <input
-                    type="text"
-                    name="address"
-                    placeholder="Address"
-                    value={form.address}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
-                    required
-                  />
-                </div>
+
+              {role === "team" && (
+                <input
+                  type="text"
+                  name="address"
+                  placeholder="Address"
+                  value={form.address}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
+                  required
+                />
               )}
+
+              {/* User & Team phone field */}
               {(role === "user" || role === "team") && (
                 <input
                   type="tel"
@@ -314,6 +337,7 @@ export default function Auth() {
             </>
           )}
 
+          {/* Common fields for login + signup */}
           <input
             type="email"
             name="email"

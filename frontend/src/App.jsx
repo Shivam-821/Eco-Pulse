@@ -11,7 +11,6 @@ import ReportDumpForm from "./components/ReportDumpForm";
 import { Complain, Auth, Home, RegisterRecycle, AboutUs, ViewAllRecycle } from "./pages/index";
 import { useState } from "react";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import the ProtectedRoute component
-import ProtectedRouteForAuthenticatedUser from "./components/ProtectedRouteForAuthenticatedUser";
 import Footer from './components/Footer'
 
 
@@ -46,9 +45,7 @@ function App() {
             <Route
               path="/auth"
               element={
-                <ProtectedRouteForAuthenticatedUser>
                   <Auth />
-                </ProtectedRouteForAuthenticatedUser>
               }
             />
             <Route path="/about" element={<AboutUs />} />

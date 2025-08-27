@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -16,7 +16,7 @@ const RegisterDump = () => {
     setImage(e.target.files[0]);
   };
 
-  const notifyError = () => toast("Error Registring Dump");
+  const notifyError = (msg) => toast(msg|| "Error Registring Dump");
     const notifySuccess = () => {
       toast("Dump Registered Successfully")
     }
@@ -70,8 +70,7 @@ const RegisterDump = () => {
       }
       
     } catch (error) {
-      console.log(error)
-      notifyError()
+      notifyError(error?.response?.data?.error)
     } finally {
       setLoading(false);
     }

@@ -34,6 +34,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {  // Use props her
            withCredentials: true,
          }
        );
+       console.log(res)
        setVerifiedUser(res?.data);
      } catch (err) {
        console.log(err);

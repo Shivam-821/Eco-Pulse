@@ -92,7 +92,7 @@ export default function Navbar({ setCollapsed }) {
               >
                 Eco Pulse
               </Box>
-            </Link>  
+            </Link>
           </Box>
 
           {/* Right side - Search and Logout */}
@@ -128,27 +128,51 @@ export default function Navbar({ setCollapsed }) {
                 style: { padding: "8px 12px" },
               }}
             />
-            <Button
-              variant="contained"
-              onClick={handleLogout}
-              sx={{
-                backgroundColor: "#22c55e",
-                "&:hover": {
-                  backgroundColor: "#16a34a",
-                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                },
-                color: "white",
-                textTransform: "none",
-                fontWeight: "600",
-                fontSize: "0.9rem",
-                px: 2.5,
-                py: 1,
-                borderRadius: 2,
-                boxShadow: "none",
-              }}
-            >
-              Logout
-            </Button>
+            {token ? (
+              <Button
+                variant="contained"
+                onClick={handleLogout}
+                sx={{
+                  backgroundColor: "#22c55e",
+                  "&:hover": {
+                    backgroundColor: "#16a34a",
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                  },
+                  color: "white",
+                  textTransform: "none",
+                  fontWeight: "600",
+                  fontSize: "0.9rem",
+                  px: 2.5,
+                  py: 1,
+                  borderRadius: 2,
+                  boxShadow: "none",
+                }}
+              >
+                Logout
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={handleLogout}
+                sx={{
+                  backgroundColor: "#22c55e",
+                  "&:hover": {
+                    backgroundColor: "#16a34a",
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                  },
+                  color: "white",
+                  textTransform: "none",
+                  fontWeight: "600",
+                  fontSize: "0.9rem",
+                  px: 2.5,
+                  py: 1,
+                  borderRadius: 2,
+                  boxShadow: "none",
+                }}
+              >
+                Login
+              </Button>
+            )}
           </Box>
         </Toolbar>
       </AppBar>

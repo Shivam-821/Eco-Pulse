@@ -44,7 +44,6 @@ const registerAdmin = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "All fields are required.");
   }
-  console.log('reached')
 
   const existedAdmin = await Admin.findOne({ $or: [{ district }, { email }] });
 

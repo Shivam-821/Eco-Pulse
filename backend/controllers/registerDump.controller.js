@@ -7,7 +7,6 @@ import {
   deleteFromCloudinary,
 } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { SmartBin } from "../models/index.js";
 import { notifyOnRegisteringDump } from "./twilio.controller.js";
 
 const registerDump = asyncHandler(async (req, res) => {
@@ -35,7 +34,7 @@ const geoLocation = {
     try {
       picture = await uploadOnCloudinary(picturePath);
     } catch (error) {
-      throw new ApiError(500, `Image upload failed: ${error.message}`);
+      return res.status(500).json(new ApiError(500, `Image upload failed: ${error.message}`));
     }
   }
 
@@ -67,7 +66,7 @@ const geoLocation = {
       );
   } catch (error) {
     if (picture?.public_id) await deleteFromCloudinary(picture.public_id);
-    throw new ApiError(500, `Failed to create dump report: ${error.message}`);
+    return res.status(500).json(new ApiError(500, `Failed to create dump report: ${error.message}`));
   }
 });
 

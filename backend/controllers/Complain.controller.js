@@ -30,7 +30,6 @@ const complaintRegistered = asyncHandler(async (req, res) => {
 
   const assignedTeam = getDump?.assignedTeam;
   const address = getDump?.address;
-  console.log(address)
 
   try {
     const createComplain = await GeneralComplaint.create({

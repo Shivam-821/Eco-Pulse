@@ -23,11 +23,8 @@ const AboutUs = () => {
           </h1>
           <p className="text-lg text-slate-700 dark:text-slate-400">
             We are a passionate team of three innovators —{" "}
-            <span className="font-semibold text-green-400">Shivam Raj</span>,{" "}
+            <span className="font-semibold text-green-400">Shivam Raj</span>{" "}and{" "}
             <span className="font-semibold text-green-400">Abhinav Patra</span>,
-            and{" "}
-            <span className="font-semibold text-green-400">Barkha Yadav</span>.
-            <br />
             Our mission is simple yet powerful:{" "}
             <span className="font-semibold">
               Make cities cleaner, enable smarter waste management, and create

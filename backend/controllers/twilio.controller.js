@@ -36,7 +36,7 @@ export const notifyOnCompletionOfWork = async (
 export const notifyOnAssignTask = async (teamname, uniqueNumber, address, distanceInKm) => {
   try{
     await sendSMS(
-      "+917061591674",
+      "+919060871087",
       `Team ${teamname} you are assigned with a new cleaning task: 
     with Unique-number:${uniqueNumber}, reported at place: ${address}, which is ${distanceInKm} KM away from you.
     clean it as soon as possible.
@@ -44,5 +44,16 @@ export const notifyOnAssignTask = async (teamname, uniqueNumber, address, distan
     )
   } catch (error) {
     console.error("Error sending assigning message")
+  }
+}
+
+export const sendOTP = async (otp) => {
+  try{
+    await sendSMS(
+      "+919060871087",
+      `OTP for verifying mobile number for Eco-Pulse is: ${otp}`
+    )
+  }catch (error){
+    console.log("Error sending otp")
   }
 }

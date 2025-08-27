@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   Facebook,
   Twitter,
@@ -26,9 +27,9 @@ const Footer = () => {
           <h2 className="text-base font-semibold mb-2">Quick Links</h2>
           <ul className="space-y-1">
             <li>
-              <a href="/report" className="hover:text-green-600">
-                Report Dump
-              </a>
+             <Link 
+             to="/reportdump"
+             className="hover:text-green-600">Report Dump</Link>
             </li>
             <li>
               <a href="/dashboard" className="hover:text-green-600">
@@ -36,14 +37,12 @@ const Footer = () => {
               </a>
             </li>
             <li>
-              <a href="/team" className="hover:text-green-600">
-                Our Team
-              </a>
+              <Link to="/about" className="hover:text-green-600">
+                About Us
+              </Link>
             </li>
             <li>
-              <a href="/contact" className="hover:text-green-600">
-                Contact Us
-              </a>
+              <Link to="/contact" className="hover:text-green-600">Contact Us</Link>
             </li>
           </ul>
         </div>
