@@ -5,7 +5,7 @@ import cors from "cors";
 import limiter from "./middleware/rateLimiter.js";
 import connectDB from "./config/db.js";
 
-// Import the aggregated API routes from /routes/index.js
+
 import apiRoutes from "./routes/index.js";
 
 dotenv.config();
@@ -21,13 +21,12 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(limiter);
 
-// Connect DB
+
 connectDB();
 
-// Mount all API routes under "/api"
+
 app.use("/api", apiRoutes);
 
-// Serve static files (e.g. processed uploads)
 app.use("/uploads", express.static("uploads"));
 
 const PORT = process.env.PORT || 3001;
