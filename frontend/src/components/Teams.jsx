@@ -1,21 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Box,
-  Typography,
-  Chip,
-  ToggleButtonGroup,
-  ToggleButton,
-  TextField,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
-import { green, grey, red } from "@mui/material/colors";
 
 export default function Teams() {
   const [teams, setTeams] = useState([]);
@@ -49,121 +33,132 @@ export default function Teams() {
 
   const filteredTeams = teams.filter((team) => {
     const matchStatus = statusFilter === "ALL" || team.status === statusFilter;
-
     const matchSearch = team.teamname
       ?.toLowerCase()
       .includes(search.toLowerCase());
-
     return matchStatus && matchSearch;
   });
 
+  const getChipClass = (status, reported) => {
+    if (reported) {
+      return "bg-red-500 text-white";
+    }
+    return status === "ASSIGNED"
+      ? "bg-green-500 text-white"
+      : "bg-gray-500 text-white dark:bg-slate-700";
+  };
+
+  const getButtonClass = (value) =>
+    `px-4 py-2 text-sm font-medium border first:rounded-l-lg last:rounded-r-lg focus:outline-none transition-colors duration-200 
+    ${
+      value === statusFilter
+        ? "bg-blue-500 text-white dark:bg-emerald-500"
+        : "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+    }`;
+
   return (
-    <Box
-      sx={{ display: "flex", marginLeft: "5px" }}
-      className="dark:bg-slate-900 min-h-screen"
-    >
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+    <div className="flex ml-1.5 mt-10 dark:bg-slate-900 min-h-screen text-slate-800 dark:text-slate-200">
+      <div className="flex-grow p-3">
+        {/* Filter and Search Section */}
+        <div className="flex justify-between mb-4 p-2">
+          <div className="inline-flex rounded-lg border dark:border-slate-600">
+            <button
+              onClick={() => setStatusFilter("ALL")}
+              className={`${getButtonClass("ALL")}`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setStatusFilter("ASSIGNED")}
+              className={`${getButtonClass("ASSIGNED")}`}
+            >
+              Assigned
+            </button>
+            <button
+              onClick={() => setStatusFilter("NOT ASSIGNED")}
+              className={`${getButtonClass("NOT ASSIGNED")}`}
+            >
+              Not Assigned
+            </button>
+          </div>
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            mb: 2,
-            padding: 2,
-          }}
-        >
-          <ToggleButtonGroup
-            value={statusFilter}
-            exclusive
-            onChange={(e, newValue) => newValue && setStatusFilter(newValue)}
-            aria-label="team status filter"
-          >
-            <ToggleButton value="ALL">All</ToggleButton>
-            <ToggleButton value="ASSIGNED">Assigned</ToggleButton>
-            <ToggleButton value="NOT ASSIGNED">Not Assigned</ToggleButton>
-          </ToggleButtonGroup>
- 
-          <TextField
-            label="Search Teams"
-            variant="outlined"
-            size="small"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </Box>
+          <div className="relative">
+            <label htmlFor="search-teams" className="sr-only">
+              Search Teams
+            </label>
+            <input
+              id="search-teams"
+              type="text"
+              placeholder="Search Teams"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-4 pr-10 py-2 text-sm rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200"
+            />
+          </div>
+        </div>
 
-        <TableContainer component={Paper} sx={{ maxWidth: "100%" }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  <strong>Team Name</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Phone</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Location</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Status</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Date Assigned</strong>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+        {/* Table Section */}
+        <div className="shadow-md rounded-lg overflow-hidden dark:bg-slate-800">
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-100 dark:bg-slate-700">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                  Team Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                  Phone
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                  Location
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                  Date Assigned
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
               {filteredTeams.map((team, index) => (
-                <TableRow
+                <tr
                   key={index}
-                  sx={{
-                    backgroundColor: team.reported ? "#ffe5e5" : "transparent",
-                  }}
+                  className={`transition-colors duration-200 ${
+                    team.reported
+                      ? "bg-red-100 dark:bg-red-900/50"
+                      : "bg-white dark:bg-slate-800"
+                  }`}
                 >
-                  <TableCell>{team.teamname}</TableCell>
-                  <TableCell>{team.phone}</TableCell>
-                  <TableCell>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {team.teamname}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">{team.phone}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
                     {typeof team.location === "object"
                       ? `${team.location.coordinates?.join(", ") || "N/A"}`
                       : team.location}
-                  </TableCell>
-                  <TableCell>
-                    {team.reported ? (
-                      <Chip
-                        label={" Reported "}
-                        sx={{
-                          color: "white",
-                          bgcolor:
-                            team.reported === true ? red[500] : grey[700],
-                          p: 1,
-                        }}
-                      />
-                    ) : (
-                      <Chip
-                        label={team.status}
-                        color={
-                          team.status === "ASSIGNED" ? "success" : "default"
-                        }
-                        sx={{
-                          color: "white",
-                          bgcolor:
-                            team.status === "ASSIGNED" ? green[500] : grey[700],
-                        }}
-                      />
-                    )}
-                  </TableCell>
-                  <TableCell>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`inline-block px-2 py-1 text-xs rounded-full font-semibold ${getChipClass(
+                        team.status,
+                        team.reported
+                      )}`}
+                    >
+                      {team.reported ? "Reported" : team.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
                     {team.dateAssigned
                       ? new Date(team.dateAssigned).toLocaleDateString()
                       : "N/A"}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
-    </Box>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }
