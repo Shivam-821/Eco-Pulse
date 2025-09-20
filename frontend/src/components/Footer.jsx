@@ -82,8 +82,8 @@ const Footer = () => {
 
       {/* Copyright */}
       <div className="mt-8 text-center border-t border-slate-300 dark:border-slate-700 pt-4">
-        © 2025 Smart Waste Management Platform. Built by Shivam Raj, Abhinav
-        Patra, and Barkha Yadav.
+        © 2025 Smart Waste Management Platform. Built by Shivam Raj and Abhinav
+        Patra.
       </div>
     </div>
   );

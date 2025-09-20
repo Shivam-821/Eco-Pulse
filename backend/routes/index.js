@@ -9,10 +9,10 @@ import reportRoutes from "./reports.js";
 import notificationRoutes from "./notifications.js";
 import mapRoutes from "./map.js";
 import uploadRoutes from "./upload.js";
-import statsRoutes from "./stats.js";
 import complainRoutes from './complain.routes.js'
 import dumpRoutes from './dumps.routes.js'
-import recycleRouter from './recycle.routes.js'
+import recycleRoutes from './recycle.routes.js'
+import statsRoutes from './stats.route.js'
 
 // Mount routes under their respective paths
 router.use("/auth", authRoutes);
@@ -23,9 +23,9 @@ router.use("/dump-reports", reportRoutes); // if dump reports and report-dump ar
 router.use("/notifications", notificationRoutes);
 router.use("/map", mapRoutes);
 router.use("/upload", uploadRoutes);
-router.use("/stats", statsRoutes);
 router.use("/complain", complainRoutes)
 router.use("/dump", dumpRoutes)
-router.use("/recycle", recycleRouter)
+router.use("/recycle", recycleRoutes)
+router.use("/stats", statsRoutes)
 
 export default router;

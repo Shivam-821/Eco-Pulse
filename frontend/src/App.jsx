@@ -8,11 +8,18 @@ import Tasks from "./components/Tasks";
 import Teams from "./components/Teams";
 import Notifications from "./components/Notifications"; // You had this commented out
 import ReportDumpForm from "./components/ReportDumpForm";
-import { Complain, Auth, Home, RegisterRecycle, AboutUs, ViewAllRecycle } from "./pages/index";
+import {
+  Complain,
+  Auth,
+  Home,
+  RegisterRecycle,
+  AboutUs,
+  ViewAllRecycle,
+  StatsDashboardPage,
+} from "./pages/index";
 import { useState } from "react";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import the ProtectedRoute component
-import Footer from './components/Footer'
-
+import Footer from "./components/Footer";
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
@@ -41,13 +48,9 @@ function App() {
               <Route path="/loadge-complain" element={<Complain />} />
               <Route path="/register-recycle" element={<RegisterRecycle />} />
               <Route path="/viewrecycle" element={<ViewAllRecycle />} />
+              <Route path="/stats" element={<StatsDashboardPage />} />
             </Route>
-            <Route
-              path="/auth"
-              element={
-                  <Auth />
-              }
-            />
+            <Route path="/auth" element={<Auth />} />
             <Route path="/about" element={<AboutUs />} />
           </Routes>
           <Footer />

@@ -23,9 +23,9 @@ const AboutUs = () => {
           </h1>
           <p className="text-lg text-slate-700 dark:text-slate-400">
             We are a passionate team of three innovators —{" "}
-            <span className="font-semibold text-green-400">Shivam Raj</span>{" "}and{" "}
-            <span className="font-semibold text-green-400">Abhinav Patra</span>,
-            Our mission is simple yet powerful:{" "}
+            <span className="font-semibold text-green-400">Shivam Raj</span>
+            {/* <span className="font-semibold text-green-400">Abhinav Patra</span>, */}
+            My mission is simple yet powerful:{" "}
             <span className="font-semibold">
               Make cities cleaner, enable smarter waste management, and create
               an eco-friendly economy.
@@ -41,35 +41,41 @@ const AboutUs = () => {
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* Admin / Municipality */}
-                  <div className="bg-emerald-200 dark:bg-slate-800 p-6 rounded-2xl shadow-lg">
-                    <h3 className="text-2xl font-bold text-green-600 mb-4 flex items-center gap-2">
-                    <Building2 /> Admin (Municipality)
-                    </h3>
-                    <p className="mb-2">
-                    • Manage and monitor cleanliness across the city.
-                    <br />
-                    • Assign and track cleanup operations.
-                    <br />
-                    • Analyze waste management data for better planning.
-                    <br />
-                    • Generate revenue by selling analyzed waste data to industries and researchers.
-                    </p>
-                    <h4 className="text-lg font-semibold mt-4 text-blue-700 flex items-center gap-2">
-                    <AlertCircle /> Why Join Us?
-                    </h4>
-                    <ul className="list-disc list-inside">
-                    <li>Increase city cleanliness ratings nationally.</li>
-                    <li>Efficient waste management with minimal resources.</li>
-                    <li>
-                      Earn revenue through partnerships with upcycling industries.
-                    </li>
-                    <li>Digitalize and modernize municipal operations.</li>
-                    <li>Additional revenue from data analytics and private cleaning services.</li>
-                    <li>Facilitate private cleaning requests for individual properties.</li>
-                    </ul>
-                  </div>
+            <div className="bg-emerald-200 dark:bg-slate-800 p-6 rounded-2xl shadow-lg">
+              <h3 className="text-2xl font-bold text-green-600 mb-4 flex items-center gap-2">
+                <Building2 /> Admin (Municipality)
+              </h3>
+              <p className="mb-2">
+                • Manage and monitor cleanliness across the city.
+                <br />
+                • Assign and track cleanup operations.
+                <br />
+                • Analyze waste management data for better planning.
+                <br />• Generate revenue by selling analyzed waste data to
+                industries and researchers.
+              </p>
+              <h4 className="text-lg font-semibold mt-4 text-blue-700 flex items-center gap-2">
+                <AlertCircle /> Why Join Us?
+              </h4>
+              <ul className="list-disc list-inside">
+                <li>Increase city cleanliness ratings nationally.</li>
+                <li>Efficient waste management with minimal resources.</li>
+                <li>
+                  Earn revenue through partnerships with upcycling industries.
+                </li>
+                <li>Digitalize and modernize municipal operations.</li>
+                <li>
+                  Additional revenue from data analytics and private cleaning
+                  services.
+                </li>
+                <li>
+                  Facilitate private cleaning requests for individual
+                  properties.
+                </li>
+              </ul>
+            </div>
 
-                  {/* Common User */}
+            {/* Common User */}
             <div className="bg-emerald-200 dark:bg-slate-800 p-6 rounded-2xl shadow-lg">
               <h3 className="text-2xl font-bold text-green-600 mb-4 flex items-center gap-2">
                 <Users /> Common User (Citizen)

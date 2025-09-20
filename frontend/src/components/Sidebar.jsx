@@ -9,7 +9,8 @@ import {
   FaUserPlus,
   FaBars,
   FaRecycle,
-  FaInfoCircle
+  FaInfoCircle,
+  FaChartBar,
 } from "react-icons/fa";
 import DarkMode from "./DarkMode";
 import axios from "axios";
@@ -94,7 +95,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {  // Use props her
             >
               <FaInfoCircle /> {!collapsed && "About Us"}
             </Link>
-            </li>
+          </li>
           <li>
             <Link
               to="/teams"
@@ -117,6 +118,14 @@ export default function Sidebar({ collapsed, setCollapsed }) {  // Use props her
               className="flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
             >
               <FaRecycle /> {!collapsed && "Recycle Items"}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/stats"
+              className="flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+            >
+              <FaChartBar /> {!collapsed && "Statistic"}
             </Link>
           </li>
         </ul>
