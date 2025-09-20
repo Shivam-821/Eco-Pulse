@@ -9,6 +9,7 @@ const extractToken = (req) => {
 };
 
 const verifyToken = (token) => {
+  console.log(token)
   if (!token || token.split(".").length !== 3) {
     throw new ApiError(401, "Invalid token format");
   }
@@ -20,11 +21,12 @@ const verifyToken = (token) => {
   }
 };
 
-
 const verifyUser = asyncHandler(async (req, res, next) => {
   const token = extractToken(req);
   const decoded = verifyToken(token);
-  const user = await User.findById(decoded._id).select("-password -refreshToken");
+  const user = await User.findById(decoded._id).select(
+    "-password -refreshToken"
+  );
 
   if (!user) throw new ApiError(401, "Unauthorized");
   req.user = user;
@@ -34,7 +36,9 @@ const verifyUser = asyncHandler(async (req, res, next) => {
 const verifyAdmin = asyncHandler(async (req, res, next) => {
   const token = extractToken(req);
   const decoded = verifyToken(token);
-  const admin = await Admin.findById(decoded._id).select("-password -refreshToken");
+  const admin = await Admin.findById(decoded._id).select(
+    "-password -refreshToken"
+  );
 
   if (!admin) throw new ApiError(401, "Unauthorized");
   req.admin = admin;
@@ -44,7 +48,9 @@ const verifyAdmin = asyncHandler(async (req, res, next) => {
 const verifyTeam = asyncHandler(async (req, res, next) => {
   const token = extractToken(req);
   const decoded = verifyToken(token);
-  const team = await AssignTeam.findById(decoded._id).select("-password -refreshToken");
+  const team = await AssignTeam.findById(decoded._id).select(
+    "-password -refreshToken"
+  );
 
   if (!team) throw new ApiError(401, "Unauthorized");
   req.team = team;
@@ -85,6 +91,5 @@ const verifyAnyToken = asyncHandler(async (req, res, next) => {
     "Unauthorized: Token does not belong to a known user"
   );
 });
-
 
 export { verifyUser, verifyAdmin, verifyTeam, verifyAnyToken };

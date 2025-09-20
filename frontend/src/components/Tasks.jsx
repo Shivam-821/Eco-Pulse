@@ -11,7 +11,6 @@ import {
   InputLabel,
   FormControl,
   Grid,
-  CircularProgress,
   Snackbar,
   Alert,
 } from "@mui/material";
@@ -240,16 +239,8 @@ export default function Tasks() {
 
   if (loading) {
     return (
-      <div
-        style={{
-          padding: "90px 20px 20px 260px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
       </div>
     );
   }
@@ -271,7 +262,11 @@ export default function Tasks() {
       <Grid container direction={"column"} spacing={2}>
         {unassignedTasks.length === 0 ? (
           <Grid item xs={12}>
-            <Typography variant="body1" sx={{ m: 2 }}>
+            <Typography
+              variant="body1"
+              sx={{ m: 2 }}
+              className="dark:text-gray-300"
+            >
               No unassigned tasks available.
             </Typography>
           </Grid>
@@ -279,7 +274,7 @@ export default function Tasks() {
           unassignedTasks.map((task) => (
             <Grid item xs={12} sm={6} md={4} key={task.id}>
               <Card sx={{ borderLeft: `6px solid ${task.color}` }}>
-                <CardContent>
+                <CardContent className="dark:bg-slate-200">
                   <Typography variant="h6" fontWeight={600}>
                     Location: {task.locationName}
                   </Typography>
@@ -309,13 +304,23 @@ export default function Tasks() {
       </Grid>
 
       {/* Assigned Tasks */}
-      <Typography variant="h5" mt={4} gutterBottom fontWeight={600} color="orange">
+      <Typography
+        variant="h5"
+        mt={4}
+        gutterBottom
+        fontWeight={600}
+        color="orange"
+      >
         Assigned Tasks
       </Typography>
       <Grid container direction={"column"} spacing={2}>
         {assignedTasks.length === 0 ? (
           <Grid item xs={12}>
-            <Typography variant="body1" sx={{ m: 2 }}>
+            <Typography
+              variant="body1"
+              sx={{ m: 2 }}
+              className="dark:text-gray-300"
+            >
               No assigned tasks available.
             </Typography>
           </Grid>
@@ -325,10 +330,9 @@ export default function Tasks() {
               <Card
                 sx={{
                   borderLeft: `6px solid ${task.color}`,
-                  backgroundColor: task.reported ? "#ffe5e5" : "white", 
                 }}
               >
-                <CardContent>
+                <CardContent className={`${task.reported ? "bg-red-100" : "dark:bg-slate-200"}`}>
                   <Typography variant="h6" fontWeight={600}>
                     Location: {task.locationName}
                   </Typography>
@@ -353,13 +357,23 @@ export default function Tasks() {
       </Grid>
 
       {/* Completed Tasks */}
-      <Typography variant="h5" mt={4} gutterBottom fontWeight={600} color="green">
+      <Typography
+        variant="h5"
+        mt={4}
+        gutterBottom
+        fontWeight={600}
+        color="green"
+      >
         Completed Tasks
       </Typography>
       <Grid container direction={"column"} spacing={2}>
         {completedTasks.length === 0 ? (
           <Grid item xs={12}>
-            <Typography variant="body1" sx={{ m: 2 }}>
+            <Typography
+              variant="body1"
+              sx={{ m: 2 }}
+              className="dark:text-gray-300"
+            >
               No completed tasks available.
             </Typography>
           </Grid>

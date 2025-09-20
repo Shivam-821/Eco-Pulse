@@ -5,10 +5,12 @@ export default function Teams() {
   const [teams, setTeams] = useState([]);
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const fetchTeams = async () => {
       try {
+        setLoading(true)
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/dump/getall-dump`
         );
@@ -23,8 +25,10 @@ export default function Teams() {
         }));
 
         setTeams(extractedTeams);
+        setLoading(false)
       } catch (error) {
         console.error("Error fetching teams:", error);
+        setLoading(false)
       }
     };
 
@@ -55,6 +59,14 @@ export default function Teams() {
         ? "bg-blue-500 text-white dark:bg-emerald-500"
         : "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
     }`;
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex ml-1.5 mt-10 dark:bg-slate-900 min-h-screen text-slate-800 dark:text-slate-200">

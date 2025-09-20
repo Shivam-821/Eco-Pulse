@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { Task } from "../models/index.js";
-import { verifyUser, verifyAdmin, verifyTeam } from "../middleware/auth.middleware.js";
+import { verifyAdmin, verifyTeam } from "../middleware/auth.middleware.js";
 import { assignTask, getAllTeam, workCompleted } from "../controllers/assignTeam.controller.js";
+import upload from "../middleware/multer.middleware.js";
 
 const router = Router();
 
@@ -9,7 +9,7 @@ const router = Router();
 router.route('/assign-task').post(verifyAdmin, assignTask)
 
 // Mark a task as complete
-router.route('/:dumpId/completed').put(verifyTeam, workCompleted)
+router.route('/completed/:dumpId').post(verifyTeam, upload.single("picture"), workCompleted)
 
 // Get all teams
 router.route("/get-all-assignteam").get(getAllTeam)

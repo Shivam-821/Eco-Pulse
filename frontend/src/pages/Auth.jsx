@@ -4,11 +4,11 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function Auth() {
+const Auth = () => {
   const navigate = useNavigate();
 
-  const [role, setRole] = useState("user"); // default role
-  const [mode, setMode] = useState("login"); // login | signup
+  const [role, setRole] = useState("user");
+  const [mode, setMode] = useState("login");
   const [locating, setLocating] = useState(false);
   const [verifiedUser, setVerifiedUser] = useState(null);
 
@@ -17,7 +17,6 @@ export default function Auth() {
   const notifyError = (msg) => toast.error(msg || "Something went wrong!");
   const notifySuccess = (msg) => toast.success(msg);
 
-  // Form state
   const [form, setForm] = useState({
     fullname: "",
     email: "",
@@ -31,12 +30,11 @@ export default function Auth() {
     address: "",
   });
 
-  // 🔹 Reset form whenever role/mode changes
   useEffect(() => {
     setForm((prev) => ({
       fullname: "",
-      email: prev.email, // keep email
-      password: prev.password, // keep password
+      email: prev.email,
+      password: prev.password,
       phone: "",
       district: "",
       state: "",
@@ -47,7 +45,6 @@ export default function Auth() {
     }));
   }, [role, mode]);
 
-  // Handle geolocation for team signup
   useEffect(() => {
     if (role === "team" && mode === "signup") {
       if (navigator.geolocation) {
@@ -68,17 +65,18 @@ export default function Auth() {
           },
           (err) => {
             console.error("Geolocation error:", err.message);
-            alert("Location permission denied. Team signup needs location.");
+            notifyError(
+              "Location permission denied. Team signup requires location."
+            );
             setLocating(false);
           }
         );
       } else {
-        alert("Geolocation is not supported by your browser.");
+        notifyError("Geolocation is not supported by your browser.");
       }
     }
   }, [role, mode]);
 
-  // Verify token (on mount)
   useEffect(() => {
     const verify = async () => {
       if (!token) {
@@ -95,22 +93,19 @@ export default function Auth() {
             withCredentials: true,
           }
         );
-        console.log(res);
-        setVerifiedUser(res.data.data);
+        console.log(res.data.role)
+        setVerifiedUser(res.data);
       } catch (err) {
-        console.log("Token verification failed:", err);
         setVerifiedUser(null);
       }
     };
     verify();
-  }, [token]);
+  }, []);
 
-  // Handle input change
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -121,7 +116,8 @@ export default function Auth() {
       endpoint = `api/auth/user/${mode}`;
     } else if (role === "team") {
       if (mode === "signup" && !form.location) {
-        return alert("Location required to sign up as Cleaning Team.");
+        notifyError("Location required to sign up as a Cleaning Team.");
+        return;
       }
       endpoint = `api/auth/team/${mode}`;
     }
@@ -132,11 +128,7 @@ export default function Auth() {
         form,
         {
           headers:
-            role === "team" && mode === "signup"
-              ? {} // no token needed for signup
-              : token
-              ? { Authorization: `Bearer ${token}` }
-              : {},
+            (role === "team" && mode === "signup") ? { Authorization: `Bearer ${token}` }: {},
           withCredentials: true,
         }
       );
@@ -146,31 +138,46 @@ export default function Auth() {
         if (accessToken) {
           localStorage.setItem("accessToken", accessToken);
         }
-
         notifySuccess(
           mode === "signup" ? "Signup successful!" : "Login successful!"
         );
-
         setTimeout(() => navigate("/map"), 1000);
       } else {
         notifyError(res.data?.message || "Request failed");
       }
     } catch (error) {
-      console.error("Error:", error);
       notifyError(error.response?.data?.message || error.message);
     }
   };
 
+  const roleButtonClass = (r) =>
+    `px-4 py-2 mx-1 rounded-full text-sm font-medium transition-colors duration-200 ${
+      role === r
+        ? "bg-emerald-500 text-white dark:bg-emerald-500"
+        : "bg-gray-200 text-slate-800 hover:bg-emerald-200 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+    }`;
+
+  const modeButtonClass = (m) =>
+    `px-4 py-2 rounded-md transition-colors duration-200 ${
+      mode === m
+        ? "bg-blue-500 text-white dark:bg-green-500"
+        : "bg-gray-200 text-slate-800 hover:bg-gray-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+    }`;
+
+  const inputClass =
+    "w-full p-2 border border-gray-300 dark:border-slate-600 rounded-md outline-none transition-colors duration-200 dark:bg-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-green-500";
+  const disabledInputClass =
+    "mt-1 block w-full rounded-md border-gray-300 shadow-sm outline-none bg-gray-200 dark:bg-slate-600 dark:text-slate-400 cursor-not-allowed";
+
   return (
-    <div className="min-h-screen flex md:items-center md:justify-center justify-end bg-gray-100 dark:bg-slate-900 sm:pr-2 pt-10">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-slate-900 px-4 pt-10">
       <ToastContainer />
-      <div className="bg-white shadow-md p-6 rounded-lg w-full max-w-md flex flex-col justify-center dark:bg-gray-700 dark:text-white">
-        <h1 className="text-2xl font-bold mb-4 text-center">
+      <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg w-full max-w-md text-slate-800 dark:text-slate-200">
+        <h1 className="text-4xl font-bold mb-6 text-center text-blue-700 dark:text-green-400">
           {mode === "login" ? "Login" : "Sign Up"}
         </h1>
 
-        {/* Role buttons */}
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-4 space-x-2">
           {[
             "user",
             "admin",
@@ -182,11 +189,7 @@ export default function Auth() {
           ].map((r) => (
             <button
               key={r}
-              className={`px-4 py-2 mx-1 rounded-full text-sm font-medium transition ${
-                role === r
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 dark:text-black"
-              }`}
+              className={roleButtonClass(r)}
               onClick={() => setRole(r)}
             >
               {r === "user"
@@ -198,46 +201,34 @@ export default function Auth() {
           ))}
         </div>
 
-        {/* Mode buttons */}
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-6 space-x-2">
           <button
-            className={`px-4 py-2 mr-2 rounded ${
-              mode === "login"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 dark:text-gray-800"
-            }`}
+            className={modeButtonClass("login")}
             onClick={() => setMode("login")}
           >
             Login
           </button>
           <button
-            className={`px-4 py-2 rounded ${
-              mode === "signup"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 dark:text-gray-800"
-            }`}
+            className={modeButtonClass("signup")}
             onClick={() => setMode("signup")}
           >
             Sign Up
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === "signup" && (
             <>
-              {/* Common signup fields */}
               <input
                 type="text"
                 name="fullname"
                 placeholder="Full Name"
                 value={form.fullname}
                 onChange={handleChange}
-                className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
+                className={inputClass}
                 required
               />
 
-              {/* Admin signup fields */}
               {role === "admin" && (
                 <>
                   <input
@@ -246,7 +237,8 @@ export default function Auth() {
                     placeholder="District"
                     value={form.district}
                     onChange={handleChange}
-                    className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
+                    className={inputClass}
+                    required
                   />
                   <input
                     type="text"
@@ -254,7 +246,8 @@ export default function Auth() {
                     placeholder="State"
                     value={form.state}
                     onChange={handleChange}
-                    className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
+                    className={inputClass}
+                    required
                   />
                   <input
                     type="text"
@@ -262,7 +255,8 @@ export default function Auth() {
                     placeholder="Admin Officer Name"
                     value={form.adminOfficer}
                     onChange={handleChange}
-                    className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
+                    className={inputClass}
+                    required
                   />
                   <input
                     type="text"
@@ -270,58 +264,59 @@ export default function Auth() {
                     placeholder="Pincode"
                     value={form.pincode}
                     onChange={handleChange}
-                    className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
+                    className={inputClass}
+                    required
                   />
                 </>
               )}
 
-              {/* Team signup fields */}
-              {role === "team" && locating && (
-                <p className="text-sm text-blue-500 font-medium">
-                  Fetching location...
-                </p>
-              )}
-
-              {role === "team" && form.location && (
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <div>
-                    <label className="block text-sm font-medium">
-                      Latitude
-                    </label>
-                    <input
-                      type="text"
-                      value={form.location.coordinates[1]}
-                      readOnly
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium">
-                      Longitude
-                    </label>
-                    <input
-                      type="text"
-                      value={form.location.coordinates[0]}
-                      readOnly
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-
               {role === "team" && (
-                <input
-                  type="text"
-                  name="address"
-                  placeholder="Address"
-                  value={form.address}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
-                  required
-                />
+                <>
+                  {locating && (
+                    <p className="text-sm text-blue-500 font-medium dark:text-green-400">
+                      Fetching location...
+                    </p>
+                  )}
+
+                  {form.location && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium">
+                          Latitude
+                        </label>
+                        <input
+                          type="text"
+                          value={form.location.coordinates[1]}
+                          readOnly
+                          className={disabledInputClass}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium">
+                          Longitude
+                        </label>
+                        <input
+                          type="text"
+                          value={form.location.coordinates[0]}
+                          readOnly
+                          className={disabledInputClass}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <input
+                    type="text"
+                    name="address"
+                    placeholder="Address"
+                    value={form.address}
+                    onChange={handleChange}
+                    className={inputClass}
+                    required
+                  />
+                </>
               )}
 
-              {/* User & Team phone field */}
               {(role === "user" || role === "team") && (
                 <input
                   type="tel"
@@ -330,21 +325,20 @@ export default function Auth() {
                   value={form.phone}
                   maxLength={10}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
+                  className={inputClass}
                   required
                 />
               )}
             </>
           )}
 
-          {/* Common fields for login + signup */}
           <input
             type="email"
             name="email"
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
-            className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
+            className={inputClass}
             required
           />
 
@@ -354,13 +348,13 @@ export default function Auth() {
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
-            className="w-full p-2 border rounded outline-none focus:border-blue-400 focus:border-2"
+            className={inputClass}
             required
           />
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition cursor-pointer"
+            className="w-full bg-green-500 text-white p-3 rounded-xl font-bold hover:bg-green-400 transition-colors duration-200"
           >
             {mode === "login" ? "Login" : "Signup"} as{" "}
             {role === "user"
@@ -373,4 +367,6 @@ export default function Auth() {
       </div>
     </div>
   );
-}
+};
+
+export default Auth;

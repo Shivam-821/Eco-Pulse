@@ -16,6 +16,7 @@ import {
   AboutUs,
   ViewAllRecycle,
   StatsDashboardPage,
+  AssignedTask,
 } from "./pages/index";
 import { useState } from "react";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import the ProtectedRoute component
@@ -49,6 +50,7 @@ function App() {
               <Route path="/register-recycle" element={<RegisterRecycle />} />
               <Route path="/viewrecycle" element={<ViewAllRecycle />} />
               <Route path="/stats" element={<StatsDashboardPage />} />
+              <Route path="/assigned-task/:teamname" element={<AssignedTask />} />
             </Route>
             <Route path="/auth" element={<Auth />} />
             <Route path="/about" element={<AboutUs />} />

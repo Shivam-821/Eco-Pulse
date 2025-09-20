@@ -37,8 +37,8 @@ export const notifyOnAssignTask = async (teamname, uniqueNumber, address, distan
   try{
     await sendSMS(
       "+919060871087",
-      `Team ${teamname} you are assigned with a new cleaning task: 
-    with Unique-number:${uniqueNumber}, reported at place: ${address}, which is ${distanceInKm} KM away from you.
+      `Team ${teamname} you are assigned with a new cleaning task: \n
+    Unique-number: ${uniqueNumber}, reported at place: ${address}, which is ${distanceInKm} KM away from you. \n
     clean it as soon as possible.
                  - by Admin(municipality)`
     )

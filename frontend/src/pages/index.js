@@ -5,5 +5,6 @@ import RegisterRecycle from "./RegisterRecycle";
 import AboutUs from './About '
 import ViewAllRecycle from "./ViewAllRecycle";
 import StatsDashboardPage from "./StatsDashboardPage";
+import AssignedTask from "./AssignedTask";
 
-export {Auth, Complain, Home, RegisterRecycle, AboutUs, ViewAllRecycle, StatsDashboardPage}
+export {Auth, Complain, Home, RegisterRecycle, AboutUs, ViewAllRecycle, StatsDashboardPage, AssignedTask}

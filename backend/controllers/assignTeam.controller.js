@@ -3,7 +3,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Regdump } from "../models/index.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import {notifyOnAssignTask} from "./twilio.controller.js"
+import { notifyOnAssignTask } from "./twilio.controller.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
@@ -43,12 +44,15 @@ const generateAccessAndRefreshToken = async (teamId) => {
 
 const registerTeam = asyncHandler(async (req, res) => {
   const { fullname, email, password, location, address, phone } = req.body;
-  console.log(req.body)
 
-  if ([fullname, email, password, address].some((field) => field?.trim() === "")) {
+  if (
+    [fullname, email, password, address, phone].some(
+      (field) => field?.trim() === ""
+    )
+  ) {
     throw new ApiError(400, "All fields are required.");
   }
-  const teamname = fullname
+  const teamname = fullname;
 
   const existedTeam = await AssignTeam.findOne({
     $or: [{ teamname }, { email }],
@@ -156,14 +160,14 @@ const loginTeam = asyncHandler(async (req, res) => {
 const getAllTeam = asyncHandler(async (req, res) => {
   const teams = await AssignTeam.find();
 
-  if(!teams){
-    throw new ApiError(404, "No assign team found")
+  if (!teams) {
+    throw new ApiError(404, "No assign team found");
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, teams, 'All teams fetched successfully'))
-})
+    .json(new ApiResponse(200, teams, "All teams fetched successfully"));
+});
 
 const assignTask = asyncHandler(async (req, res) => {
   const { teamName, dumpId, location, deadline } = req.body;
@@ -182,17 +186,15 @@ const assignTask = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Team not found");
   }
 
-  const [dumpLat, dumpLng] = location; 
-  const [teamLat, teamLng] = team.location.coordinates; 
+  const [dumpLat, dumpLng] = location;
+  const [teamLat, teamLng] = team.location.coordinates;
 
- 
   const distanceInKm = getDistanceFromLatLonInKm(
     teamLat,
     teamLng,
     dumpLat,
     dumpLng
   );
-
 
   team.assignedWork.push(dump._id);
   await team.save();
@@ -201,7 +203,12 @@ const assignTask = asyncHandler(async (req, res) => {
   dump.assignedTeam = team._id;
   await dump.save();
 
-  await notifyOnAssignTask(teamName, dump.uniqueNumber, dump.address, distanceInKm.toFixed(2))
+  await notifyOnAssignTask(
+    teamName,
+    dump.uniqueNumber,
+    dump.address,
+    distanceInKm.toFixed(2)
+  );
 
   return res.status(200).json(
     new ApiResponse(200, {
@@ -214,23 +221,41 @@ const assignTask = asyncHandler(async (req, res) => {
 });
 
 const workCompleted = asyncHandler(async (req, res) => {
-  const { dumpId } = req.query;
+  const dumpId = req.params?.dumpId;
 
   if (!dumpId) {
-    throw new ApiError(400, "Dump ID is required");
+    return res.status(404).json(new ApiError(404, "DumpId is required"));
   }
 
-  const dump = await Regdump.findById(dumpId);
-  if (!dump) {
-    throw new ApiError(404, "No dump found");
+  try {
+    const dump = await Regdump.findById(dumpId);
+    if (!dump) {
+      throw new ApiError(404, "No dump found");
+    }
+
+    const picturePath = req.file?.path;
+    let picture;
+    if (picturePath) {
+      try {
+        picture = await uploadOnCloudinary(picturePath);
+      } catch (error) {
+        return res
+          .status(500)
+          .json(new ApiError(500, `Image upload failed: ${error.message}`));
+      }
+    }
+
+    dump.picture = picture?.url;
+    dump.completed = true;
+    await dump.save();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Dump marked as completed"));
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(new ApiError(500, "Internal server Error"));
   }
-
-  dump.completed = true;
-  await dump.save();
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, dump, "Dump marked as completed"));
 });
 
 export { registerTeam, loginTeam, assignTask, workCompleted, getAllTeam };

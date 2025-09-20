@@ -14,6 +14,7 @@ import {
 } from "react-icons/fa";
 import DarkMode from "./DarkMode";
 import axios from "axios";
+import { MdCleaningServices } from "react-icons/md";
 
 export default function Sidebar({ collapsed, setCollapsed }) {  // Use props here
   const navigate = useNavigate();
@@ -35,8 +36,8 @@ export default function Sidebar({ collapsed, setCollapsed }) {  // Use props her
            withCredentials: true,
          }
        );
-       console.log(res)
        setVerifiedUser(res?.data);
+       console.log(verifiedUser?.data?.teamname);
      } catch (err) {
        console.log(err);
        setVerifiedUser(null);
@@ -51,10 +52,6 @@ export default function Sidebar({ collapsed, setCollapsed }) {  // Use props her
     setCollapsed(!collapsed);
   };
 
-  // Import FaInfoCircle at the top of your file along with other icons
-  // Add this line at the imports: import { FaInfoCircle } from "react-icons/fa";
-
-  // Then add this in the Sidebar Links section after the other links:
 
   return (
     <div
@@ -158,7 +155,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {  // Use props her
               </div>
               <div
                 className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
-                onClick={() => navigate("/register-recycle")}
+                onClick={() => navigate("/assigned-task/:")}
               >
                 <FaSignInAlt /> {!collapsed && "Recycle"}
               </div>
@@ -179,6 +176,14 @@ export default function Sidebar({ collapsed, setCollapsed }) {  // Use props her
                 <FaUserPlus /> {!collapsed && "Sign Up"}
               </div>
             </>
+          )}
+          {verifiedUser?.role === "team" && (
+            <div
+                className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+                onClick={() => navigate(`assigned-task/${verifiedUser?.data?.teamname}`)}
+              >
+                <MdCleaningServices /> {!collapsed && "Assigned Task"}
+              </div>
           )}
           <DarkMode isSidebarCollapsed={collapsed} />
         </div>

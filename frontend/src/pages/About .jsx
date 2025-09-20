@@ -24,8 +24,10 @@ const AboutUs = () => {
           <p className="text-lg text-slate-700 dark:text-slate-400">
             We are a passionate team of three innovators —{" "}
             <span className="font-semibold text-green-400">Shivam Raj</span>
-            {/* <span className="font-semibold text-green-400">Abhinav Patra</span>, */}
-            My mission is simple yet powerful:{" "}
+            {" and "}
+            <span className="font-semibold text-green-400">
+              Abhinav Patra
+            </span>. My mission is simple yet powerful:{" "}
             <span className="font-semibold">
               Make cities cleaner, enable smarter waste management, and create
               an eco-friendly economy.
