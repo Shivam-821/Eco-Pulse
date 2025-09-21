@@ -37,7 +37,7 @@ const AssignedTask = () => {
             withCredentials: true,
           }
         );
-        console.log(res?.data?.data?.task);
+        // console.log(res?.data?.data?.task);
         setAssignedTask(res?.data?.data?.task);
         setTeamname(res?.data?.data?.name);
       } catch (error) {
@@ -67,7 +67,7 @@ const AssignedTask = () => {
             withCredentials: true,
           }
         );
-        console.log(res);
+        // console.log(res);
         if (res.status === 200) {
           setMarkedCompleted(false);
           setSubmitCompletedTask(false);

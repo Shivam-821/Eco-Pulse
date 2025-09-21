@@ -14,7 +14,7 @@ export const notifyOnRegisteringDump = async (
       - by municipality team(admin)`
     );
   } catch (error) {
-    console.error("Error sending success dump Registration message:", error);
+    // console.error("Error sending success dump Registration message:", error);
   }
 };
 
@@ -28,7 +28,7 @@ export const notifyOnCompletionOfWork = async (
       `Your registered dump is cleaned by the respective assigned team: ${assignTeam}`
     );
   } catch (error) {
-    console.error("Error sending successfully cleaness of registered dump:", error);
+    // console.error("Error sending successfully cleaness of registered dump:", error);
   }
 };
 
@@ -43,7 +43,7 @@ export const notifyOnAssignTask = async (teamname, uniqueNumber, address, distan
                  - by Admin(municipality)`
     )
   } catch (error) {
-    console.error("Error sending assigning message")
+    // console.error("Error sending assigning message")
   }
 }
 
@@ -54,6 +54,6 @@ export const sendOTP = async (otp) => {
       `OTP for verifying mobile number for Eco-Pulse is: ${otp}`
     )
   }catch (error){
-    console.log("Error sending otp")
+    // console.log("Error sending otp")
   }
 }

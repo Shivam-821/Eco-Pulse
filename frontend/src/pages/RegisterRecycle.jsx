@@ -86,9 +86,9 @@ const RegisterRecycle = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen py-10 dark:bg-slate-900">
+    <div className="flex flex-col justify-center items-center min-h-screen pt-18 pb-10 dark:bg-slate-900">
       <ToastContainer />
-      <div className="max-w-md w-full p-5 bg-white dark:bg-blue-950 dark:text-white rounded-xl shadow-lg space-y-6">
+      <div className="max-w-md w-full p-5 bg-white dark:bg-green-900 dark:text-white rounded-xl shadow-lg space-y-6">
         <h2 className="text-2xl font-bold text-center">
           Register Recycle Item
         </h2>
@@ -97,7 +97,7 @@ const RegisterRecycle = () => {
             type="text"
             value={recycableItems}
             onChange={(e) => setRecycableItems(e.target.value)}
-            className="w-full border p-2 rounded focus:border-blue-600"
+            className="w-full border p-2 rounded focus:border-green-500 outline-none"
             placeholder="Recyclable Items"
             required
           />
@@ -105,15 +105,16 @@ const RegisterRecycle = () => {
             type="number"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            className="w-full border p-2 rounded focus:border-blue-600"
+            className="w-full border p-2 rounded focus:border-green-500 outline-none"
             placeholder="Quantity"
             required
+            min={1}
           />
           <input
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="w-full border p-2 rounded focus:border-blue-600"
+            className="w-full border p-2 rounded focus:border-green-500 outline-none"
             placeholder="Latitude,Longitude"
             required
           />
@@ -127,14 +128,14 @@ const RegisterRecycle = () => {
           <input
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            className="w-full h-10 border p-2 rounded focus:border-blue-600"
+            className="w-full h-10 border p-2 rounded focus:border-green-500 outline-none"
             placeholder="Address"
             required
           />
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full border p-2 rounded focus:border-blue-600"
+            className="w-full border p-2 rounded focus:border-green-500 outline-none"
             rows={3}
             placeholder="Description"
             required

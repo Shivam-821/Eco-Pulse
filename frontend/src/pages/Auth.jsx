@@ -93,7 +93,7 @@ const Auth = () => {
             withCredentials: true,
           }
         );
-        console.log(res.data.role)
+        // console.log(res.data.role)
         setVerifiedUser(res.data);
       } catch (err) {
         setVerifiedUser(null);

@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
 import dotenv from "dotenv";
+import streamifier from "streamifier";
+
 dotenv.config();
 
 cloudinary.config({
@@ -9,25 +10,24 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
-  try {
-    if (!localFilePath) return null;
-    const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto",
-    });
-
-    fs.unlinkSync(localFilePath);
-    return response;
-  } catch (error) {
-    fs.unlinkSync(localFilePath);
-    return null;
-  }
+const uploadOnCloudinary = (fileBuffer, folder = "uploads") => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { resource_type: "auto", folder },
+      (error, result) => {
+        if (result) resolve(result);
+        else reject(error);
+      }
+    );
+    streamifier.createReadStream(fileBuffer).pipe(stream);
+  });
 };
 
 const deleteFromCloudinary = async (publicId) => {
   try {
-    const result = cloudinary.uploader.destroy(publicId);
+    const result = await cloudinary.uploader.destroy(publicId);
     console.log("Deleted from cloudinary. Public id", publicId);
+    return result;
   } catch (error) {
     console.log("Error deleting from cloudinary", error);
     return null;

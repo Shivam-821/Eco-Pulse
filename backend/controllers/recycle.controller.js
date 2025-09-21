@@ -18,7 +18,7 @@ const createRecycle = asyncHandler(async (req, res) => {
     }
 
     let image;
-    const imagePath = req.file?.path;
+    const imagePath = req.file?.buffer;
     if(imagePath){
         try{
             image = await uploadOnCloudinary(imagePath)
@@ -36,7 +36,7 @@ const createRecycle = asyncHandler(async (req, res) => {
           address,
           quantity,
           location,
-          image: image?.url || "",
+          image: image?.secure_url || "",
         });
 
         return res

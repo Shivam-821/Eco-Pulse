@@ -11,11 +11,10 @@ const ViewAllRecycle = () => {
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/recycle/get-all-recycle`
       );
-      console.log("hi")
-      console.log(res.data.data)
+      // console.log(res.data.data)
       setRecycles(res.data.data || []);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast.error("Error fetching recycle items");
     } finally {
       setLoading(false);
@@ -44,7 +43,7 @@ const ViewAllRecycle = () => {
         {recycles.map((item) => (
           <div
             key={item._id}
-            className="w-full max-w-md bg-white dark:bg-blue-950 dark:text-white rounded-xl shadow-lg overflow-hidden p-4 flex items-center space-x-4"
+            className="w-full max-w-md bg-white dark:bg-green-900 dark:text-white rounded-xl shadow-lg overflow-hidden p-4 flex items-center space-x-4"
           >
             {item.image && (
               <img

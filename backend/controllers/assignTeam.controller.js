@@ -233,7 +233,7 @@ const workCompleted = asyncHandler(async (req, res) => {
       throw new ApiError(404, "No dump found");
     }
 
-    const picturePath = req.file?.path;
+    const picturePath = req.file?.buffer;
     let picture;
     if (picturePath) {
       try {
@@ -245,7 +245,7 @@ const workCompleted = asyncHandler(async (req, res) => {
       }
     }
 
-    dump.picture = picture?.url;
+    dump.picture = picture?.secure_url;
     dump.completed = true;
     await dump.save();
 
@@ -254,6 +254,7 @@ const workCompleted = asyncHandler(async (req, res) => {
       .json(new ApiResponse(200, {}, "Dump marked as completed"));
   } catch (error) {
     console.log(error);
+    if(picture?.public_id) await deleteFromCloudinary(picture.public._id)
     return res.status(500).json(new ApiError(500, "Internal server Error"));
   }
 });

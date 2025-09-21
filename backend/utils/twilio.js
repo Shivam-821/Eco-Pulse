@@ -20,9 +20,9 @@ export const sendSMS = async (to, message) => {
       from: MESS_FROM,
       to,
     });
-    console.log("Message sent successfully: ", response.sid);
+    // console.log("Message sent successfully: ", response.sid);
     return response.sid;
   } catch (error) {
-    console.error("Error sending Message: ", error);
+    // console.error("Error sending Message: ", error);
   }
 };

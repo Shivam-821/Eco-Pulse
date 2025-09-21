@@ -29,7 +29,7 @@ const geoLocation = {
 
 
   let picture;
-  const picturePath = req.file?.path;
+  const picturePath = req.file?.buffer;
   if (picturePath) {
     try {
       picture = await uploadOnCloudinary(picturePath);
@@ -42,9 +42,9 @@ const geoLocation = {
     const dump = await Regdump.create({
       location: geoLocation,
       description,
-      picture: picture?.url || "",
+      picture: picture?.secure_url || "",
       dumpReporter: dumpReporter._id,
-      uniqueNumber: Math.floor(Math.random() * 99),
+      uniqueNumber: Math.floor(Math.random() * 999),
       address,
     });
 

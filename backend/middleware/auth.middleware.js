@@ -9,7 +9,6 @@ const extractToken = (req) => {
 };
 
 const verifyToken = (token) => {
-  console.log(token)
   if (!token || token.split(".").length !== 3) {
     throw new ApiError(401, "Invalid token format");
   }

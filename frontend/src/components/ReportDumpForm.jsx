@@ -79,7 +79,7 @@ const RegisterDump = () => {
   return (
     <div className="flex flex-col dark:bg-slate-900 justify-center items-center py-10 min-h-screen">
       <ToastContainer />
-      <div className="max-w-md mx-auto p-5 bg-white rounded-xl shadow-lg shadow-gray-300 space-y-6 mt-10 dark:bg-blue-950 dark:text-white dark:shadow-md dark:shadow-blue-900">
+      <div className="max-w-md mx-auto p-5 bg-white rounded-xl shadow-lg shadow-gray-300 space-y-6 mt-10 dark:bg-teal-800 dark:text-white dark:shadow-md dark:shadow-teal-700">
         <h2 className="text-2xl font-bold text-center">Register Dump</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -88,7 +88,7 @@ const RegisterDump = () => {
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full border p-2 rounded outline-none focus:border-blue-600"
+              className="w-full border p-2 rounded outline-none focus:border-lime-600"
               placeholder="Latitude,Longitude"
               required
             />
@@ -106,7 +106,7 @@ const RegisterDump = () => {
             <input
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="w-full h-10 border p-2 rounded outline-none focus:border-blue-600"
+              className="w-full h-10 border p-2 rounded outline-none focus:border-lime-600"
               placeholder="Enter the address"
               required
             />
@@ -117,7 +117,7 @@ const RegisterDump = () => {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full border p-2 rounded outline-none focus:border-blue-600"
+              className="w-full border p-2 rounded outline-none focus:border-lime-600"
               rows={3}
               placeholder="Describe the dump"
               required
@@ -130,7 +130,7 @@ const RegisterDump = () => {
               type="file"
               onChange={handleImageChange}
               accept="image/*"
-              className="w-full border-2 border-gray-500 rounded cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900 px-2"
+              className="w-full border-2 border-gray-500 rounded cursor-pointer hover:bg-blue-100 dark:hover:bg-lime-800 px-2"
             />
           </div>
 
