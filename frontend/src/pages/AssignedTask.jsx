@@ -27,6 +27,7 @@ const AssignedTask = () => {
       return;
     }
     const fetchAssignedTask = async () => {
+      setLoading(true)
       try {
         const res = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/task-data/task-assigned`,
