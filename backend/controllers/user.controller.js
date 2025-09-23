@@ -103,6 +103,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
+// remove the mobile part 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, phone, password } = req.body;
 

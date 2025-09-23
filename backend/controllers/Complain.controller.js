@@ -4,6 +4,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Regdump } from "../models/index.js";
 
+
+// we also need to get the district so that only that district municiplaity will be able to see those dumps and can assign to their district cleaning team. 
 const complaintRegistered = asyncHandler(async (req, res) => {
   const {
     complaintType,

@@ -23,16 +23,16 @@ const Home = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
             <a
-              href="#report"
+              href="/tasks"
               className="px-6 py-3 bg-green-500 text-slate-950 rounded-xl font-semibold hover:bg-green-400 transition"
             >
-              Report Dump
+              View Tasks
             </a>
             <a
-              href="#complain"
+              href="/stats"
               className="px-6 py-3 bg-emerald-500 text-slate-950 rounded-xl font-semibold hover:bg-emerald-400 transition"
             >
-              Lodge Complaint
+              Analyze Report
             </a>
           </div>
         </section>
@@ -152,7 +152,7 @@ const Home = () => {
             </h2>
             <p className="dark:text-slate-400 text-slate-700 mb-6">
               Facing any issues with waste handling? Lodge a complaint and get
-              quick resolutions!
+              quick resolutions from admin!
             </p>
             <a
               href="#"
