@@ -121,6 +121,10 @@ const Auth = () => {
       }
       endpoint = `api/auth/team/${mode}`;
     }
+    if (role === "team" && mode === "signup" && (verifiedUser?.role !== "admin" || !verifiedUser.role)) {
+      notifyError("Admin is required to Register Cleaning Team");
+      return;
+    }
 
     try {
       const res = await axios.post(
@@ -128,7 +132,9 @@ const Auth = () => {
         form,
         {
           headers:
-            (role === "team" && mode === "signup") ? { Authorization: `Bearer ${token}` }: {},
+            role === "team" && mode === "signup"
+              ? { Authorization: `Bearer ${token}` }
+              : {},
           withCredentials: true,
         }
       );
