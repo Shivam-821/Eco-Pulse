@@ -7,8 +7,6 @@ class ApiError extends Error {
   ) {
     super(message);
     this.statusCode = statusCode;
-    this.data = null;
-    this.message = message;
     this.success = false;
     this.errors = errors;
 
@@ -17,6 +15,16 @@ class ApiError extends Error {
     } else {
       Error.captureStackTrace(this, this.constructor);
     }
+  }
+
+  toJSON() {
+    return {
+      statusCode: this.statusCode,
+      message: this.message,
+      success: this.success,
+      errors: this.errors,
+      stack: process.env.NODE_ENV === "development" ? this.stack : undefined,
+    };
   }
 }
 

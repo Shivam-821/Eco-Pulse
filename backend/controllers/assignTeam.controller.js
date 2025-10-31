@@ -50,7 +50,7 @@ const registerTeam = asyncHandler(async (req, res) => {
       (field) => field?.trim() === ""
     )
   ) {
-    throw new ApiError(400, "All fields are required.");
+    return res.status(400).json(new ApiError(400, "All fields are required."));
   }
   const teamname = fullname;
 
@@ -59,7 +59,7 @@ const registerTeam = asyncHandler(async (req, res) => {
   });
 
   if (existedTeam) {
-    throw new ApiError(409, "Team with this name or email already exists.");
+    return res.status(409).json(new ApiError(409, "Team with this name or email already exists."));
   }
 
   try {
@@ -81,7 +81,7 @@ const registerTeam = asyncHandler(async (req, res) => {
     );
 
     if (!createdTeam) {
-      throw new ApiError(500, "Something went wrong while registering a admin");
+      return res.status(500).json(new ApiError(500, "Something went wrong while registering a Team"));
     }
 
     const options = {
@@ -102,10 +102,10 @@ const registerTeam = asyncHandler(async (req, res) => {
         )
       );
   } catch (error) {
-    throw new ApiError(
+    return res.status(201).json(new ApiError(
       500,
-      `Something went wrong while registering the team ${error.message}`
-    );
+      `Something went wrong while registering the team `
+    ));
   }
 });
 
@@ -113,18 +113,18 @@ const loginTeam = asyncHandler(async (req, res) => {
   const { email, teamname, password } = req.body;
 
   if (!email && !teamname) {
-    throw new ApiError(400, "Required field should be filled");
+    return res.status(400).json(new ApiError(400, "Required field should be filled"));
   }
 
   const team = await AssignTeam.findOne({ $or: [{ teamname }, { email }] });
 
   if (!team) {
-    throw new ApiError(404, "Team not found");
+    return res.status(404).json(new ApiError(404, "Team not found, please sign-up with Admin"));
   }
 
   const isPasswordValid = await team.isPasswordCorrect(password);
   if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid credentials");
+    return res.status(401).json(new ApiError(401, "Invalid credentials"));
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -136,7 +136,7 @@ const loginTeam = asyncHandler(async (req, res) => {
   );
 
   if (!loggedInTeam) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, "Team not found");
   }
 
   const options = {

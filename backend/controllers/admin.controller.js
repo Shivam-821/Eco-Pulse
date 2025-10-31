@@ -17,38 +17,31 @@ const generateAccessAndRefreshToken = async (userId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(500, `Something went wrong while generating tokens ${error.message}`);
+    throw new ApiError(
+      500,
+      `Something went wrong while generating tokens ${error.message}`
+    );
   }
 };
 
 const registerAdmin = asyncHandler(async (req, res) => {
-  const {
-    fullname,
-    email,
-    password,
-    district,
-    state,
-    adminOfficer,
-    pincode,
-  } = req.body;
+  const { fullname, email, password, district, state, adminOfficer, pincode } =
+    req.body;
 
   if (
-    [
-      fullname,
-      email,
-      password,
-      district,
-      state,
-      adminOfficer,
-    ].some((field) => field?.trim() === "")
+    [fullname, email, password, district, state, adminOfficer].some(
+      (field) => field?.trim() === ""
+    )
   ) {
-    throw new ApiError(400, "All fields are required.");
+    return res.status(400).json(new ApiError(400, "All fields are required."));
   }
 
   const existedAdmin = await Admin.findOne({ $or: [{ district }, { email }] });
 
   if (existedAdmin) {
-    throw new ApiError(409, "User with district or email already exists.");
+    return res
+      .status(409)
+      .json(new ApiError(409, "User with district or email already exists."));
   }
 
   try {
@@ -61,7 +54,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
       state,
       adminOfficer,
     });
-    console.log(admin)
+    console.log(admin);
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
       admin._id
@@ -70,7 +63,6 @@ const registerAdmin = asyncHandler(async (req, res) => {
     const createdAdmin = await Admin.findById(admin._id).select(
       "-password -refreshToken"
     );
-    console.log(createdAdmin)
 
     const options = {
       httpOnly: true,
@@ -90,7 +82,14 @@ const registerAdmin = asyncHandler(async (req, res) => {
         )
       );
   } catch (error) {
-    throw new ApiError(500, `Something went wrong while registering a admin :: registerAdmin :: ${error.message}`);
+    return res
+      .status(500)
+      .json(
+        new ApiError(
+          500,
+          `Something went wrong while registering a admin`
+        )
+      );
   }
 });
 
@@ -98,18 +97,18 @@ const loginAdmin = asyncHandler(async (req, res) => {
   const { email, district, password } = req.body;
 
   if (!email && !district) {
-    throw new ApiError(400, "Required field should be filled");
+    return res.status(400).json(new ApiError(400, "Required field should be filled"));
   }
 
   const admin = await Admin.findOne({ $or: [{ district }, { email }] });
 
   if (!admin) {
-    throw new ApiError(404, "Admin not found");
+    return res.status(404).json(new ApiError(404, "Admin not found!, Please register Yourself"));
   }
 
   const isPasswordValid = await admin.isPasswordCorrect(password);
   if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid credentials");
+    return res.state(401).json(new ApiError(401, "Invalid credentials"));
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -142,7 +141,6 @@ const loginAdmin = asyncHandler(async (req, res) => {
       )
     );
 });
-
 
 const getCurrentAdmin = asyncHandler(async (req, res) => {
   return res

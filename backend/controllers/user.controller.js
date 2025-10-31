@@ -2,26 +2,22 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/index.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { Router } from "express";
-import {verifyOTP} from '../utils/otpverify.js'
 import { sendOTP } from "./twilio.controller.js";
 
-const router = Router()
-
 const generateOTP = () => {
-  let otp = ""
+  let otp = "";
   let i;
-  for(i = 0; i<4; i++){
-    otp += Math.floor(Math.random()*10)
+  for (i = 0; i < 4; i++) {
+    otp += Math.floor(Math.random() * 10);
   }
   return otp;
-}
+};
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      throw new ApiError(404, "User not found");
+      return (new ApiError(404, "User not found"));
     }
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
@@ -31,7 +27,7 @@ const generateAccessAndRefreshToken = async (userId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(500, "Something went wrong while generating tokens");
+    return res.status(500).json(new ApiError(500, "Something went wrong while generating tokens"));
   }
 };
 
@@ -41,20 +37,21 @@ const registerUser = asyncHandler(async (req, res) => {
   if ([fullname, email, password].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "All fields are required.");
   }
+  if (!phone) {
+    return res.status(400).json(new ApiError(400, "Mobile number required"))
+  }
 
   const existedUser = await User.findOne({ $or: [{ phone }, { email }] });
 
   if (existedUser) {
-    return res.json(
-      new ApiError(409, "User with email or username already exists.")
+    return res.status(409).json(
+      new ApiError(409, "User with email or phone already exists.")
     );
   }
-  const ot_p = generateOTP()
-  await sendOTP(ot_p)
-  
-  // now we need to first verify the otp
-  
+  // const ot_p = generateOTP()
+  // await sendOTP(ot_p)
 
+  // now we need to first verify the otp
   try {
     const user = await User.create({
       fullname,
@@ -70,15 +67,8 @@ const registerUser = asyncHandler(async (req, res) => {
     const createdUser = await User.findById(user._id).select(
       "-password -refreshToken"
     );
-
     if (!createdUser) {
-      return res.json(
-        new ApiError(
-          500,
-          "Error: ",
-          error
-        )
-      );
+      return res.status(500).json(new ApiError(500, "Error: Something went wrong", error));
     }
 
     const options = {
@@ -99,11 +89,11 @@ const registerUser = asyncHandler(async (req, res) => {
         )
       );
   } catch (error) {
-    return res.json(new ApiError(500, "Error: ", error));
+    return res.status(500).json(new ApiError(500, "Something went wrong"));
   }
 });
 
-// remove the mobile part 
+// remove the mobile part
 const loginUser = asyncHandler(async (req, res) => {
   const { email, phone, password } = req.body;
 
@@ -114,12 +104,12 @@ const loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ $or: [{ phone }, { email }] });
 
   if (!user) {
-    return res.json(new ApiError(404, "User Not Found"));
+    return res.status(404).json(new ApiError(404, "User Not Found"));
   }
 
   const isPasswordValid = await user.isPasswordCorrect(password);
   if (!isPasswordValid) {
-    return res.json(new ApiError(401, "Invalid credentials"));
+    return res.status(401).json(new ApiError(401, "Invalid credentials"));
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -131,7 +121,7 @@ const loginUser = asyncHandler(async (req, res) => {
   );
 
   if (!loggedInUser) {
-    throw new ApiError(404, "User not found");
+    return res.json(new ApiError(404, "User not found"));
   }
 
   const options = {
