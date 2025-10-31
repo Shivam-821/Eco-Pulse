@@ -11,6 +11,14 @@ const Auth = () => {
   const [mode, setMode] = useState("login");
   const [locating, setLocating] = useState(false);
   const [verifiedUser, setVerifiedUser] = useState(null);
+  const [showNotice, setShowNotice] = useState(() => {
+    return sessionStorage.getItem("seenWakeMessage") ? false : true;
+  });
+  const [enabled, setEnabled] = useState(true);
+
+  useEffect(() => {
+    if (showNotice) sessionStorage.setItem("seenWakeMessage", "true");
+  }, [showNotice]);
 
   const token = localStorage.getItem("accessToken");
 
@@ -105,9 +113,26 @@ const Auth = () => {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const phoneRegex = /^[6-9]\d{9}$/;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setEnabled(false);
+    if (!emailRegex.test(form.email)) {
+      notifyError("Please enter a valid email address.");
+      return;
+    }
+
+    if ((role === "user" || role === "team") && mode === "signup") {
+      if (!phoneRegex.test(form.phone)) {
+        notifyError(
+          "Please enter a valid 10-digit phone number starting with 6–9."
+        );
+        return;
+      }
+    }
 
     let endpoint = "";
     if (role === "admin") {
@@ -121,7 +146,11 @@ const Auth = () => {
       }
       endpoint = `api/auth/team/${mode}`;
     }
-    if (role === "team" && mode === "signup" && (verifiedUser?.role !== "admin" || !verifiedUser.role)) {
+    if (
+      role === "team" &&
+      mode === "signup" &&
+      (verifiedUser?.role !== "admin" || !verifiedUser.role)
+    ) {
       notifyError("Admin is required to Register Cleaning Team");
       return;
     }
@@ -149,10 +178,14 @@ const Auth = () => {
         );
         setTimeout(() => navigate("/map"), 1000);
       } else {
+        console.error(error);
         notifyError(res.data?.message || "Request failed");
       }
     } catch (error) {
+      console.log(error);
       notifyError(error.response?.data?.message || error.message);
+    } finally {
+      setEnabled(true);
     }
   };
 
@@ -176,8 +209,17 @@ const Auth = () => {
     "mt-1 block w-full rounded-md border-gray-300 shadow-sm outline-none bg-gray-200 dark:bg-slate-600 dark:text-slate-400 cursor-not-allowed";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-slate-900 px-4 pt-10">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-slate-900 px-4 pt-10 relative">
       <ToastContainer />
+      {showNotice && (
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-md dark:bg-yellow-800 dark:text-yellow-100 dark:border-yellow-400 absolute top-[49.7px]">
+          <p className="text-sm">
+            ⏳ This app runs on free hosting — it might take{" "}
+            <strong>a few moments to wake up</strong> after inactivity. <br />
+            Please wait while we get things ready!
+          </p>
+        </div>
+      )}
       <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg w-full max-w-md text-slate-800 dark:text-slate-200">
         <h1 className="text-4xl font-bold mb-6 text-center text-blue-700 dark:text-green-400">
           {mode === "login" ? "Login" : "Sign Up"}
@@ -361,6 +403,7 @@ const Auth = () => {
           <button
             type="submit"
             className="w-full bg-green-500 text-white p-3 rounded-xl font-bold hover:bg-green-400 transition-colors duration-200"
+            disabled={!enabled}
           >
             {mode === "login" ? "Login" : "Signup"} as{" "}
             {role === "user"
@@ -368,6 +411,7 @@ const Auth = () => {
               : role === "admin"
               ? "Admin"
               : "Cleaning Team"}
+            {enabled ? "" : " ... "}
           </button>
         </form>
       </div>
