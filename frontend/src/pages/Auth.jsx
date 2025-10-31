@@ -11,10 +11,16 @@ const Auth = () => {
   const [mode, setMode] = useState("login");
   const [locating, setLocating] = useState(false);
   const [verifiedUser, setVerifiedUser] = useState(null);
-  const [showNotice, setShowNotice] = useState(() => {
-    return sessionStorage.getItem("seenWakeMessage") ? false : true;
-  });
   const [enabled, setEnabled] = useState(true);
+  const [showNotice, setShowNotice] = useState(false);
+
+  useEffect(() => {
+    const seen = sessionStorage.getItem("seenWakeMessage");
+    if (!seen) {
+      setShowNotice(true);
+      sessionStorage.setItem("seenWakeMessage", "true");
+    }
+  }, []);
 
   useEffect(() => {
     if (showNotice) sessionStorage.setItem("seenWakeMessage", "true");
