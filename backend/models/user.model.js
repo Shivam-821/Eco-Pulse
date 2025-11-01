@@ -45,12 +45,6 @@ const userSchema = new Schema({
       ref: "Regdump",
     },
   ],
-  state: {
-    type: String
-  },
-  district: {
-    type: String,
-  }
 });
 
 userSchema.pre("save", async function(next) {
