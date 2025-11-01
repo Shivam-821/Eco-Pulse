@@ -6,8 +6,10 @@ import {
   SparklesIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
+import useToken from "../context/token";
 
 const Home = () => {
+  const { tokenId } = useToken();
   return (
     <div className="pt-14 dark:bg-slate-900 min-h-screen px-6 text-slate-800 dark:text-slate-200">
       <div className="max-w-7xl mx-auto py-12 flex flex-col gap-20">
@@ -118,49 +120,39 @@ const Home = () => {
         </section>
 
         {/* Report and Complaint Section */}
+        {/* Collaboration Section */}
         <section
-          id="actions"
-          className="flex flex-col lg:flex-row justify-center items-center gap-12 mt-5"
+          id="collaboration"
+          className="bg-emerald-200 dark:bg-slate-800 p-10 rounded-2xl text-center shadow-lg w-full transition-transform duration-300 hover:scale-105"
         >
-          {/* Report Section */}
-          <div
-            id="report"
-            className="bg-emerald-200 dark:bg-slate-800 p-8 rounded-2xl text-center shadow-lg w-full max-w-md hover:scale-105 transition-transform duration-300"
-          >
-            <h2 className="text-2xl font-bold mb-4 text-blue-700 dark:text-green-400">
-              Report a Dump
-            </h2>
-            <p className="dark:text-slate-400 text-slate-700 mb-6">
-              Found an unattended waste site? Report it easily and help us act
-              fast to maintain cleanliness!
+          <h2 className="text-3xl font-bold mb-6 text-blue-700 dark:text-green-400">
+            Collaborate for a Greener Tomorrow 🌍
+          </h2>
+          {!tokenId ? (
+            <p className="dark:text-slate-400 text-slate-700 mb-8">
+              Eco Pulse invites municipalities, industries, and citizens to
+              co-create sustainable solutions for waste management.
             </p>
+          ) : (
+            <p className="dark:text-slate-400 text-slate-700 mb-8">
+              Join our mission and share your achivements and motivate others to contribute towards nature.
+            </p>
+          )}
+          {!tokenId ? (
             <a
               href="#"
               className="px-6 py-3 dark:bg-emerald-500 bg-green-500 text-slate-950 rounded-xl font-bold hover:bg-emerald-400 transition"
             >
-              Report Now
+              Join Our Mission
             </a>
-          </div>
-
-          {/* Complaint Section */}
-          <div
-            id="complain"
-            className="bg-emerald-200 dark:bg-slate-800 p-8 rounded-2xl text-center shadow-lg w-full max-w-md hover:scale-105 transition-transform duration-300"
-          >
-            <h2 className="text-2xl font-bold mb-4 text-blue-700 dark:text-green-400">
-              Lodge a Complaint
-            </h2>
-            <p className="dark:text-slate-400 text-slate-700 mb-6">
-              Facing any issues with waste handling? Lodge a complaint and get
-              quick resolutions from admin!
-            </p>
+          ) : (
             <a
               href="#"
               className="px-6 py-3 dark:bg-emerald-500 bg-green-500 text-slate-950 rounded-xl font-bold hover:bg-emerald-400 transition"
             >
-              Complain Now
+              Share Your Story
             </a>
-          </div>
+          )}
         </section>
       </div>
     </div>
