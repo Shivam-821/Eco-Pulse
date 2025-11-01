@@ -6,7 +6,7 @@ import Map from "./components/Map";
 import "./index.css";
 import Tasks from "./components/Tasks";
 import Teams from "./components/Teams";
-import Notifications from "./components/Notifications"; // You had this commented out
+import Notifications from "./components/Notifications"; 
 import ReportDumpForm from "./components/ReportDumpForm";
 import {
   Complain,
@@ -19,7 +19,7 @@ import {
   AssignedTask,
 } from "./pages/index";
 import { useState } from "react";
-import ProtectedRoute from "./components/ProtectedRoute"; // Import the ProtectedRoute component
+import ProtectedRoute from "./components/ProtectedRoute"; 
 import Footer from "./components/Footer";
 
 function App() {
@@ -40,7 +40,6 @@ function App() {
         <main className="flex-1 p-4 overflow-y-auto bg-gray-100 dark:bg-slate-900">
           <Routes>
             <Route element={<ProtectedRoute />}>
-              <Route path="/" element={<Home />} />
               <Route path="/map" element={<Map />} />
               <Route path="/tasks" element={<Tasks />} />
               <Route path="/teams" element={<Teams />} />
@@ -50,8 +49,12 @@ function App() {
               <Route path="/register-recycle" element={<RegisterRecycle />} />
               <Route path="/viewrecycle" element={<ViewAllRecycle />} />
               <Route path="/stats" element={<StatsDashboardPage />} />
-              <Route path="/assigned-task/:teamname" element={<AssignedTask />} />
+              <Route
+                path="/assigned-task/:teamname"
+                element={<AssignedTask />}
+              />
             </Route>
+            <Route path="/" element={<Home />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/about" element={<AboutUs />} />
           </Routes>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useToken from "../context/token";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const Auth = () => {
   const [verifiedUser, setVerifiedUser] = useState(null);
   const [enabled, setEnabled] = useState(true);
   const [showNotice, setShowNotice] = useState(false);
+  const { tokenId, setTokenId } = useToken();
 
   useEffect(() => {
     const seen = sessionStorage.getItem("seenWakeMessage");
@@ -26,7 +28,7 @@ const Auth = () => {
     if (showNotice) sessionStorage.setItem("seenWakeMessage", "true");
   }, [showNotice]);
 
-  const token = localStorage.getItem("accessToken");
+  const token = tokenId;
 
   const notifyError = (msg) => toast.error(msg || "Something went wrong!");
   const notifySuccess = (msg) => toast.success(msg);
@@ -177,7 +179,7 @@ const Auth = () => {
       if (res.status === 201 || res.status === 200) {
         const accessToken = res.data?.data?.accessToken;
         if (accessToken) {
-          localStorage.setItem("accessToken", accessToken);
+          setTokenId(accessToken);
         }
         notifySuccess(
           mode === "signup" ? "Signup successful!" : "Login successful!"
@@ -192,6 +194,18 @@ const Auth = () => {
       notifyError(error.response?.data?.message || error.message);
     } finally {
       setEnabled(true);
+      setForm({
+        fullname: "",
+        email: "",
+        phone: "",
+        password: "",
+        district: "",
+        state: "",
+        adminOfficer: "",
+        pincode: "",
+        location: null,
+        address: "",
+      });
     }
   };
 

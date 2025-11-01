@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { MdAddPhotoAlternate } from "react-icons/md";
+import useToken from "../context/token";
 
 const AssignedTask = () => {
   const [loading, setLoading] = useState(true);
@@ -13,21 +14,16 @@ const AssignedTask = () => {
     id: null,
   });
   const [image, setImage] = useState(null);
-  const [token, setToken] = useState(null);
+  const { tokenId, setTokenId } = useToken();
 
   useEffect(() => {
-    const tok = localStorage.getItem("accessToken");
-    setToken(tok);
-  });
-
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
+    const token = tokenId;
     if (!token) {
       setLoading(false);
       return;
     }
     const fetchAssignedTask = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
         const res = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/task-data/task-assigned`,
@@ -52,8 +48,8 @@ const AssignedTask = () => {
 
   useEffect(() => {
     const taskCompleted = async () => {
-       const formData = new FormData();
-       formData.append("picture", image);
+      const formData = new FormData();
+      formData.append("picture", image);
       try {
         const res = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/api/tasks/completed/${

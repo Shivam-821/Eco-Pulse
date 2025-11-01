@@ -1,25 +1,27 @@
 import { useState, useRef } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import useToken from "../context/token";
 
 const RegisterDump = () => {
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const token = localStorage.getItem("accessToken");
-  const [data, setData] = useState(null)
-  const [address, setAddress] = useState("")
+  const { tokenId } = useToken();
+  const token = tokenId;
+  const [data, setData] = useState(null);
+  const [address, setAddress] = useState("");
   const dataCardRef = useRef(null);
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
   };
 
-  const notifyError = (msg) => toast(msg|| "Error Registring Dump");
-    const notifySuccess = () => {
-      toast("Dump Registered Successfully")
-    }
+  const notifyError = (msg) => toast(msg || "Error Registring Dump");
+  const notifySuccess = () => {
+    toast("Dump Registered Successfully");
+  };
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -49,7 +51,7 @@ const RegisterDump = () => {
     if (image) formData.append("picture", image);
 
     try {
-      const res  = await axios.post(
+      const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/dump/report-dump`,
         formData,
         {
@@ -59,18 +61,17 @@ const RegisterDump = () => {
           withCredentials: true,
         }
       );
-      if(res.status === 201){
+      if (res.status === 201) {
         setDescription("");
         setLocation("");
-        setAddress("")
+        setAddress("");
         setImage(null);
-        setData(res.data.data)
+        setData(res.data.data);
         notifySuccess();
-         dataCardRef.current?.scrollIntoView({ behavior: "smooth" });
+        dataCardRef.current?.scrollIntoView({ behavior: "smooth" });
       }
-      
     } catch (error) {
-      notifyError(error?.response?.data?.error)
+      notifyError(error?.response?.data?.error);
     } finally {
       setLoading(false);
     }
@@ -158,8 +159,7 @@ const RegisterDump = () => {
             {data.location?.coordinates?.[1]}, {data.location?.coordinates?.[0]}
           </p>
           <p>
-            <span className="font-semibold">Address:</span>{" "}
-            {data.address}
+            <span className="font-semibold">Address:</span> {data.address}
           </p>
           {data.picture && (
             <div>

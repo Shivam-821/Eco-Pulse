@@ -22,6 +22,7 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import axios from "axios";
+import useToken from "../context/token";
 
 const style = {
   position: "absolute",
@@ -62,7 +63,8 @@ export default function Tasks() {
     message: "",
     severity: "success",
   });
-  const token = localStorage.getItem("accessToken");
+  const { tokenId } = useToken();
+  const token = tokenId;
   const [verifiedUser, setVerifiedUser] = useState(null);
   const [availableTeams, setAvailableTeams] = useState([]);
 
@@ -78,7 +80,7 @@ export default function Tasks() {
         );
         setVerifiedUser(res.data);
       } catch (err) {
-        console.log(err)
+        console.log(err);
         setVerifiedUser(null);
       }
     };
@@ -110,10 +112,10 @@ export default function Tasks() {
   const fetchTeams = async () => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/tasks/get-all-assignteam`,
+        `${import.meta.env.VITE_BASE_URL}/api/tasks/get-all-assignteam`
       );
       setAvailableTeams(res.data.data);
-      console.log(res.data.data)
+      console.log(res.data.data);
     } catch (error) {
       console.error("Failed to fetch teams", error);
       setSnackbar({
@@ -132,7 +134,6 @@ export default function Tasks() {
 
       const tasksWithLocationNames = await Promise.all(
         response.data.data.map(async (dump) => {
-
           return {
             id: dump._id,
             locationName: dump.address,
@@ -229,12 +230,8 @@ export default function Tasks() {
     setOpen(false);
   };
 
-  const unassignedTasks = tasks.filter(
-    (task) => !task.assigned
-  );
-  const assignedTasks = tasks.filter(
-    (task) => task.assigned
-  );
+  const unassignedTasks = tasks.filter((task) => !task.assigned);
+  const assignedTasks = tasks.filter((task) => task.assigned);
   const completedTasks = tasks.filter((task) => task.completed);
 
   if (loading) {
@@ -332,7 +329,11 @@ export default function Tasks() {
                   borderLeft: `6px solid ${task.color}`,
                 }}
               >
-                <CardContent className={`${task.reported ? "bg-red-100" : "dark:bg-slate-200"}`}>
+                <CardContent
+                  className={`${
+                    task.reported ? "bg-red-100" : "dark:bg-slate-200"
+                  }`}
+                >
                   <Typography variant="h6" fontWeight={600}>
                     Location: {task.locationName}
                   </Typography>

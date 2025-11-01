@@ -15,43 +15,44 @@ import {
 import DarkMode from "./DarkMode";
 import axios from "axios";
 import { MdCleaningServices } from "react-icons/md";
+import useToken from "../context/token";
 
-export default function Sidebar({ collapsed, setCollapsed }) {  // Use props here
+export default function Sidebar({ collapsed, setCollapsed }) {
+  // Use props here
   const navigate = useNavigate();
-  const token = localStorage.getItem("accessToken");
+  const { tokenId } = useToken();
+  const token = tokenId;
   const [verifiedUser, setVerifiedUser] = useState(null);
 
- useEffect(() => {
-   if (!token) {
-     setVerifiedUser(null);
-     return;
-   }
+  useEffect(() => {
+    if (!token) {
+      setVerifiedUser(null);
+      return;
+    }
 
-   const verify = async () => {
-     try {
-       const res = await axios.get(
-         `${import.meta.env.VITE_BASE_URL}/api/auth/verify-token`,
-         {
-           headers: { Authorization: `Bearer ${token}` },
-           withCredentials: true,
-         }
-       );
-       setVerifiedUser(res?.data);
-      //  console.log(verifiedUser?.data?.teamname);
-     } catch (err) {
-       console.log(err);
-       setVerifiedUser(null);
-     }
-   };
+    const verify = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/auth/verify-token`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }
+        );
+        setVerifiedUser(res?.data);
+        //  console.log(verifiedUser?.data?.teamname);
+      } catch (err) {
+        console.log(err);
+        setVerifiedUser(null);
+      }
+    };
 
-   verify();
- }, [token]);
-
+    verify();
+  }, [token]);
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
   };
-
 
   return (
     <div

@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import useToken from "../context/token";
 
 const Complaint = () => {
   const [complaintType, setComplaintType] = useState("bin-issue");
@@ -12,7 +13,8 @@ const Complaint = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [complaints, setComplaints] = useState([]);
-  const token = localStorage.getItem("accessToken")
+  const { tokenId } = useToken();
+  const token = tokenId;
 
 
 useEffect(() => {

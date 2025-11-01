@@ -12,11 +12,13 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaBars, FaSearch } from "react-icons/fa";
+import useToken from "../context/token";
 
 export default function Navbar({ setCollapsed }) {
   const [inputValue, setInputValue] = useState("");
   const navigate = useNavigate();
-  const token = localStorage.getItem("accessToken");
+  const { tokenId, setTokenId } = useToken();
+  const token = tokenId;
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
@@ -25,21 +27,21 @@ export default function Navbar({ setCollapsed }) {
   const handleLogout = async () => {
     try {
       let response;
-    if(token) { 
-      response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/auth/logout`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        }
-      );
-    }else {
-      return 
-    }
+      if (token) {
+        response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/auth/logout`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }
+        );
+      } else {
+        return;
+      }
       if (response.status === 200) {
-        localStorage.removeItem("accessToken");
+        setTokenId("");
         toast.success("Logged out successfully!");
-        setTimeout(() => navigate("/auth"), 2000);
+        setTimeout(() => navigate("/auth"), 1200);
       }
     } catch (error) {
       console.error(error);
@@ -153,7 +155,7 @@ export default function Navbar({ setCollapsed }) {
             ) : (
               <Button
                 variant="contained"
-                onClick={handleLogout}
+                onClick={() => navigate('/auth')}
                 sx={{
                   backgroundColor: "#22c55e",
                   "&:hover": {
