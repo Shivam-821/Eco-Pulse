@@ -37,6 +37,12 @@ const assignTeamSchema = new Schema({
       },
     },
   },
+  state: {
+    type: String
+  },
+  district: {
+    type: String,
+  },
   password: {
     type: String,
     required: true,
