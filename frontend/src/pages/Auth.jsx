@@ -296,27 +296,26 @@ const Auth = () => {
                 className={inputClass}
                 required
               />
-
+              <input
+                type="text"
+                name="district"
+                placeholder="District"
+                value={form.district}
+                onChange={handleChange}
+                className={inputClass}
+                required
+              />
+              <input
+                type="text"
+                name="state"
+                placeholder="State"
+                value={form.state}
+                onChange={handleChange}
+                className={inputClass}
+                required
+              />
               {role === "admin" && (
                 <>
-                  <input
-                    type="text"
-                    name="district"
-                    placeholder="District"
-                    value={form.district}
-                    onChange={handleChange}
-                    className={inputClass}
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="state"
-                    placeholder="State"
-                    value={form.state}
-                    onChange={handleChange}
-                    className={inputClass}
-                    required
-                  />
                   <input
                     type="text"
                     name="adminOfficer"
