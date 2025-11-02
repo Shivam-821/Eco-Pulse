@@ -18,7 +18,7 @@ const assignTeamSchema = new Schema({
       required: true,
     },
   },
-  address:{
+  address: {
     type: String,
     required: true,
   },
@@ -40,6 +40,12 @@ const assignTeamSchema = new Schema({
   password: {
     type: String,
     required: true,
+  },
+  state: {
+    type: String,
+  },
+  district: {
+    type: String,
   },
   avatar: {
     type: String,
