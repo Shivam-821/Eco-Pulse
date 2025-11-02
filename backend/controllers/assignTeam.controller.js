@@ -43,7 +43,7 @@ const generateAccessAndRefreshToken = async (teamId) => {
 };
 
 const registerTeam = asyncHandler(async (req, res) => {
-  const { fullname, email, password, location, address, phone } = req.body;
+  const { fullname, email, password, location, address, phone, district, state } = req.body;
 
   if (
     [fullname, email, password, address, phone].some(
@@ -70,6 +70,8 @@ const registerTeam = asyncHandler(async (req, res) => {
       location,
       address,
       phone,
+      district, // this will be same as of the admin who created this account
+      state,
     });
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
