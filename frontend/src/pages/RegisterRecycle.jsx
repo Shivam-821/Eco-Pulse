@@ -165,6 +165,7 @@ const RegisterRecycle = () => {
                   onChange={(e) => setRecycableItems(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 text-sm sm:text-base outline-none"
                   placeholder="e.g., Plastic bottles, Paper, Glass, etc."
+                  maxLength={40}
                   required
                 />
               </div>
@@ -243,6 +244,7 @@ const RegisterRecycle = () => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 text-sm sm:text-base outline-none"
                   placeholder="Enter complete pickup address"
                   required
+                  maxLength={50}
                 />
               </div>
               <div className="flex gap-3 lg:gap-18">
@@ -284,6 +286,7 @@ const RegisterRecycle = () => {
                   rows={3}
                   placeholder="Describe the items, condition, packaging, etc."
                   required
+                  maxLength={50}
                 />
               </div>
 

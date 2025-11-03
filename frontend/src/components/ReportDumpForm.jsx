@@ -188,6 +188,7 @@ const RegisterDump = () => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 text-sm sm:text-base outline-none"
                   placeholder="Enter the complete address"
                   required
+                  maxLength={50}
                 />
               </div>
 
@@ -230,6 +231,7 @@ const RegisterDump = () => {
                   rows={3}
                   placeholder="Describe the dump site, type of waste, estimated size, etc."
                   required
+                  maxLength={40}
                 />
               </div>
 

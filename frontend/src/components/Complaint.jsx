@@ -195,6 +195,7 @@ const Complaint = () => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
+                    maxLength={60}
                   />
                 </div>
                 <div className="flex gap:3 lg:gap-18">
