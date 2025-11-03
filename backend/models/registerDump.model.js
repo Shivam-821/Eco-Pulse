@@ -15,6 +15,12 @@ const registerdumpSchema = new Schema(
         type: [Number],
       },
     },
+    district: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
     picture: {
       type: String,
       required: true,
@@ -32,7 +38,7 @@ const registerdumpSchema = new Schema(
     },
     assignedTeam: {
       type: Schema.Types.ObjectId,
-      ref: "AssignTeam"
+      ref: "AssignTeam",
     },
     completed: {
       type: Boolean,

@@ -16,11 +16,11 @@ const recycleSchema = new Schema(
       default: "",
     },
     image: {
-        type: String,
+      type: String,
     },
-    quantity:{
-        type: Number,
-        required: true,
+    quantity: {
+      type: Number,
+      required: true,
     },
     status: {
       type: String,
@@ -30,6 +30,12 @@ const recycleSchema = new Schema(
     address: {
       type: String,
       required: true,
+    },
+    district: {
+      type: String,
+    },
+    state: {
+      type: String,
     },
     location: {
       type: {

@@ -38,6 +38,12 @@ const generalComplaintSchema = new Schema(
     address:{
       type: String,
     },
+    district: {
+      type: String
+    },
+    state: {
+      type: String
+    },
     pincode: {
       type: String,
       required: true,

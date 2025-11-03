@@ -21,6 +21,12 @@ const smartBinSchema = new Schema({
       required: true, // [longitude, latitude]
     },
   },
+  district: {
+    type: String,
+  },
+  state: {
+    type: String,
+  },
   fillLevel: {
     type: Number,
     required: true,
