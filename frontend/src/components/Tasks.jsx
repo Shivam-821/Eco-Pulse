@@ -251,7 +251,7 @@ export default function Tasks() {
   }
 
   return (
-    <div style={{ padding: "90px 20px 20px 5px" }}>
+    <div style={{ padding: "56px 20px 20px 5px" }}>
       {/* Unassigned Tasks */}
       <Typography variant="h5" gutterBottom fontWeight={600} color="red">
         Unassigned Tasks

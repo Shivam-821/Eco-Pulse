@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import useToken from "../context/token";
+import { toast, ToastContainer } from "react-toastify";
 
 const Complaint = () => {
   const [complaintType, setComplaintType] = useState("bin-issue");
@@ -9,31 +10,30 @@ const Complaint = () => {
   const [uniqueNumber, setUniqueNumber] = useState("");
   const [pincode, setPincode] = useState("");
   const [location, setLocation] = useState({ coordinates: [] });
-
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [complaints, setComplaints] = useState([]);
+  const [district, setDistrict] = useState("");
+  const [state, setState] = useState("");
   const { tokenId } = useToken();
   const token = tokenId;
 
-
-useEffect(() => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setLocation({
-          type: "Point",
-          coordinates: [longitude, latitude],
-        });
-      },
-      (err) => {
-        console.error("Geolocation error:", err);
-      }
-    );
-  }
-}, []);
-
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setLocation({
+            type: "Point",
+            coordinates: [longitude, latitude],
+          });
+        },
+        (err) => {
+          console.error("Geolocation error:", err);
+        }
+      );
+    }
+  }, []);
 
   const fetchComplaints = async () => {
     try {
@@ -42,7 +42,8 @@ useEffect(() => {
       );
       setComplaints(res.data?.data || []);
     } catch (err) {
-      console.error("Error fetching complaints:", err);
+      toast.error("Error fetching complaints")
+      // console.error("Error fetching complaints:", err);
     }
   };
 
@@ -60,6 +61,8 @@ useEffect(() => {
         complaintType,
         description,
         location,
+        district,
+        state,
         pincode,
         uniqueNumber,
         binUniqueCode,
@@ -80,11 +83,13 @@ useEffect(() => {
         }
       );
       setMessage(res.data?.message || "Complaint submitted successfully!");
-      
+
       setComplaints([res.data?.data, ...complaints]);
 
       setDescription("");
       setPincode("");
+      setState("")
+      setDistrict("")
       setBinUniqueCode("");
       setUniqueNumber("");
     } catch (err) {
@@ -95,142 +100,296 @@ useEffect(() => {
     }
   };
 
+  const getStatusColor = (resolved) => {
+    return resolved
+      ? "text-green-600 dark:text-green-400"
+      : "text-orange-600 dark:text-orange-400";
+  };
+
+  const getStatusText = (resolved) => {
+    return resolved ? "Resolved" : "In Progress";
+  };
+
   return (
-    <div className="flex md:justify-center justify-end">
-      <div className="max-w-2xl p-4 dark:bg-red-950 mt-18 dark:text-gray-200 md:w-[550px] w-auto sm:mr-9 mr-5 rounded-lg">
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8 dark:bg-pink-900">
-          <h2 className="text-2xl font-bold mb-4 text-rose-600 dark:text-red-400">
-            Register a Complaint
-            <a
-              className="bg-red-500 ml-10 md:ml-15 p-2 rounded-lg text-lg font-semibold hover:bg-red-600 scroll-smooth text-white"
-              href="#view-complain"
-            >
-              View Complains
-            </a>
-          </h2>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block font-medium">Complaint Type:</label>
-              <select
-                className="w-full border p-2 rounded outline-none focus:border-2 focus:border-red-400"
-                value={complaintType}
-                onChange={(e) => setComplaintType(e.target.value)}
-              >
-                <option className="dark:bg-red-900" value="bin-issue">
-                  Bin Issue
-                </option>
-                <option className="dark:bg-red-900" value="dump-inaction">
-                  Dump Inaction
-                </option>
-              </select>
-            </div>
-
-            {complaintType === "bin-issue" && (
-              <div>
-                <label className="block font-medium">Bin Unique Code:</label>
-                <input
-                  type="text"
-                  className="w-full border p-2 rounded outline-none focus:border-2 focus:border-red-400"
-                  value={binUniqueCode}
-                  onChange={(e) => setBinUniqueCode(e.target.value)}
-                  required
-                />
-              </div>
-            )}
-
-            {complaintType === "dump-inaction" && (
-              <div>
-                <label className="block font-medium">Dump Unique Number:</label>
-                <input
-                  type="text"
-                  className="w-full border p-2 rounded outline-none focus:border-2 focus:border-red-400"
-                  value={uniqueNumber}
-                  onChange={(e) => setUniqueNumber(e.target.value)}
-                  required
-                />
-              </div>
-            )}
-
-            <div>
-              <label className="block font-medium">Description:</label>
-              <textarea
-                className="w-full border p-2 rounded outline-none focus:border-2 focus:border-red-400"
-                rows="4"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium">Pincode:</label>
-              <input
-                type="text"
-                className="w-full border p-2 rounded outline-none focus:border-2 focus:border-red-400"
-                value={pincode}
-                onChange={(e) => setPincode(e.target.value)}
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium">Coordinates:</label>
-              <p className="text-sm text-gray-600 dark:text-white">
-                {location.coordinates.length > 0
-                  ? `Longitude: ${location.coordinates[0]}, Latitude: ${location.coordinates[1]}`
-                  : "Fetching current location..."}
-              </p>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 cursor-pointer"
-            >
-              {loading ? "Submitting..." : "Submit Complaint"}
-            </button>
-          </form>
-
-          {message && (
-            <p className="mt-4 text-center text-blue-700 font-medium">
-              {message}
-            </p>
-          )}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-15 px-4">
+      <ToastContainer />
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
+            Complaint Management
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300">
+            Report issues and track your complaints
+          </p>
         </div>
 
-        {/* Complaints Section */}
-        <div
-          id="view-complain"
-          className="bg-white rounded-xl shadow-md p-6 dark:bg-red-700 dark:text-gray-100"
-        >
-          <h2 className="text-xl font-semibold mb-4 ">All Complaints</h2>
-          {complaints.length === 0 ? (
-            <p className="text-gray-500">No complaints found.</p>
-          ) : (
-            <ul className="space-y-4">
-              {complaints.map((comp) => (
-                <li key={comp._id} className="border p-4 rounded-lg border-red-400">
-                  <p className="font-semibold text-gray-800">
-                    Type: {comp.complaintType}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Complaint Form Section */}
+          <div className="lg:col-span-2">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+                  Register Complaint
+                </h2>
+                <a
+                  href="#view-complain"
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+                >
+                  View Complaints
+                </a>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Complaint Type
+                  </label>
+                  <select
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 outline-none"
+                    value={complaintType}
+                    onChange={(e) => setComplaintType(e.target.value)}
+                  >
+                    <option value="bin-issue">Bin Issue</option>
+                    <option value="dump-inaction">Dump Inaction</option>
+                  </select>
+                </div>
+
+                {complaintType === "bin-issue" && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Bin Unique Code
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 outline-none"
+                      value={binUniqueCode}
+                      onChange={(e) => setBinUniqueCode(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
+                {complaintType === "dump-inaction" && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Dump Unique Number
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 outline-none"
+                      value={uniqueNumber}
+                      onChange={(e) => setUniqueNumber(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 resize-none outline-none"
+                    rows="4"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="flex gap:3 lg:gap-18">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      State
+                    </label>
+                    <input
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 resize-none outline-none"
+                      rows="4"
+                      value={state}
+                      onChange={(e) => setState(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      District
+                    </label>
+                    <input
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 resize-none outline-none"
+                      rows="4"
+                      value={district}
+                      onChange={(e) => setDistrict(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Pincode
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 outline-none"
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Current Location
+                  </label>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {location.coordinates.length > 0
+                      ? `Longitude: ${location.coordinates[0]?.toFixed(
+                          6
+                        )}, Latitude: ${location.coordinates[1]?.toFixed(6)}`
+                      : "Fetching your location..."}
                   </p>
-                  {comp.uniqueNumber && (
-                    <p>Unique-Number: {comp.relatedDump?.uniqueNumber}</p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-3 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center cursor-pointer"
+                >
+                  {loading ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit Complaint"
                   )}
-                  <p>Description: {comp.description}</p>
-                  <p>Pincode: {comp.pincode}</p>
-                  <p>Address: {comp.address || "Unknown"}</p>
-                  <p className="text-green-400">Assigned-Team: {comp.assignedTeam?.teamname}</p>
-                  <p className="text-sm text-gray-400">
-                    Created at: {new Date(comp.createdAt).toLocaleString()}
+                </button>
+              </form>
+
+              {message && (
+                <div
+                  className={`mt-4 p-3 rounded-lg text-center font-medium ${
+                    message.includes("successfully")
+                      ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                      : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
+                  }`}
+                >
+                  {message}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Complaints List Section */}
+          <div className="lg:col-span-1">
+            <div
+              id="view-complain"
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-5 border border-gray-200 dark:border-gray-700 h-fit sticky top-8"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+                  Your Complaints
+                </h2>
+                <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm px-2 py-1 rounded-full">
+                  {complaints.length}
+                </span>
+              </div>
+
+              {complaints.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="text-gray-400 dark:text-gray-500 mb-2">
+                    <svg
+                      className="w-12 h-12 mx-auto"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No complaints found
                   </p>
-                  {comp.resolved && (
-                    <span className="text-green-700 font-medium">Resolved</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
+                </div>
+              ) : (
+                <div className="space-y-4 max-h-[700px] overflow-y-auto">
+                  {complaints.map((comp) => (
+                    <div
+                      key={comp._id}
+                      className="border border-gray-200 dark:border-gray-600 rounded-lg py-4 px-3 hover:shadow-md transition-shadow duration-200"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="inline-block bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded capitalize">
+                          {comp.complaintType?.replace("-", " ")}
+                        </span>
+                        <span
+                          className={`text-xs font-medium ${getStatusColor(
+                            comp.resolved
+                          )}`}
+                        >
+                          {getStatusText(comp.resolved)}
+                        </span>
+                      </div>
+
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 line-clamp-2">
+                        {comp.description}
+                      </p>
+
+                      <div className="space-y-1 text-xs text-gray-500 dark:text-gray-400">
+                        {comp.uniqueNumber && (
+                          <p>
+                            ID:{" "}
+                            {comp.relatedDump?.uniqueNumber ||
+                              comp.uniqueNumber}
+                          </p>
+                        )}
+                        <p>Pincode: {comp.pincode}</p>
+                        {comp.address && (
+                          <p className="truncate">Address: {comp.address}</p>
+                        )}
+                        {comp.assignedTeam?.teamname && (
+                          <p className="text-green-600 dark:text-green-400">
+                            Team: {comp.assignedTeam.teamname}
+                          </p>
+                        )}
+                        <p className="text-xs">
+                          {new Date(comp.createdAt).toLocaleDateString()} at{" "}
+                          {new Date(comp.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

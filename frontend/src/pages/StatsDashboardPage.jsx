@@ -111,8 +111,8 @@ const StatsDashboardPage = () => {
   const COLORS = ["#34D399", "#FBBF24", "#F87171"];
 
   return (
-    <div className="pt-14 dark:bg-slate-900 min-h-screen px-6 text-slate-800 dark:text-slate-200">
-      <div className="max-w-7xl mx-auto py-12 flex flex-col gap-20">
+    <div className="pt-10 dark:bg-slate-900 min-h-screen px-6 text-slate-800 dark:text-slate-200">
+      <div className="max-w-7xl mx-auto py-12 flex flex-col gap-17">
         <section className="text-center dark:bg-slate-800 bg-emerald-200 rounded-md py-18 px-4">
           <h1 className="text-5xl font-bold mb-6 text-green-500">
             Eco Dashboard

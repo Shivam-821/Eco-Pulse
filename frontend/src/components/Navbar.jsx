@@ -57,9 +57,10 @@ export default function Navbar({ setCollapsed }) {
         sx={{
           left: { md: "auto" },
           width: "100%",
-          backgroundColor: "white",
+          height: "63px",
+          backgroundColor: "transparent",
           color: "black",
-          borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+          borderBottom: "2px solid rgba(0, 0, 2, 0.26)",
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
       >
@@ -69,7 +70,7 @@ export default function Navbar({ setCollapsed }) {
             justifyContent: "space-between",
             alignItems: "center",
             px: { xs: 2, md: 3 },
-            py: 1,
+            py: 0.7,
           }}
         >
           {/* Left side - Menu button and title */}
@@ -83,7 +84,7 @@ export default function Navbar({ setCollapsed }) {
             >
               <FaBars />
             </IconButton>
-            <Link to="/">
+            <Link to="/" className="flex gap-2 flex-row-reverse items-center">
               <Box
                 sx={{
                   fontWeight: "bold",
@@ -94,6 +95,7 @@ export default function Navbar({ setCollapsed }) {
               >
                 Eco Pulse
               </Box>
+              <img src="/eco_logo.png" alt="eco-logo" className="w-13 h-13" />
             </Link>
           </Box>
 
@@ -155,7 +157,7 @@ export default function Navbar({ setCollapsed }) {
             ) : (
               <Button
                 variant="contained"
-                onClick={() => navigate('/auth')}
+                onClick={() => navigate("/auth")}
                 sx={{
                   backgroundColor: "#22c55e",
                   "&:hover": {

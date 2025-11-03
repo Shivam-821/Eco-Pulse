@@ -229,7 +229,7 @@ const Auth = () => {
     "mt-1 block w-full rounded-md border-gray-300 shadow-sm outline-none bg-gray-200 dark:bg-slate-600 dark:text-slate-400 cursor-not-allowed";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-slate-900 px-4 pt-10 relative">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-slate-900 md:px-6 pt-10 relative">
       <ToastContainer />
       {showNotice && (
         <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-md dark:bg-yellow-800 dark:text-yellow-100 dark:border-yellow-400 absolute top-[49.7px]">
@@ -240,7 +240,11 @@ const Auth = () => {
           </p>
         </div>
       )}
-      <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg w-full max-w-md text-slate-800 dark:text-slate-200">
+      <div
+        className={`bg-white dark:bg-slate-800 p-8 px-10 md:px-12 rounded-2xl shadow-lg w-[90%] max-w-[500px] ${
+          showNotice && mode !== "login" ? "mt-22" : "mt-4"
+        } text-slate-800 dark:text-slate-200`}
+      >
         <h1 className="text-4xl font-bold mb-6 text-center text-blue-700 dark:text-green-400">
           {mode === "login" ? "Login" : "Sign Up"}
         </h1>
@@ -296,27 +300,28 @@ const Auth = () => {
                 className={inputClass}
                 required
               />
-
+              <input
+                type="text"
+                name="district"
+                readOnly={verifiedUser?.role === "admin"}
+                placeholder="District"
+                value={form.district}
+                onChange={handleChange}
+                className={inputClass}
+                required
+              />
+              <input
+                type="text"
+                name="state"
+                placeholder="State"
+                readOnly={verifiedUser?.role === "admin"}
+                value={form.state}
+                onChange={handleChange}
+                className={inputClass}
+                required
+              />
               {role === "admin" && (
                 <>
-                  <input
-                    type="text"
-                    name="district"
-                    placeholder="District"
-                    value={form.district}
-                    onChange={handleChange}
-                    className={inputClass}
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="state"
-                    placeholder="State"
-                    value={form.state}
-                    onChange={handleChange}
-                    className={inputClass}
-                    required
-                  />
                   <input
                     type="text"
                     name="adminOfficer"
