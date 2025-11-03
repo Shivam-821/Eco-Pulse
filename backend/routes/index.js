@@ -14,6 +14,7 @@ import dumpRoutes from './dumps.routes.js'
 import recycleRoutes from './recycle.routes.js'
 import statsRoutes from './stats.route.js'
 import assignedTaskRoutes from './assignedTask.route.js'
+import chatRoutes from './chatbot.route.js'
 
 // Mount routes under their respective paths
 router.use("/auth", authRoutes);
@@ -29,5 +30,6 @@ router.use("/dump", dumpRoutes)
 router.use("/recycle", recycleRoutes)
 router.use("/stats", statsRoutes)
 router.use("/task-data", assignedTaskRoutes)
+router.use('/chat', chatRoutes)
 
 export default router;
