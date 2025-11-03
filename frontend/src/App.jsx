@@ -38,7 +38,7 @@ function App() {
           collapsed ? "ml-20" : "ml-64"
         }`}
       >
-        <Navbar setCollapsed={setCollapsed} />
+        <Navbar setCollapsed={setCollapsed} collapsed={collapsed} />
         <main className="flex-1 p-4 overflow-y-auto bg-gray-100 dark:bg-slate-900 relative">
           <Routes>
             <Route element={<ProtectedRoute />}>

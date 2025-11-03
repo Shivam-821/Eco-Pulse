@@ -13,16 +13,22 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaBars, FaSearch } from "react-icons/fa";
 import useToken from "../context/token";
+import { useEffect } from "react";
 
-export default function Navbar({ setCollapsed }) {
+export default function Navbar({ setCollapsed, collapsed }) {
   const [inputValue, setInputValue] = useState("");
   const navigate = useNavigate();
   const { tokenId, setTokenId } = useToken();
+  const [collapse, setCollapse] = useState(collapsed);
   const token = tokenId;
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
+
+  useEffect(() => {
+    setCollapse(collapsed);
+  }, [collapsed]);
 
   const handleLogout = async () => {
     try {
@@ -69,7 +75,8 @@ export default function Navbar({ setCollapsed }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            px: { xs: 2, md: 3 },
+            pr: { xs: 2, md: 3 },
+            pl: 1,
             py: 0.7,
           }}
         >
@@ -84,8 +91,8 @@ export default function Navbar({ setCollapsed }) {
             >
               <FaBars />
             </IconButton>
-            <Link to="/" className="flex gap-2 flex-row-reverse items-center">
-              <Box
+            <Link to="/" className="flex gap-3 flex-row-reverse items-center">
+              {!collapse && <Box
                 sx={{
                   fontWeight: "bold",
                   fontSize: "1.2rem",
@@ -94,7 +101,7 @@ export default function Navbar({ setCollapsed }) {
                 }}
               >
                 Eco Pulse
-              </Box>
+              </Box>}
               <img src="/eco_logo.png" alt="eco-logo" className="w-13 h-13" />
             </Link>
           </Box>

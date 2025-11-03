@@ -28,11 +28,11 @@ const Footer = () => {
           <ul className="space-y-1">
             <li>
              <Link 
-             to="/reportdump"
+             to="#"
              className="hover:text-green-600">Report Dump</Link>
             </li>
             <li>
-              <a href="/dashboard" className="hover:text-green-600">
+              <a href="#" className="hover:text-green-600">
                 Admin Dashboard
               </a>
             </li>
@@ -42,7 +42,7 @@ const Footer = () => {
               </Link>
             </li>
             <li>
-              <Link to="/contact" className="hover:text-green-600">Contact Us</Link>
+              <Link to="#" className="hover:text-green-600">Contact Us</Link>
             </li>
           </ul>
         </div>

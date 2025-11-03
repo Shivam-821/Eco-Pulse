@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   FaMap,
   FaTasks,
   FaUsers,
-  FaBell,
   FaSignInAlt,
   FaUserPlus,
   FaBars,
@@ -12,17 +11,28 @@ import {
   FaInfoCircle,
   FaChartBar,
 } from "react-icons/fa";
+import { MdCleaningServices } from "react-icons/md";
 import DarkMode from "./DarkMode";
 import axios from "axios";
-import { MdCleaningServices } from "react-icons/md";
+import gsap from "gsap";
 import useToken from "../context/token";
 
 export default function Sidebar({ collapsed, setCollapsed }) {
-  // Use props here
   const navigate = useNavigate();
+  const location = useLocation();
   const { tokenId } = useToken();
   const token = tokenId;
   const [verifiedUser, setVerifiedUser] = useState(null);
+  const sidebarRef = useRef(null);
+
+  useEffect(() => {
+    // Sidebar fade-in effect
+    gsap.fromTo(
+      sidebarRef.current,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.3, ease: "power2.out" }
+    );
+  }, [collapsed]);
 
   useEffect(() => {
     if (!token) {
@@ -40,7 +50,6 @@ export default function Sidebar({ collapsed, setCollapsed }) {
           }
         );
         setVerifiedUser(res?.data);
-        //  console.log(verifiedUser?.data?.teamname);
       } catch (err) {
         console.log(err);
         setVerifiedUser(null);
@@ -50,146 +59,133 @@ export default function Sidebar({ collapsed, setCollapsed }) {
     verify();
   }, [token]);
 
-  const toggleSidebar = () => {
-    setCollapsed(!collapsed);
+  const toggleSidebar = () => setCollapsed(!collapsed);
+
+  // Active route highlight
+  const getLinkClasses = (path) => {
+    const base =
+      "flex items-center h-[44px] rounded-xl transition-all duration-300 text-gray-700 dark:text-slate-200 hover:text-green-500 dark:hover:text-green-300 hover:bg-green-100 dark:hover:bg-slate-700 px-3 relative group";
+    const active =
+      location.pathname === path
+        ? "bg-green-100 dark:bg-slate-700 text-green-600 dark:text-green-300"
+        : "";
+    return `${base} ${active}`;
   };
+
+  const NavItem = ({ icon: Icon, text, path, onClick }) => (
+    <li className="relative">
+      <div
+        onClick={() => (onClick ? onClick() : navigate(path))}
+        className={`${getLinkClasses(path)} cursor-pointer ${
+          collapsed ? "justify-center" : "justify-start gap-3"
+        }`}
+      >
+        <Icon className="text-[18px] shrink-0 leading-none" />
+        <span
+          className={`overflow-hidden transition-all duration-300 ${
+            collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+          }`}
+        >
+          {text}
+        </span>
+      </div>
+    </li>
+  );
 
   return (
     <div
-      className={`bg-white dark:bg-slate-800 h-screen p-4 flex flex-col transition-all duration-300 fixed ${
+      ref={sidebarRef}
+      className={`bg-gradient-to-b from-white to-green-50 dark:from-slate-900 dark:to-slate-800 shadow-lg h-screen p-4 pb-5 flex flex-col fixed border-r border-green-100 dark:border-slate-700 transition-all duration-500 ${
         collapsed ? "w-20" : "w-64"
       }`}
     >
-      {/* Top Section */}
-      <div className="flex items-center justify-between mb-6 mt-16">
+      {/* 🌿 Top Section */}
+      <div className="flex items-center justify-between mb-2 mt-11 min-h-[60px] transition-all duration-300">
         {!collapsed && (
-          <h2 className="text-2xl font-bold text-green-400 dark:text-green-300">
+          <h2 className="text-2xl font-extrabold bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent tracking-wide">
             Eco Pulse
           </h2>
         )}
         <button
           onClick={toggleSidebar}
-          className="text-green-400 dark:text-green-300 text-xl"
+          className="text-green-500 dark:text-green-300 text-2xl p-2 hover:rotate-180 transition-transform duration-500 cursor-pointer"
         >
           <FaBars />
         </button>
       </div>
 
-      {/* Sidebar Links */}
-      <div className="sidebar-scrollable flex-1 overflow-y-auto">
-        <ul className="space-y-4">
-          <li>
-            <Link
-              to="/map"
-              className="flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
-            >
-              <FaMap /> {!collapsed && "Map"}
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/about"
-              className="flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
-            >
-              <FaInfoCircle /> {!collapsed && "About Us"}
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/teams"
-              className="flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
-            >
-              <FaUsers /> {!collapsed && "Teams"}
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/tasks"
-              className="flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
-            >
-              <FaTasks /> {!collapsed && "Tasks"}
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/viewrecycle"
-              className="flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
-            >
-              <FaRecycle /> {!collapsed && "Recycle Items"}
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/stats"
-              className="flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
-            >
-              <FaChartBar /> {!collapsed && "Statistic"}
-            </Link>
-          </li>
+      {/* 🌱 Sidebar Links */}
+      <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-green-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+        <ul className="space-y-1">
+          <NavItem icon={FaMap} text="Map" path="/map" />
+          <NavItem icon={FaInfoCircle} text="About Us" path="/about" />
+          <NavItem icon={FaUsers} text="Teams" path="/teams" />
+          <NavItem icon={FaTasks} text="Tasks" path="/tasks" />
+          <NavItem icon={FaRecycle} text="Recycle Items" path="/viewrecycle" />
+          <NavItem icon={FaChartBar} text="Statistic" path="/stats" />
         </ul>
       </div>
 
-      {/* Sidebar Bottom Section */}
-      <div className="mt-auto">
-        <div className="space-y-3">
+      {/* 🌸 Bottom Section */}
+      <div className="mt-2 pt-4 border-t border-green-100 dark:border-slate-700">
+        <ul className="space-y-1">
           {verifiedUser?.role === "admin" && (
-            <div
-              className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+            <NavItem
+              icon={FaSignInAlt}
+              text="SignUp Team"
               onClick={() => navigate("/auth")}
-            >
-              <FaSignInAlt /> {!collapsed && "SignUp Team"}
-            </div>
+            />
           )}
+
           {verifiedUser?.role === "user" && (
             <>
-              <div
-                className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+              <NavItem
+                icon={FaSignInAlt}
+                text="Report Dump"
                 onClick={() => navigate("/reportdump")}
-              >
-                <FaSignInAlt /> {!collapsed && "Report Dump"}
-              </div>
-              <div
-                className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+              />
+              <NavItem
+                icon={FaSignInAlt}
+                text="Raise Complain"
                 onClick={() => navigate("/loadge-complain")}
-              >
-                <FaSignInAlt /> {!collapsed && "Raise Complain"}
-              </div>
-              <div
-                className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+              />
+              <NavItem
+                icon={FaSignInAlt}
+                text="Recycle"
                 onClick={() => navigate("/register-recycle")}
-              >
-                <FaSignInAlt /> {!collapsed && "Recycle"}
-              </div>
+              />
             </>
           )}
+
           {!token && (
             <>
-              <div
-                className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+              <NavItem
+                icon={FaSignInAlt}
+                text="Sign In"
                 onClick={() => navigate("/auth")}
-              >
-                <FaSignInAlt /> {!collapsed && "Sign In"}
-              </div>
-              <div
-                className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+              />
+              <NavItem
+                icon={FaUserPlus}
+                text="Sign Up"
                 onClick={() => navigate("/auth")}
-              >
-                <FaUserPlus /> {!collapsed && "Sign Up"}
-              </div>
+              />
             </>
           )}
+
           {verifiedUser?.role === "team" && (
-            <div
-              className="cursor-pointer flex items-center gap-2 text-gray-700 dark:text-slate-200 hover:text-green-400 dark:hover:text-green-300"
+            <NavItem
+              icon={MdCleaningServices}
+              text="Assigned Task"
               onClick={() =>
                 navigate(`assigned-task/${verifiedUser?.data?.teamname}`)
               }
-            >
-              <MdCleaningServices /> {!collapsed && "Assigned Task"}
-            </div>
+            />
           )}
-          <DarkMode isSidebarCollapsed={collapsed} />
-        </div>
+
+          <div className="relative">
+            <DarkMode isSidebarCollapsed={collapsed} />
+          </div>
+        </ul>
       </div>
     </div>
   );
