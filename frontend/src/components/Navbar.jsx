@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -64,7 +64,9 @@ export default function Navbar({ setCollapsed, collapsed }) {
           left: { md: "auto" },
           width: "100%",
           height: "63px",
-          backgroundColor: "transparent",
+          backgroundColor: "rgba(175, 205, 225, 0.3)", 
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)", 
           color: "black",
           borderBottom: "2px solid rgba(0, 0, 2, 0.26)",
           zIndex: (theme) => theme.zIndex.drawer + 1,
@@ -92,16 +94,18 @@ export default function Navbar({ setCollapsed, collapsed }) {
               <FaBars />
             </IconButton>
             <Link to="/" className="flex gap-3 flex-row-reverse items-center">
-              {!collapse && <Box
-                sx={{
-                  fontWeight: "bold",
-                  fontSize: "1.2rem",
-                  color: "#22c55e",
-                  display: { xs: "none", sm: "block" },
-                }}
-              >
-                Eco Pulse
-              </Box>}
+              {!collapse && (
+                <Box
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "1.2rem",
+                    color: "#22c55e",
+                    display: { xs: "none", sm: "block" },
+                  }}
+                >
+                  Eco Pulse
+                </Box>
+              )}
               <img src="/eco_logo.png" alt="eco-logo" className="w-13 h-13" />
             </Link>
           </Box>
