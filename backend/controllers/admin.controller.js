@@ -108,7 +108,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
 
   const isPasswordValid = await admin.isPasswordCorrect(password);
   if (!isPasswordValid) {
-    return res.state(401).json(new ApiError(401, "Invalid credentials"));
+    return res.status(401).json(new ApiError(401, "Invalid credentials"));
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -120,7 +120,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
   );
 
   if (!loggedInAdmin) {
-    throw new ApiError(404, "User not found");
+    return res.status(404).json(new ApiError(404, "User not found"));
   }
 
   const options = {

@@ -17,7 +17,7 @@ const generateAccessAndRefreshToken = async (userId) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      return (new ApiError(404, "User not found"));
+      return res.status(404).json(new ApiError(404, "User not found"));
     }
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
@@ -35,7 +35,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const { fullname, email, phone, password, district, state } = req.body;
 
   if ([fullname, email, password].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "All fields are required.");
+    return res.status(400).json(new ApiError(400, "All fields are required."));
   }
   if (!phone) {
     return res.status(400).json(new ApiError(400, "Mobile number required"))

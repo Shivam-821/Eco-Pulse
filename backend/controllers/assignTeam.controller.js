@@ -28,7 +28,7 @@ const generateAccessAndRefreshToken = async (teamId) => {
   try {
     const team = await AssignTeam.findById(teamId);
     if (!team) {
-      throw new ApiError(404, "Team not found");
+      return res.status(404).json(new ApiError(404, "Team not found"));
     }
 
     const accessToken = team.generateAccessToken();
@@ -38,7 +38,7 @@ const generateAccessAndRefreshToken = async (teamId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(500, "Something went wrong while generating tokens");
+    return res.status(500).json(new ApiError(500, "Something went wrong while generating tokens"));
   }
 };
 
@@ -138,7 +138,7 @@ const loginTeam = asyncHandler(async (req, res) => {
   );
 
   if (!loggedInTeam) {
-    throw new ApiError(404, "Team not found");
+    return res.status(404).json(new ApiError(404, "Team not found"));
   }
 
   const options = {
@@ -163,7 +163,7 @@ const getAllTeam = asyncHandler(async (req, res) => {
   const teams = await AssignTeam.find();
 
   if (!teams) {
-    throw new ApiError(404, "No assign team found");
+    return res.status(404).json(new ApiError(404, "No assign team found"));
   }
 
   return res
@@ -175,17 +175,17 @@ const assignTask = asyncHandler(async (req, res) => {
   const { teamName, dumpId, location, deadline } = req.body;
 
   if (!teamName || !dumpId || !location || !deadline) {
-    throw new ApiError(400, "All fields are required");
+    return res.status(400).json(new ApiError(400, "All fields are required"));
   }
 
   const dump = await Regdump.findById(dumpId);
   if (!dump) {
-    throw new ApiError(404, "Dump not found");
+    return res.status(404).json(new ApiError(404, "Dump not found"));
   }
 
   const team = await AssignTeam.findOne({ teamname: teamName });
   if (!team) {
-    throw new ApiError(404, "Team not found");
+    return res.status(404).json(new ApiError(404, "Team not found"));
   }
 
   const [dumpLat, dumpLng] = location;
@@ -232,7 +232,7 @@ const workCompleted = asyncHandler(async (req, res) => {
   try {
     const dump = await Regdump.findById(dumpId);
     if (!dump) {
-      throw new ApiError(404, "No dump found");
+      return res.status(404).json(new ApiError(404, "No dump found"));
     }
 
     const picturePath = req.file?.buffer;

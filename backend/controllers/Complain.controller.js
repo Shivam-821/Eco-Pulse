@@ -57,7 +57,7 @@ const complaintRegistered = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, createdComp, "Complain raised successfully"));
   } catch (error) {
-    throw new ApiError(501, `Error generating Complain:: ComplainRegistered :: ${error.message}`);
+    return res.status(501).json(new ApiError(501, `Error generating Complain:: ComplainRegistered`));
   }
 });
 
