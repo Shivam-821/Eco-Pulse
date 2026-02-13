@@ -4,7 +4,10 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Regdump } from "../models/index.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { notifyOnAssignTask } from "./twilio.controller.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import {
+  uploadOnCloudinary,
+  deleteFromCloudinary,
+} from "../utils/cloudinary.js";
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
@@ -251,6 +254,7 @@ const workCompleted = asyncHandler(async (req, res) => {
     return res.status(404).json(new ApiError(404, "DumpId is required"));
   }
 
+  let picture;
   try {
     const dump = await Regdump.findById(dumpId);
     if (!dump) {
@@ -258,7 +262,6 @@ const workCompleted = asyncHandler(async (req, res) => {
     }
 
     const picturePath = req.file?.buffer;
-    let picture;
     if (picturePath) {
       try {
         picture = await uploadOnCloudinary(picturePath);
