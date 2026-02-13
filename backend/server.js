@@ -37,7 +37,7 @@ app.get("/health", (req, res) => {
 import cron from "node-cron";
 
 cron.schedule("*/14 * * * *", () => {
-  // Get current time in IST (Indian Standard Time)
+  // current time in IST
   const date = new Date(
     new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }),
   );
@@ -54,7 +54,7 @@ cron.schedule("*/14 * * * *", () => {
   const backendUrl = process.env.BACKEND_URL || `http://localhost:${PORT}`;
   console.log(`Pinging backend at ${backendUrl}/health to keep it alive...`);
 
-  // Using global fetch (available in Node 18+)
+  // Using global fetch 
   fetch(`${backendUrl}/health`)
     .then((response) => {
       if (response.ok) {

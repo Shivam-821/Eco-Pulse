@@ -8,33 +8,35 @@ import {
 } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { notifyOnRegisteringDump } from "./twilio.controller.js";
+import { analyzeWasteImage } from "../services/aiService.js";
 
 const registerDump = asyncHandler(async (req, res) => {
-const { location, description, address } = req.body;
-const dumpReporter = req.user
+  const { location, description, address } = req.body;
+  const dumpReporter = req.user;
 
-if (!location || !description || !address) {
-  throw new ApiError(400, "All fields are required");
-}
+  if (!location || !description || !address) {
+    throw new ApiError(400, "All fields are required");
+  }
 
-const [lat, lng] = location.split(",").map(Number);
-if (isNaN(lat) || isNaN(lng)) {
-  throw new ApiError(400, "Invalid location format");
-}
+  const [lat, lng] = location.split(",").map(Number);
+  if (isNaN(lat) || isNaN(lng)) {
+    throw new ApiError(400, "Invalid location format");
+  }
 
-const geoLocation = {
-  type: "Point",
-  coordinates: [lng, lat],
-};
-
+  const geoLocation = {
+    type: "Point",
+    coordinates: [lng, lat],
+  };
 
   let picture;
-  const picturePath = req.file?.buffer;
-  if (picturePath) {
+  if (req.file) {
+    const fileBuffer = req.file.buffer;
     try {
-      picture = await uploadOnCloudinary(picturePath);
+      picture = await uploadOnCloudinary(fileBuffer);
     } catch (error) {
-      return res.status(500).json(new ApiError(500, `Image upload failed: ${error.message}`));
+      return res
+        .status(500)
+        .json(new ApiError(500, `Image upload failed: ${error.message}`));
     }
   }
 
@@ -48,6 +50,23 @@ const geoLocation = {
       address,
     });
 
+    // --- AI Analysis & Gamification ---
+    if (picture?.secure_url) {
+      try {
+        const aiAnalysis = await analyzeWasteImage(picture.secure_url);
+        dump.aiAnalysis = aiAnalysis;
+        await dump.save();
+
+        if (aiAnalysis.isWaste) {
+          await User.findByIdAndUpdate(dumpReporter._id, {
+            $inc: { credits: 10 },
+          });
+        }
+      } catch (error) {
+        console.error("AI Analysis failed for Dump Report:", error);
+      }
+    }
+    // ----------------------------------
 
     const registeredDump = await Regdump.findById(dump._id).populate({
       path: "dumpReporter",
@@ -57,16 +76,20 @@ const geoLocation = {
     dumpReporter.dumpRegistered.push(dump._id);
     await dumpReporter.save();
 
-    await notifyOnRegisteringDump(dumpReporter.fullname, dump.uniqueNumber)
+    await notifyOnRegisteringDump(dumpReporter.fullname, dump.uniqueNumber);
 
     return res
       .status(201)
       .json(
-        new ApiResponse(201, registeredDump, "Dump registered successfully")
+        new ApiResponse(201, registeredDump, "Dump registered successfully"),
       );
   } catch (error) {
     if (picture?.public_id) await deleteFromCloudinary(picture.public_id);
-    return res.status(500).json(new ApiError(500, `Failed to create dump report: ${error.message}`));
+    return res
+      .status(500)
+      .json(
+        new ApiError(500, `Failed to create dump report: ${error.message}`),
+      );
   }
 });
 
@@ -74,7 +97,6 @@ const getAllDump = asyncHandler(async (req, res) => {
   const dumps = await Regdump.find()
     .populate("dumpReporter assignedTeam")
     .select("-password -refreshToken");
-    
 
   if (!dumps) throw new ApiError(404, "Dumps not found");
 

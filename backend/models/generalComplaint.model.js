@@ -31,18 +31,18 @@ const generalComplaintSchema = new Schema(
         default: "Point",
       },
       coordinates: {
-        type: [Number], 
+        type: [Number],
         required: true,
       },
     },
-    address:{
+    address: {
       type: String,
     },
     district: {
-      type: String
+      type: String,
     },
     state: {
-      type: String
+      type: String,
     },
     pincode: {
       type: String,
@@ -55,20 +55,25 @@ const generalComplaintSchema = new Schema(
     },
     assignedTeam: {
       type: Schema.Types.ObjectId,
-      ref: "AssignTeam"
+      ref: "AssignTeam",
     },
     resolved: {
       type: Boolean,
       default: false,
     },
+    imageUrl: {
+      type: String, // URL from Cloudinary
+    },
+    aiAnalysis: {
+      type: Object, // JSON from Gemini
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
-
 
 generalComplaintSchema.index({ location: "2dsphere" });
 
 export const GeneralComplaint = mongoose.model(
   "GeneralComplaint",
-  generalComplaintSchema
+  generalComplaintSchema,
 );

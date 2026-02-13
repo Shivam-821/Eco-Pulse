@@ -1,4 +1,4 @@
-import mongoose,{Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const registerdumpSchema = new Schema(
   {
@@ -48,13 +48,18 @@ const registerdumpSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    completedPicture: {
+      type: String, // Stores the 'After' photo
+    },
     uniqueNumber: {
       type: Number,
       required: true,
     },
+    aiAnalysis: {
+      type: Object, // Stores AI analysis results (wasteType, severity, summary, etc.)
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-
-export const Regdump = mongoose.model("Regdump", registerdumpSchema)
+export const Regdump = mongoose.model("Regdump", registerdumpSchema);

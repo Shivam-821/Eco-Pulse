@@ -1,7 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // Initialize the AI client outside the handler to avoid re-initialization on every request
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_VISION });
 
 const SYSTEM_PROMPT = `You are PrakritiAI, an eco-friendly AI assistant focused on sustainability, recycling, and environmental conservation. Your role is to:
 
@@ -64,7 +67,7 @@ async function callApiWithRetry(message) {
       console.warn(
         `Attempt ${i + 1} failed. Retrying in ${
           INITIAL_DELAY_MS * 2 ** i
-        }ms. Error: ${error.message}`
+        }ms. Error: ${error.message}`,
       );
 
       // If this is the last attempt, re-throw the error to be caught by the main handler
@@ -93,12 +96,13 @@ export const responseMessage = async (req, res) => {
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
-    if (!process.env.GEMINI_API_KEY) {
+    if (!process.env.GEMINI_API_KEY_VISION) {
       // Professional Terminology: API Key Management
-      console.error("GEMINI_API_KEY not set.");
+      console.error("GEMINI_API_KEY_VISION not set.");
       return res.status(500).json({
         success: false,
-        message: "Missing Google API Key. Please set GEMINI_API_KEY in .env.",
+        message:
+          "Missing Google API Key. Please set GEMINI_API_KEY_VISION in .env.",
       });
     }
 

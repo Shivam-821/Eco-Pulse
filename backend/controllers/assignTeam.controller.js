@@ -38,16 +38,27 @@ const generateAccessAndRefreshToken = async (teamId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    return res.status(500).json(new ApiError(500, "Something went wrong while generating tokens"));
+    return res
+      .status(500)
+      .json(new ApiError(500, "Something went wrong while generating tokens"));
   }
 };
 
 const registerTeam = asyncHandler(async (req, res) => {
-  const { fullname, email, password, location, address, phone, district, state } = req.body;
+  const {
+    fullname,
+    email,
+    password,
+    location,
+    address,
+    phone,
+    district,
+    state,
+  } = req.body;
 
   if (
     [fullname, email, password, address, phone].some(
-      (field) => field?.trim() === ""
+      (field) => field?.trim() === "",
     )
   ) {
     return res.status(400).json(new ApiError(400, "All fields are required."));
@@ -59,7 +70,9 @@ const registerTeam = asyncHandler(async (req, res) => {
   });
 
   if (existedTeam) {
-    return res.status(409).json(new ApiError(409, "Team with this name or email already exists."));
+    return res
+      .status(409)
+      .json(new ApiError(409, "Team with this name or email already exists."));
   }
 
   try {
@@ -75,15 +88,19 @@ const registerTeam = asyncHandler(async (req, res) => {
     });
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-      team._id
+      team._id,
     );
 
     const createdTeam = await AssignTeam.findById(team._id).select(
-      "-password -refreshToken"
+      "-password -refreshToken",
     );
 
     if (!createdTeam) {
-      return res.status(500).json(new ApiError(500, "Something went wrong while registering a Team"));
+      return res
+        .status(500)
+        .json(
+          new ApiError(500, "Something went wrong while registering a Team"),
+        );
     }
 
     const options = {
@@ -100,14 +117,15 @@ const registerTeam = asyncHandler(async (req, res) => {
         new ApiResponse(
           201,
           { user: createdTeam, accessToken, refreshToken },
-          "Consumer registered and logged in successfully"
-        )
+          "Consumer registered and logged in successfully",
+        ),
       );
   } catch (error) {
-    return res.status(201).json(new ApiError(
-      500,
-      `Something went wrong while registering the team `
-    ));
+    return res
+      .status(201)
+      .json(
+        new ApiError(500, `Something went wrong while registering the team `),
+      );
   }
 });
 
@@ -115,13 +133,17 @@ const loginTeam = asyncHandler(async (req, res) => {
   const { email, teamname, password } = req.body;
 
   if (!email && !teamname) {
-    return res.status(400).json(new ApiError(400, "Required field should be filled"));
+    return res
+      .status(400)
+      .json(new ApiError(400, "Required field should be filled"));
   }
 
   const team = await AssignTeam.findOne({ $or: [{ teamname }, { email }] });
 
   if (!team) {
-    return res.status(404).json(new ApiError(404, "Team not found, please sign-up with Admin"));
+    return res
+      .status(404)
+      .json(new ApiError(404, "Team not found, please sign-up with Admin"));
   }
 
   const isPasswordValid = await team.isPasswordCorrect(password);
@@ -130,11 +152,11 @@ const loginTeam = asyncHandler(async (req, res) => {
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    team._id
+    team._id,
   );
 
   const loggedInTeam = await AssignTeam.findById(team._id).select(
-    "-password -refreshToken"
+    "-password -refreshToken",
   );
 
   if (!loggedInTeam) {
@@ -154,8 +176,8 @@ const loginTeam = asyncHandler(async (req, res) => {
       new ApiResponse(
         201,
         { user: loggedInTeam, accessToken, refreshToken },
-        "User logged in successfully"
-      )
+        "User logged in successfully",
+      ),
     );
 });
 
@@ -195,7 +217,7 @@ const assignTask = asyncHandler(async (req, res) => {
     teamLat,
     teamLng,
     dumpLat,
-    dumpLng
+    dumpLng,
   );
 
   team.assignedWork.push(dump._id);
@@ -209,7 +231,7 @@ const assignTask = asyncHandler(async (req, res) => {
     teamName,
     dump.uniqueNumber,
     dump.address,
-    distanceInKm.toFixed(2)
+    distanceInKm.toFixed(2),
   );
 
   return res.status(200).json(
@@ -218,7 +240,7 @@ const assignTask = asyncHandler(async (req, res) => {
       distanceInKm: distanceInKm.toFixed(2),
       team: team.teamname,
       deadline: dump.deadline,
-    })
+    }),
   );
 });
 
@@ -247,7 +269,7 @@ const workCompleted = asyncHandler(async (req, res) => {
       }
     }
 
-    dump.picture = picture?.secure_url;
+    dump.completedPicture = picture?.secure_url;
     dump.completed = true;
     await dump.save();
 
@@ -256,7 +278,7 @@ const workCompleted = asyncHandler(async (req, res) => {
       .json(new ApiResponse(200, {}, "Dump marked as completed"));
   } catch (error) {
     console.log(error);
-    if(picture?.public_id) await deleteFromCloudinary(picture.public._id)
+    if (picture?.public_id) await deleteFromCloudinary(picture.public._id);
     return res.status(500).json(new ApiError(500, "Internal server Error"));
   }
 });
