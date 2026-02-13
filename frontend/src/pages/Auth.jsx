@@ -229,7 +229,7 @@ const Auth = () => {
     "mt-1 block w-full rounded-md border-gray-300 shadow-sm outline-none bg-gray-200 dark:bg-slate-600 dark:text-slate-400 cursor-not-allowed";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-slate-900 md:px-6 pt-10 relative">
+    <div className="min-h-screen flex items-center justify-center bg-[#e8fff0] dark:bg-slate-900 md:px-6 pt-10 relative">
       <ToastContainer />
       {showNotice && (
         <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-md dark:bg-yellow-800 dark:text-yellow-100 dark:border-yellow-400 absolute top-[49.7px]">
@@ -241,7 +241,7 @@ const Auth = () => {
         </div>
       )}
       <div
-        className={`bg-white dark:bg-slate-800 p-8 px-10 md:px-12 rounded-2xl shadow-lg w-[90%] max-w-[500px] ${
+        className={`bg-[#f1fff5] dark:bg-slate-800 p-8 px-10 md:px-12 rounded-2xl shadow-lg w-[90%] max-w-[500px] ${
           showNotice && mode !== "login" ? "mt-22" : "mt-4"
         } text-slate-800 dark:text-slate-200`}
       >
@@ -256,8 +256,8 @@ const Auth = () => {
             ...(verifiedUser?.role === "admin" && mode === "signup"
               ? ["team"]
               : verifiedUser?.role !== "admin" && mode === "login"
-              ? ["team"]
-              : []),
+                ? ["team"]
+                : []),
           ].map((r) => (
             <button
               key={r}
@@ -267,8 +267,8 @@ const Auth = () => {
               {r === "user"
                 ? "User"
                 : r === "admin"
-                ? "Admin"
-                : "Cleaning Team"}
+                  ? "Admin"
+                  : "Cleaning Team"}
             </button>
           ))}
         </div>
@@ -434,8 +434,8 @@ const Auth = () => {
             {role === "user"
               ? "User"
               : role === "admin"
-              ? "Admin"
-              : "Cleaning Team"}
+                ? "Admin"
+                : "Cleaning Team"}
             {enabled ? "" : " ... "}
           </button>
         </form>

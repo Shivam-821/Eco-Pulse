@@ -88,7 +88,7 @@ const RegisterDump = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-15 px-4">
+    <div className="min-h-screen bg-[#e8fff0] dark:bg-gray-900 py-15 px-4">
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -121,7 +121,7 @@ const RegisterDump = () => {
         >
           {/* Form Section */}
           <div
-            className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700 ${
+            className={`bg-[#f1fff5] dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700 ${
               data ? "w-full" : "w-full max-w-2xl"
             }`}
           >

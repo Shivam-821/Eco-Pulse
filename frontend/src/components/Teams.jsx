@@ -69,7 +69,7 @@ export default function Teams() {
   }
 
   return (
-    <div className="flex ml-1.5 mt-10 dark:bg-slate-900 min-h-screen text-slate-800 dark:text-slate-200">
+    <div className="flex ml-1.5 mt-10 bg-[#e8fff0] dark:bg-slate-900 min-h-screen text-slate-800 dark:text-slate-200">
       <div className="flex-grow p-3">
         {/* Filter and Search Section */}
         <div className="flex justify-between mb-4 p-2">
@@ -104,7 +104,7 @@ export default function Teams() {
               placeholder="Search Teams"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-4 pr-10 py-2 text-sm rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200"
+              className="pl-4 pr-10 py-2 text-sm rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-[#f3fff7] dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200"
             />
           </div>
         </div>
@@ -112,7 +112,7 @@ export default function Teams() {
         {/* Table Section */}
         <div className="shadow-md rounded-lg overflow-hidden dark:bg-slate-800">
           <table className="min-w-full table-auto">
-            <thead className="bg-gray-100 dark:bg-slate-700">
+            <thead className="bg-gray-200 dark:bg-slate-700">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                   Team Name

@@ -477,7 +477,7 @@ export default function Tasks() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-14 pl-12 px-4">
+    <div className="min-h-screen bg-[#e4feed] dark:bg-gray-900 py-14 pl-12 px-4">
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="text-center">
@@ -590,9 +590,7 @@ export default function Tasks() {
             <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
               <FaUsers className="text-green-600 dark:text-green-400" />
             </div>
-            <h2 className="text-xl font-bold text-gray-800">
-              Assign Task
-            </h2>
+            <h2 className="text-xl font-bold text-gray-800">Assign Task</h2>
           </div>
 
           <FormControl fullWidth sx={{ mb: 3 }}>

@@ -118,7 +118,7 @@ const Complaint = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-15 px-4">
+    <div className="min-h-screen bg-[#e8fff0] dark:bg-gray-900 py-15 px-4">
       <ToastContainer />
       <div className="max-w-4xl mx-auto">
         {/* Header */}
@@ -134,7 +134,7 @@ const Complaint = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Complaint Form Section */}
           <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-[#f3fff7] dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
                   Register Complaint

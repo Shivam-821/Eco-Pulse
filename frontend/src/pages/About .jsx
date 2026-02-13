@@ -14,7 +14,7 @@ import {
 
 const AboutUs = () => {
   return (
-    <div className="pt-16 dark:bg-slate-900 min-h-screen px-6 text-slate-800 dark:text-slate-200">
+    <div className="pt-16 bg-[#e8fff0] dark:bg-slate-900 min-h-screen px-6 text-slate-800 dark:text-slate-200">
       <div className="max-w-5xl mx-auto flex flex-col gap-16 py-12">
         {/* About Us Introduction */}
         <section className="text-center">
@@ -25,9 +25,8 @@ const AboutUs = () => {
             We are a passionate team of three innovators —{" "}
             <span className="font-semibold text-green-400">Shivam Raj</span>
             {" and "}
-            <span className="font-semibold text-green-400">
-              Abhinav Patra
-            </span>. My mission is simple yet powerful:{" "}
+            <span className="font-semibold text-green-400">Abhinav Patra</span>.
+            My mission is simple yet powerful:{" "}
             <span className="font-semibold">
               Make cities cleaner, enable smarter waste management, and create
               an eco-friendly economy.

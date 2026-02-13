@@ -11,7 +11,7 @@ import useToken from "../context/token";
 const Home = () => {
   const { tokenId } = useToken();
   return (
-    <div className="pt-14 dark:bg-slate-900 min-h-screen px-6 text-slate-800 dark:text-slate-200">
+    <div className="pt-14 bg-[#e8fff0] dark:bg-slate-900 min-h-screen px-6 text-slate-800 dark:text-slate-200">
       <div className="max-w-7xl mx-auto py-12 flex flex-col gap-20">
         {/* Hero Section */}
         <section className="text-center dark:bg-gray-800 bg-emerald-200  rounded-md py-18 px-4">
@@ -135,7 +135,8 @@ const Home = () => {
             </p>
           ) : (
             <p className="dark:text-slate-400 text-slate-700 mb-8">
-              Join our mission and share your achivements and motivate others to contribute towards nature.
+              Join our mission and share your achivements and motivate others to
+              contribute towards nature.
             </p>
           )}
           {!tokenId ? (

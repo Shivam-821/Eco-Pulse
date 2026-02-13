@@ -95,7 +95,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
   return (
     <div
       ref={sidebarRef}
-      className={`bg-gradient-to-b from-white to-green-50 dark:from-slate-900 dark:to-slate-800 shadow-lg h-screen p-4 pb-5 flex flex-col fixed border-r border-green-100 dark:border-slate-700 transition-all duration-500 ${
+      className={`bg-gradient-to-b from-[#f1fff5] to-green-50 dark:from-slate-900 dark:to-slate-800 shadow-lg h-screen p-4 pb-5 flex flex-col fixed border-r border-green-100 dark:border-slate-700 transition-all duration-500 ${
         collapsed ? "w-20" : "w-64"
       }`}
     >

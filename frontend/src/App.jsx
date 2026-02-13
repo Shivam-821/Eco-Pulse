@@ -28,7 +28,7 @@ function App() {
   const navigate = useNavigate()
 
   return (
-    <div className="flex h-screen overflow-hidden dark:bg-slate-950">
+    <div className="flex h-screen overflow-hidden bg-[#e3feec] dark:bg-slate-950">
       {/* Sidebar */}
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
@@ -66,13 +66,13 @@ function App() {
             <div className="relative">
               {/* Tooltip / Dialog box */}
               <div className="hidden w-76 group-hover:flex absolute bottom-8 right-20 bg-gradient-to-r from-lime-600 to-green-600 text-white px-4 py-2 rounded-2xl shadow-xl transition-all duration-300 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 before:content-[''] before:absolute before:top-1/2 before:-right-3 before:-translate-y-1/2 before:border-[7px] before:border-transparent before:border-l-green-600 text-sm">
-                <strong className="text-green-100">PrakritiAI</strong>{" "} {" — "}
+                <strong className="text-green-100">PrakritiAI</strong> {" — "}
                 Your Personal Eco Companion.
               </div>
 
               {/* Bot Icon */}
               <img
-                onClick={() => navigate('/chat-bot')}
+                onClick={() => navigate("/chat-bot")}
                 className="w-[62px] cursor-pointer hover:scale-110 transition-transform drop-shadow-lg z-50"
                 src="/chat-bot.png"
                 alt="chat-bot"

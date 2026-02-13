@@ -34,7 +34,7 @@ const ViewAllRecycle = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-15 px-4">
+    <div className="min-h-screen bg-[#e4feed] dark:bg-gray-900 py-15 px-4">
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -87,7 +87,7 @@ const ViewAllRecycle = () => {
             {recycles.map((item, index) => (
               <div
                 key={item._id}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:scale-105 animate-fade-in"
+                className="bg-[#f1fff5] dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:scale-105 animate-fade-in"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {/* Image Section */}
@@ -104,8 +104,8 @@ const ViewAllRecycle = () => {
                           item.status === "available"
                             ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                             : item.status === "pending"
-                            ? "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+                              ? "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+                              : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
                         }`}
                       >
                         {item.status?.charAt(0).toUpperCase() +

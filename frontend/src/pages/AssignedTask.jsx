@@ -91,7 +91,7 @@ const AssignedTask = () => {
   }
 
   return (
-    <div className="min-h-screen w-full p-6 bg-gray-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+    <div className="min-h-screen w-full p-6 bg-[#e8fff0] dark:bg-slate-900 text-slate-800 dark:text-slate-200">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center py-12">
