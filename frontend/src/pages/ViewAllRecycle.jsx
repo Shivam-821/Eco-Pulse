@@ -1,15 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import { useSearchParams } from "react-router-dom";
 
 const ViewAllRecycle = () => {
   const [recycles, setRecycles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get("search") || "";
+
+  const filteredRecycles = useMemo(() => {
+    if (!searchQuery) return recycles;
+    return recycles.filter(
+      (item) =>
+        item.recycableItems
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        item.address?.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  }, [recycles, searchQuery]);
 
   const fetchRecycles = async () => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/recycle/get-all-recycle`
+        `${import.meta.env.VITE_BASE_URL}/api/recycle/get-all-recycle`,
       );
       setRecycles(res.data.data || []);
     } catch (error) {
@@ -63,7 +77,7 @@ const ViewAllRecycle = () => {
 
       {/* Recycle Items Grid */}
       <div className="max-w-7xl mx-auto">
-        {recycles.length === 0 ? (
+        {filteredRecycles.length === 0 ? (
           <div className="text-center py-16">
             <div className="w-24 h-24 mx-auto mb-4 text-gray-400 dark:text-gray-600">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,15 +90,19 @@ const ViewAllRecycle = () => {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300 mb-2">
-              No Recyclable Items Found
+              {searchQuery
+                ? `No results found for "${searchQuery}"`
+                : "No Recyclable Items Found"}
             </h3>
             <p className="text-gray-500 dark:text-gray-400">
-              Be the first to list recyclable materials in your area!
+              {searchQuery
+                ? "Try checking your spelling or different keywords."
+                : "Be the first to list recyclable materials in your area!"}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recycles.map((item, index) => (
+            {filteredRecycles.map((item, index) => (
               <div
                 key={item._id}
                 className="bg-[#f1fff5] dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:scale-105 animate-fade-in"

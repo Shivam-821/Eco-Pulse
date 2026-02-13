@@ -32,7 +32,7 @@ const AssignedTask = () => {
               Authorization: `Bearer ${token}`,
             },
             withCredentials: true,
-          }
+          },
         );
         // console.log(res?.data?.data?.task);
         setAssignedTask(res?.data?.data?.task);
@@ -48,7 +48,7 @@ const AssignedTask = () => {
 
   useEffect(() => {
     const token = tokenId;
-    if (!token) {
+    if (!token || !submitCompletedTask) {
       return;
     }
     const taskCompleted = async () => {
@@ -66,7 +66,7 @@ const AssignedTask = () => {
               "Content-Type": "multipart/form-data",
             },
             withCredentials: true,
-          }
+          },
         );
         // console.log(res);
         if (res.status === 200) {

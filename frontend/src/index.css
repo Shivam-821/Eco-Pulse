@@ -149,8 +149,11 @@
 }
 
 
-
-
 ::-webkit-scrollbar{
   display: none;
+}
+
+::selection {
+  background-color: #52ef8c;
+  color: #064c00;
 }

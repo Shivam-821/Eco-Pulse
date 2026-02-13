@@ -26,6 +26,22 @@ export default function Navbar({ setCollapsed, collapsed }) {
     setInputValue(e.target.value);
   };
 
+  const handleSearch = () => {
+    // console.log("handleSearch triggered. Input:", inputValue);
+    if (inputValue.trim()) {
+      const url = `/viewrecycle?search=${encodeURIComponent(inputValue.trim())}`;
+      // console.log("Navigating to:", url);
+      navigate(url);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    // console.log("Key pressed:", e.key);
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   useEffect(() => {
     setCollapse(collapsed);
   }, [collapsed]);
@@ -39,7 +55,7 @@ export default function Navbar({ setCollapsed, collapsed }) {
           {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
-          }
+          },
         );
       } else {
         return;
@@ -64,9 +80,9 @@ export default function Navbar({ setCollapsed, collapsed }) {
           left: { md: "auto" },
           width: "100%",
           height: "63px",
-          backgroundColor: "rgba(175, 205, 225, 0.3)", 
+          backgroundColor: "rgba(175, 205, 225, 0.3)",
           backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)", 
+          WebkitBackdropFilter: "blur(8px)",
           color: "black",
           borderBottom: "2px solid rgba(0, 0, 2, 0.26)",
           zIndex: (theme) => theme.zIndex.drawer + 1,
@@ -117,10 +133,18 @@ export default function Navbar({ setCollapsed, collapsed }) {
               size="small"
               value={inputValue}
               onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
               placeholder="Search..."
               InputProps={{
                 startAdornment: (
-                  <FaSearch style={{ marginRight: 8, color: "#64748b" }} />
+                  <FaSearch
+                    style={{
+                      marginRight: 8,
+                      color: "#64748b",
+                      cursor: "pointer",
+                    }}
+                    onClick={handleSearch}
+                  />
                 ),
               }}
               sx={{
