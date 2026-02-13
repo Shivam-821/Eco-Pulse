@@ -34,10 +34,10 @@ const RegisterDump = () => {
         },
         (error) => {
           toast.error(
-            "Unable to retrieve location. Please allow location access."
+            "Unable to retrieve location. Please allow location access.",
           );
           console.error(error);
-        }
+        },
       );
     } else {
       toast.error("Geolocation is not supported by this browser.");
@@ -52,8 +52,8 @@ const RegisterDump = () => {
     formData.append("location", location);
     formData.append("description", description);
     formData.append("address", address);
-    formData.append("state", state)
-    formData.append("district", district)
+    formData.append("state", state);
+    formData.append("district", district);
     if (image) formData.append("picture", image);
 
     try {
@@ -65,14 +65,14 @@ const RegisterDump = () => {
             Authorization: `Bearer ${token}`,
           },
           withCredentials: true,
-        }
+        },
       );
       if (res.status === 201) {
         setDescription("");
         setLocation("");
         setAddress("");
-        setDistrict("")
-        setState("")
+        setDistrict("");
+        setState("");
         setImage(null);
         setData(res.data.data);
         notifySuccess();
@@ -341,6 +341,24 @@ const RegisterDump = () => {
                         {data._id}
                       </p>
                     </div>
+                    {data.aiAnalysis && data.aiAnalysis.isWaste && (
+                      <div className="bg-green-50 dark:bg-green-900/30 p-3 rounded-lg border border-green-200 dark:border-green-800 col-span-1 sm:col-span-2">
+                        <p className="text-xs sm:text-sm text-green-700 dark:text-green-300 font-semibold mb-1">
+                          AI Analysis Result (+10 Credits Earned!)
+                        </p>
+                        <div className="flex gap-2">
+                          <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 text-xs rounded border border-red-200 dark:border-red-700">
+                            Severity: {data.aiAnalysis.severity}/10
+                          </span>
+                          <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded border border-blue-200 dark:border-blue-700">
+                            {data.aiAnalysis.wasteType}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1 italic">
+                          "{data.aiAnalysis.summary}"
+                        </p>
+                      </div>
+                    )}
                     <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
                       <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                         Unique Number

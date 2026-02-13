@@ -41,6 +41,7 @@ const style = {
   boxShadow: 24,
   p: 4,
   borderRadius: 3,
+  backgroundColor: "#ffb",
   border: "1px solid #e2e8f0",
 };
 
@@ -117,7 +118,7 @@ export default function Tasks() {
           {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
-          }
+          },
         );
         setVerifiedUser(res.data);
       } catch (err) {
@@ -153,7 +154,7 @@ export default function Tasks() {
   const fetchTeams = async () => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/tasks/get-all-assignteam`
+        `${import.meta.env.VITE_BASE_URL}/api/tasks/get-all-assignteam`,
       );
       setAvailableTeams(res.data.data);
     } catch (error) {
@@ -169,7 +170,7 @@ export default function Tasks() {
   const fetchTasks = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/dump/getall-dump`
+        `${import.meta.env.VITE_BASE_URL}/api/dump/getall-dump`,
       );
 
       const tasksWithLocationNames = await Promise.all(
@@ -190,8 +191,9 @@ export default function Tasks() {
             team: dump.assignedTeam?.teamname || "",
             deadline: dump.deadline || "",
             reported: dump.complainLodge,
+            aiAnalysis: dump.aiAnalysis || null, // Add AI Analysis to state
           };
-        })
+        }),
       );
 
       setTasks(tasksWithLocationNames);
@@ -236,13 +238,13 @@ export default function Tasks() {
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
-        }
+        },
       );
 
       const updatedTasks = tasks.map((task) =>
         task.id === selectedTask.id
           ? { ...task, assigned: true, team: selectedTeam, deadline }
-          : task
+          : task,
       );
 
       setTasks(updatedTasks);
@@ -272,7 +274,7 @@ export default function Tasks() {
 
   const unassignedTasks = tasks.filter((task) => !task.assigned);
   const assignedTasks = tasks.filter(
-    (task) => task.assigned && !task.completed
+    (task) => task.assigned && !task.completed,
   );
   const completedTasks = tasks.filter((task) => task.completed);
 
@@ -310,7 +312,7 @@ export default function Tasks() {
 
     const bgClass = isReportedAssigned
       ? "bg-red-200 dark:bg-red-800/30"
-      : config.bgColor ?? "bg-white dark:bg-gray-900";
+      : (config.bgColor ?? "bg-white dark:bg-gray-900");
 
     const borderClass = isReportedAssigned
       ? "border-red-300 dark:border-red-600"
@@ -371,8 +373,8 @@ export default function Tasks() {
                 task.completed
                   ? "dark:bg-teal-700"
                   : task.team
-                  ? "dark:bg-orange-400"
-                  : "dark:bg-red-400"
+                    ? "dark:bg-orange-400"
+                    : "dark:bg-red-400"
               } w-33`}
             >
               <p className="text-xs text-gray-500 dark:text-gray-800">
@@ -387,8 +389,8 @@ export default function Tasks() {
                 task.completed
                   ? "dark:bg-teal-700"
                   : task.team
-                  ? "dark:bg-orange-400"
-                  : "dark:bg-red-400"
+                    ? "dark:bg-orange-400"
+                    : "dark:bg-red-400"
               } px-2 py-1 rounded-lg w-33`}
             >
               <p className="text-xs text-gray-500 dark:text-gray-800">
@@ -399,6 +401,18 @@ export default function Tasks() {
               </p>
             </div>
           </div>
+
+          {/* AI Analysis Tags */}
+          {task.aiAnalysis && task.aiAnalysis.isWaste && (
+            <div className="flex flex-wrap gap-2 mb-2 mt-2">
+              <span className="px-2 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 text-xs font-semibold rounded-full border border-red-200 dark:border-red-800">
+                Severity: {task.aiAnalysis.severity}/10
+              </span>
+              <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-semibold rounded-full border border-blue-200 dark:border-blue-800">
+                {task.aiAnalysis.wasteType}
+              </span>
+            </div>
+          )}
 
           {/* Team and Deadline Info */}
           {(task.team || task.deadline) && (
@@ -467,7 +481,7 @@ export default function Tasks() {
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-4xl h-13 mt-2 font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent mb-4">
             Task Management
           </h1>
           <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
@@ -576,7 +590,7 @@ export default function Tasks() {
             <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
               <FaUsers className="text-green-600 dark:text-green-400" />
             </div>
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+            <h2 className="text-xl font-bold text-gray-800">
               Assign Task
             </h2>
           </div>

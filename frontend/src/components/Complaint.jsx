@@ -15,6 +15,7 @@ const Complaint = () => {
   const [complaints, setComplaints] = useState([]);
   const [district, setDistrict] = useState("");
   const [state, setState] = useState("");
+  const [image, setImage] = useState(null); // New state for image
   const { tokenId } = useToken();
   const token = tokenId;
 
@@ -30,7 +31,7 @@ const Complaint = () => {
         },
         (err) => {
           console.error("Geolocation error:", err);
-        }
+        },
       );
     }
   }, []);
@@ -38,11 +39,11 @@ const Complaint = () => {
   const fetchComplaints = async () => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/complain/view-complain`
+        `${import.meta.env.VITE_BASE_URL}/api/complain/view-complain`,
       );
       setComplaints(res.data?.data || []);
     } catch (err) {
-      toast.error("Error fetching complaints")
+      toast.error("Error fetching complaints");
       // console.error("Error fetching complaints:", err);
     }
   };
@@ -57,30 +58,35 @@ const Complaint = () => {
     setMessage("");
 
     try {
-      const sentData = {
-        complaintType,
-        description,
-        location,
-        district,
-        state,
-        pincode,
-        uniqueNumber,
-        binUniqueCode,
-      };
+      const formData = new FormData();
+      formData.append("complaintType", complaintType);
+      formData.append("description", description);
+      // Ensure "location" is sent as a string if it's an object, or handle it in backend
+      formData.append("location", JSON.stringify(location));
+      formData.append("district", district);
+      formData.append("state", state);
+      formData.append("pincode", pincode);
 
       if (complaintType === "bin-issue") {
-        sentData.binUniqueCode = binUniqueCode;
+        formData.append("binUniqueCode", binUniqueCode);
       } else if (complaintType === "dump-inaction") {
-        sentData.uniqueNumber = uniqueNumber;
+        formData.append("uniqueNumber", uniqueNumber);
+      }
+
+      if (image) {
+        formData.append("picture", image); // Append image
       }
 
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/complain/loadge-complain`,
-        sentData,
+        formData, // Send FormData
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data", // Important for file upload
+          },
           withCredentials: true,
-        }
+        },
       );
       setMessage(res.data?.message || "Complaint submitted successfully!");
 
@@ -88,10 +94,11 @@ const Complaint = () => {
 
       setDescription("");
       setPincode("");
-      setState("")
-      setDistrict("")
+      setState("");
+      setDistrict("");
       setBinUniqueCode("");
       setUniqueNumber("");
+      setImage(null); // Reset image
     } catch (err) {
       console.error(err);
       setMessage(err.response?.data?.message || "Something went wrong.");
@@ -238,6 +245,50 @@ const Complaint = () => {
                   />
                 </div>
 
+                {/* Image Upload UI */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Upload Image (Optional but Recommended)
+                  </label>
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg
+                          className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                          <span className="font-semibold">Click to upload</span>{" "}
+                          or drag and drop
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          PNG, JPG, JPEG (MAX. 5MB)
+                        </p>
+                      </div>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => setImage(e.target.files[0])}
+                      />
+                    </label>
+                  </div>
+                  {image && (
+                    <p className="mt-2 text-sm text-green-600 dark:text-green-400">
+                      Selected: {image.name}
+                    </p>
+                  )}
+                </div>
+
                 <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Current Location
@@ -245,7 +296,7 @@ const Complaint = () => {
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {location.coordinates.length > 0
                       ? `Longitude: ${location.coordinates[0]?.toFixed(
-                          6
+                          6,
                         )}, Latitude: ${location.coordinates[1]?.toFixed(6)}`
                       : "Fetching your location..."}
                   </p>
@@ -349,7 +400,7 @@ const Complaint = () => {
                         </span>
                         <span
                           className={`text-xs font-medium ${getStatusColor(
-                            comp.resolved
+                            comp.resolved,
                           )}`}
                         >
                           {getStatusText(comp.resolved)}
@@ -385,6 +436,18 @@ const Complaint = () => {
                           })}
                         </p>
                       </div>
+
+                      {/* Show basic analysis tags if available */}
+                      {comp.aiAnalysis && comp.aiAnalysis.isWaste && (
+                        <div className="mt-2 flex gap-2">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                            Severity: {comp.aiAnalysis.severity}/10
+                          </span>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                            {comp.aiAnalysis.wasteType}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

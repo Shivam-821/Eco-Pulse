@@ -47,6 +47,10 @@ const AssignedTask = () => {
   }, [markedCompleted]);
 
   useEffect(() => {
+    const token = tokenId;
+    if (!token) {
+      return;
+    }
     const taskCompleted = async () => {
       const formData = new FormData();
       formData.append("picture", image);

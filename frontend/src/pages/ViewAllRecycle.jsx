@@ -51,7 +51,7 @@ const ViewAllRecycle = () => {
       {/* Header Section */}
       <div className="max-w-7xl mx-auto mb-12">
         <div className="text-center">
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent mb-4">
+          <h2 className="text-4xl h-13 mt-1 font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent mb-4">
             All Recyclable Items
           </h2>
           <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
