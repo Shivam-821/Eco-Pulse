@@ -22,7 +22,7 @@ const AboutUs = () => {
             <Users className="w-8 h-8" /> About Us
           </h1>
           <p className="text-lg text-slate-700 dark:text-slate-400">
-            We are a passionate team of three innovators —{" "}
+            We are a passionate team of two innovators —{" "}
             <span className="font-semibold text-green-400">Shivam Raj</span>
             {" and "}
             <span className="font-semibold text-green-400">Abhinav Patra</span>.

@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/index.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { sendOTP } from "./twilio.controller.js";
+import { queueNotification } from "../queues/notification.queue.js";
 
 const generateOTP = () => {
   let otp = "";
@@ -48,8 +48,8 @@ const registerUser = asyncHandler(async (req, res) => {
       new ApiError(409, "User with email or phone already exists.")
     );
   }
-  // const ot_p = generateOTP()
-  // await sendOTP(ot_p)
+  // const ot_p = generateOTP();
+  // await queueNotification("sendOTP", { otp: ot_p });
 
   // now we need to first verify the otp
   try {

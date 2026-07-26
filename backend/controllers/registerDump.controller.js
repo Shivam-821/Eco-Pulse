@@ -7,7 +7,7 @@ import {
   deleteFromCloudinary,
 } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { notifyOnRegisteringDump } from "./twilio.controller.js";
+import { queueNotification } from "../queues/notification.queue.js";
 import { analyzeWasteImage } from "../services/aiService.js";
 
 const registerDump = asyncHandler(async (req, res) => {
@@ -76,7 +76,10 @@ const registerDump = asyncHandler(async (req, res) => {
     dumpReporter.dumpRegistered.push(dump._id);
     await dumpReporter.save();
 
-    await notifyOnRegisteringDump(dumpReporter.fullname, dump.uniqueNumber);
+    await queueNotification("registerDump", {
+      dumpReporter: dumpReporter.fullname,
+      uniqueCode: dump.uniqueNumber,
+    });
 
     return res
       .status(201)

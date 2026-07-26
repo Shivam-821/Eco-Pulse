@@ -6,6 +6,7 @@ import http from "http";
 
 import limiter from "./middleware/rateLimiter.js";
 import connectDB from "./config/db.js";
+import "./workers/notification.worker.js"; // Bootstrap BullMQ worker
 
 import apiRoutes from "./routes/index.js";
 
