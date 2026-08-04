@@ -230,12 +230,13 @@ const assignTask = asyncHandler(async (req, res) => {
   dump.assignedTeam = team._id;
   await dump.save();
 
-  await queueNotification("assignTask", {
+  // queueing the notification
+  queueNotification("assignTask", {
     teamname: teamName,
     uniqueNumber: dump.uniqueNumber,
     address: dump.address,
     distanceInKm: distanceInKm.toFixed(2),
-  });
+  }).catch((err) => console.error("Failed to queue assignTask notification:", err));
 
   return res.status(200).json(
     new ApiResponse(200, {

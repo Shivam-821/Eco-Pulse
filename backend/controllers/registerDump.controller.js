@@ -9,6 +9,7 @@ import {
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { queueNotification } from "../queues/notification.queue.js";
 import { analyzeWasteImage } from "../services/aiService.js";
+import sharp from "sharp";
 
 const registerDump = asyncHandler(async (req, res) => {
   const { location, description, address } = req.body;
@@ -30,9 +31,14 @@ const registerDump = asyncHandler(async (req, res) => {
 
   let picture;
   if (req.file) {
-    const fileBuffer = req.file.buffer;
     try {
-      picture = await uploadOnCloudinary(fileBuffer);
+      // Compress image before upload: resize to max 1280px, convert to webp at 70% quality.
+      // Reduces a typical 3–5MB phone photo down to ~100–200KB, cutting Cloudinary upload time drastically.
+      const compressedBuffer = await sharp(req.file.buffer)
+        .resize({ width: 1280, height: 1280, fit: "inside", withoutEnlargement: true })
+        .webp({ quality: 70 })
+        .toBuffer();
+      picture = await uploadOnCloudinary(compressedBuffer);
     } catch (error) {
       return res
         .status(500)
@@ -68,10 +74,11 @@ const registerDump = asyncHandler(async (req, res) => {
     dumpReporter.dumpRegistered.push(dump._id);
     await dumpReporter.save();
 
-    await queueNotification("registerDump", {
+    // queueing the notification
+    queueNotification("registerDump", {
       dumpReporter: dumpReporter.fullname,
       uniqueCode: dump.uniqueNumber,
-    });
+    }).catch((err) => console.error("Failed to queue dump notification:", err));
 
     // Send the response immediately — do NOT wait for AI
     res

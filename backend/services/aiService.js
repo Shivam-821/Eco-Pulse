@@ -5,7 +5,6 @@ dotenv.config();
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_VISION });
 
-// Define this outside the function so it isn't recreated on every call
 const FALLBACK_RESPONSE = {
   isWaste: false,
   wasteType: "Unknown",
