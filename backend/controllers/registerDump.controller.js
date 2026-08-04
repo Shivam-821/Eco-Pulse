@@ -40,8 +40,9 @@ const registerDump = asyncHandler(async (req, res) => {
     }
   }
 
+  let dump;
   try {
-    const dump = await Regdump.create({
+    dump = await Regdump.create({
       location: geoLocation,
       description,
       picture: picture?.secure_url || "",
@@ -49,25 +50,34 @@ const registerDump = asyncHandler(async (req, res) => {
       uniqueNumber: Math.floor(Math.random() * 999),
       address,
     });
+  } catch (error) {
+    if (picture?.public_id) await deleteFromCloudinary(picture.public_id);
+    return res
+      .status(500)
+      .json(
+        new ApiError(500, `Failed to create dump report: ${error.message}`),
+      );
+  }
 
-    // --- AI Analysis & Gamification ---
-    if (picture?.secure_url) {
-      try {
-        const aiAnalysis = await analyzeWasteImage(picture.secure_url);
-        dump.aiAnalysis = aiAnalysis;
-        await dump.save();
+  // --- AI Analysis & Gamification (non-blocking, never fails the request) ---
+  if (picture?.secure_url) {
+    try {
+      const aiAnalysis = await analyzeWasteImage(picture.secure_url);
+      dump.aiAnalysis = aiAnalysis;
+      await dump.save();
 
-        if (aiAnalysis.isWaste) {
-          await User.findByIdAndUpdate(dumpReporter._id, {
-            $inc: { credits: 10 },
-          });
-        }
-      } catch (error) {
-        console.error("AI Analysis failed for Dump Report:", error);
+      if (aiAnalysis.isWaste) {
+        await User.findByIdAndUpdate(dumpReporter._id, {
+          $inc: { credits: 10 },
+        });
       }
+    } catch (aiError) {
+      console.error("AI Analysis failed for Dump Report (proceeding without AI):", aiError);
     }
-    // ----------------------------------
+  }
+  // --------------------------------------------------------------------------
 
+  try {
     const registeredDump = await Regdump.findById(dump._id).populate({
       path: "dumpReporter",
       select: "fullname email avatar",
@@ -87,11 +97,10 @@ const registerDump = asyncHandler(async (req, res) => {
         new ApiResponse(201, registeredDump, "Dump registered successfully"),
       );
   } catch (error) {
-    if (picture?.public_id) await deleteFromCloudinary(picture.public_id);
     return res
       .status(500)
       .json(
-        new ApiError(500, `Failed to create dump report: ${error.message}`),
+        new ApiError(500, `Failed to finalize dump report: ${error.message}`),
       );
   }
 });
