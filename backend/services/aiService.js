@@ -5,6 +5,15 @@ dotenv.config();
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_VISION });
 
+// Define this outside the function so it isn't recreated on every call
+const FALLBACK_RESPONSE = {
+  isWaste: false,
+  wasteType: "Unknown",
+  severity: 0,
+  confidence: 0,
+  summary: "AI Analysis Failed. Manual review required.",
+};
+
 const SYSTEM_PROMPT = `
 You are an expert Environmental Waste Analyst.
 Your task is to analyze images of potential waste/garbage dumps and provide structured data.
@@ -23,88 +32,56 @@ export const analyzeWasteImage = async (imageUrl) => {
   try {
     const response = await fetch(imageUrl);
     if (!response.ok) {
-      console.error(
-        `Fetch failed with status: ${response.status} ${response.statusText}`,
-      );
-      throw new Error(`Failed to fetch image: ${response.statusText}`);
+      console.error(`Fetch failed with status: ${response.status} ${response.statusText}`);
+      return FALLBACK_RESPONSE;
     }
 
     const arrayBuffer = await response.arrayBuffer();
     if (!arrayBuffer) {
-      throw new Error("Received empty buffer from image URL");
+      console.error("Received empty buffer from image URL");
+      return FALLBACK_RESPONSE;
     }
 
     const buffer = Buffer.from(arrayBuffer);
     const base64Image = buffer.toString("base64");
 
     const result = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-09-2025",
+      model: "gemini-2.5-flash",
       contents: [
         {
-          role: "user",
-          parts: [
-            { text: SYSTEM_PROMPT },
-            {
-              inlineData: {
-                mimeType: "image/jpeg",
-                data: base64Image,
-              },
-            },
-          ],
+          inlineData: {
+            mimeType: "image/jpeg",
+            data: base64Image,
+          },
         },
       ],
       config: {
+        systemInstruction: SYSTEM_PROMPT,
         responseMimeType: "application/json",
+        responseSchema: {
+          type: "OBJECT",
+          properties: {
+            isWaste: { type: "BOOLEAN" },
+            wasteType: { type: "STRING" },
+            severity: { type: "INTEGER" },
+            confidence: { type: "NUMBER" },
+            summary: { type: "STRING" },
+          },
+          required: ["isWaste", "wasteType", "severity", "confidence", "summary"],
+        },
       },
     });
 
-    // console.log("AI Result:", JSON.stringify(result, null, 2));
-
-    let text = null;
-
-    // Try to extract text from various possible structures
-    if (result.response && typeof result.response.text === "function") {
-      text = result.response.text();
-    } else if (typeof result.text === "function") {
-      text = result.text();
-    } else if (result.candidates && result.candidates.length > 0) {
-      // Handle @google/genai SDK structure
-      const candidate = result.candidates[0];
-      if (
-        candidate.content &&
-        candidate.content.parts &&
-        candidate.content.parts.length > 0
-      ) {
-        text = candidate.content.parts[0].text;
-      }
-    }
-
+    const text = result.text;
     if (!text) {
-      console.error(
-        "AI returned empty text response",
-        JSON.stringify(result, null, 2),
-      );
-      throw new Error("Empty response from AI model");
+      console.error("Empty response from AI model");
+      return FALLBACK_RESPONSE;
     }
 
-    // Validate JSON parsing
-    try {
-      const jsonResult = JSON.parse(text);
-      return jsonResult;
-    } catch (parseError) {
-      console.error("Failed to parse AI response as JSON:", text);
-      // Fallback or retry logic could go here
-      throw new Error("Invalid JSON response from AI");
-    }
+    return JSON.parse(text);
   } catch (error) {
-    console.error("AI Analysis Failed:", error.message);
-    // Explicitly return a fallback object to prevent undefined/crash
-    return {
-      isWaste: true,
-      wasteType: "Unknown",
-      severity: 1,
-      confidence: 0,
-      summary: "AI Analysis Failed. Manual review required.",
-    };
+    // Catches network errors, AI API errors, or JSON.parse errors
+    console.error("AI Analysis Execution Error:", error.message);
+    return FALLBACK_RESPONSE;
   }
 };
