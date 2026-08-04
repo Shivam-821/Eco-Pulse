@@ -59,24 +59,6 @@ const registerDump = asyncHandler(async (req, res) => {
       );
   }
 
-  // --- AI Analysis & Gamification (non-blocking, never fails the request) ---
-  if (picture?.secure_url) {
-    try {
-      const aiAnalysis = await analyzeWasteImage(picture.secure_url);
-      dump.aiAnalysis = aiAnalysis;
-      await dump.save();
-
-      if (aiAnalysis.isWaste) {
-        await User.findByIdAndUpdate(dumpReporter._id, {
-          $inc: { credits: 10 },
-        });
-      }
-    } catch (aiError) {
-      console.error("AI Analysis failed for Dump Report (proceeding without AI):", aiError);
-    }
-  }
-  // --------------------------------------------------------------------------
-
   try {
     const registeredDump = await Regdump.findById(dump._id).populate({
       path: "dumpReporter",
@@ -91,7 +73,8 @@ const registerDump = asyncHandler(async (req, res) => {
       uniqueCode: dump.uniqueNumber,
     });
 
-    return res
+    // Send the response immediately — do NOT wait for AI
+    res
       .status(201)
       .json(
         new ApiResponse(201, registeredDump, "Dump registered successfully"),
@@ -102,6 +85,24 @@ const registerDump = asyncHandler(async (req, res) => {
       .json(
         new ApiError(500, `Failed to finalize dump report: ${error.message}`),
       );
+  }
+
+  // --- AI Analysis & Gamification ---
+  if (picture?.secure_url) {
+    analyzeWasteImage(picture.secure_url)
+      .then(async (aiAnalysis) => {
+        dump.aiAnalysis = aiAnalysis;
+        await dump.save();
+
+        if (aiAnalysis.isWaste) {
+          await User.findByIdAndUpdate(dumpReporter._id, {
+            $inc: { credits: 10 },
+          });
+        }
+      })
+      .catch((aiError) => {
+        console.error("Background AI analysis failed (dump already saved):", aiError);
+      });
   }
 });
 
